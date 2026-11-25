@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#0b0f17" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>NOVA PULSE v6.4 — Регіональний SMART ADVISOR</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --bg-card: #121826;
+      --bg-card-2: #182133;
+      --bg-input: #0e1420;
+      --border: #263248;
+      --text: #eef2f9;
+      --muted: #93a1bd;
+      --accent: #ef233c;
+      --accent-soft: rgba(239, 35, 60, 0.16);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.15);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.15);
+      --blue: #3b82f6;
+      --blue-soft: rgba(59, 130, 246, 0.15);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding-bottom: 84px;
+    }
+
+    /* Top Sticky Bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 15, 23, 0.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+    }
+    .topbar-row {
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.2px;
+    }
+    .brand-badge {
+      background: var(--accent);
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .btn-pill {
+      border: 1px solid var(--border);
+      background: var(--bg-card-2);
+      color: var(--text);
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: 0.15s ease;
+    }
+    .btn-pill:active { transform: scale(0.97); }
+    .btn-pill.locked {
+      background: var(--amber-soft);
+      border-color: var(--amber);
+      color: #fcd34d;
+    }
+    .btn-pill.unlocked {
+      background: var(--green-soft);
+      border-color: var(--green);
+      color: #86efac;
+    }
+
+    /* Tabs */
+    .tabs-wrap {
+      max-width: 980px;
+      margin: 10px auto 0;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .tabs-wrap::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex: 0 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Container & Cards */
+    .container {
+      max-width: 980px;
+      margin: 14px auto;
+      padding: 0 12px;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-bottom: 14px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 800;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .collapse-btn {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .card.collapsed .card-body { display: none; }
+    .card.collapsed .card-header { margin-bottom: 0; }
+
+    /* Hero KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    @media (min-width: 680px) {
+      .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .kpi {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+    .kpi-val {
+      font-size: 19px;
+      font-weight: 800;
+    }
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    .text-green { color: var(--green); }
+    .text-red { color: var(--accent); }
+    .text-amber { color: var(--amber); }
+    .text-blue { color: var(--blue); }
+
+    /* Controls & Sliders (Scroll-Safe) */
+    .control-row {
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+    }
+    .control-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .control-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .num-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 8px;
+    }
+    .num-box input {
+      width: 92px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 14px;
+      text-align: right;
+      outline: none;
+    }
+    .num-unit {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .slider-wrap {
+      padding: 4px 14px;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      height: 6px;
+      cursor: pointer;
+      touch-action: pan-y;
+    }
+    body.sliders-locked input[type="range"] {
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    /* Form Elements */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 680px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .field label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    input[type="text"], input[type="number"], input[type="month"], select, textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 11px;
+      border-radius: 9px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blue);
+    }
+
+    /* Segmented & Preset Buttons */
+    .seg-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .seg-btn {
+      flex: 1 1 auto;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+    .seg-btn.active {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+      color: #93c5fd;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background: var(--bg-card-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 9px 13px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* Badges & Alerts */
+    .alert {
+      padding: 11px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-card-2);
+    }
+    .alert.good { background: var(--green-soft); border-color: rgba(34,197,94,0.4); color: #bbf7d0; }
+    .alert.warn { background: var(--amber-soft); border-color: rgba(245,158,11,0.4); color: #fde68a; }
+    .alert.bad  { background: var(--accent-soft); border-color: rgba(239,35,60,0.45); color: #fecdd3; }
+
+    /* Tables & Lists */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    th { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+
+    .capex-item, .loc-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Progress Bar */
+    .prog-track {
+      width: 100%;
+      height: 10px;
+      background: var(--bg-input);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin: 8px 0;
+    }
+    .prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      transition: width 0.25s ease;
+    }
+
+    /* Chart Canvas */
+    .chart-box {
+      position: relative;
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    canvas {
+      width: 100%;
+      height: 290px;
+      display: block;
+    }
+
+    /* Floating Scroll Buttons */
+    .float-nav {
+      position: fixed;
+      right: 14px;
+      bottom: 16px;
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .float-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(24, 33, 51, 0.92);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--green);
+      color: #052e16;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.22s ease;
+      z-index: 120;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Footer */
+    footer {
+      max-width: 980px;
+      margin: 24px auto 12px;
+      padding: 16px 12px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .dash-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+    .dash-kpi { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:13px; min-width:0; }
+    .dash-kpi .k-label { color:var(--muted); font-size:12px; }
+    .dash-kpi .k-value { font-size:clamp(18px,4vw,25px); font-weight:850; margin-top:5px; overflow-wrap:anywhere; }
+    .muted-note { color:var(--muted); font-size:12px; }
+    .ledger-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+    .ledger-form .wide { grid-column:1/-1; }
+    .ledger-list { display:flex; flex-direction:column; gap:8px; }
+    .ledger-row { display:grid; grid-template-columns:1fr auto; gap:8px; padding:10px; border:1px solid var(--border); border-radius:10px; background:var(--bg-card-2); }
+    .ledger-row small { color:var(--muted); display:block; }
+    .ledger-amount { font-weight:800; white-space:nowrap; text-align:right; }
+    .ledger-actions { display:flex; gap:6px; justify-content:flex-end; margin-top:5px; }
+    .btn-danger { background:#3b1720; color:#fecaca; border:1px solid #7f1d1d; border-radius:8px; padding:5px 8px; }
+    .btn-primary { background:var(--accent); color:white; border:0; border-radius:9px; padding:11px 14px; font-weight:800; width:100%; }
+    .status-line { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; color:var(--muted); font-size:12px; }
+    @media(min-width:700px) { .dash-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } .ledger-form { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+
+    .branch-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;width:100%}
+    .branch-actions button{flex:1 1 145px}
+    .employee-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--bg-card-2);margin:8px 0}
+    .benchmark-table{width:100%;border-collapse:collapse}
+    .benchmark-table td,.benchmark-table th{padding:8px;border-bottom:1px solid var(--border);font-size:12px}
+    .tag-note{font-size:11px;color:var(--muted)}
+    footer strong {
+      color: var(--text);
+      letter-spacing: 0.4px;
+    }
+  
+    /* v6: central report analytics */
+    .v6-report-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+    .v6-report-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:12px 0}
+    .v6-report-kpi{background:rgba(255,255,255,.035);border:1px solid var(--border,rgba(255,255,255,.1));border-radius:12px;padding:12px}
+    .v6-report-kpi strong{display:block;font-size:19px;margin-top:5px}
+    .v6-report-tools label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+    .v6-report-tools select,.v6-report-tools input{width:100%;min-width:0}
+    .v6-report-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+    @media(max-width:520px){.v6-report-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body class="sliders-locked logged-out">
+  <style>
+    .auth-screen{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at top,#1b2940,#080c13 65%);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
+    .auth-card{width:min(100%,440px);background:#121826;border:1px solid #34435c;border-radius:18px;padding:22px;box-shadow:0 20px 70px #0009}
+    .auth-card h1{font-size:21px;margin:0 0 6px}.auth-card p{color:#93a1bd;font-size:13px}
+    .auth-card input,.branch-workspace input,.branch-workspace select,.branch-workspace textarea{width:100%;background:#0e1420;border:1px solid #34435c;color:#eef2f9;padding:11px;border-radius:9px;font-size:15px}
+    .auth-card label,.branch-workspace label{display:block;font-size:12px;color:#aab7ce;margin:10px 0 5px}
+    .branch-workspace{display:none;max-width:760px;margin:20px auto;padding:0 12px}
+    .branch-workspace .card{background:#121826;border:1px solid #263248;border-radius:14px;padding:16px;margin-bottom:12px}
+    .branch-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.branch-workspace textarea{min-height:85px}
+    .auth-note{font-size:11px!important;color:#fbbf24!important;line-height:1.5}
+    .role-chip{display:inline-block;background:#182133;border:1px solid #34435c;border-radius:20px;padding:5px 10px;font-size:12px;color:#93c5fd}
+    body.logged-out header,body.logged-out main,body.logged-out footer,body.branch-mode header,body.branch-mode main,body.branch-mode footer{display:none!important}
+    body.branch-mode .branch-workspace{display:block}
+    @media(max-width:520px){.branch-grid{grid-template-columns:1fr}}
+
+    /* v6.4 additions */
+    .backup-banner {
+      max-width: 980px; margin: 10px auto 0; padding: 10px 12px;
+      background: var(--amber-soft); border: 1px solid var(--amber); color: #fcd34d;
+      border-radius: 11px; font-size: 13px; display: flex; gap: 8px;
+      align-items: center; justify-content: space-between; flex-wrap: wrap;
+    }
+    .backup-banner .bb-actions { display: flex; gap: 6px; }
+    body.branch-mode .backup-banner { display: none !important; }
+    .auth-confirm { display: none; }
+  </style>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="brand-badge" style="display:inline-block;margin-bottom:12px">NOVA PULSE</div>
+      <h1 id="authTitle">Вхід до системи</h1><p id="authLead">Введіть логін і пароль.</p>
+      <label for="authLogin">Логін</label><input id="authLogin" type="text" autocomplete="username" placeholder="Логін">
+      <label for="authPassword">Пароль</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Пароль">
+      <div id="authConfirmWrap" class="auth-confirm"><label for="authPassword2">Повторіть пароль</label><input id="authPassword2" type="password" autocomplete="new-password" placeholder="Повторіть пароль"></div>
+      <button id="authSubmitBtn" class="btn-primary" style="margin-top:14px" onclick="loginSystem()">Увійти</button>
+      <div id="authError" class="alert bad" style="display:none"></div>
+      <div class="auth-note">Демо-режим без сервера: облікові записи та дані зберігаються лише в цьому браузері. Це не захищена серверна авторизація.</div>
+      <div style="margin-top:12px"><button class="btn-secondary" onclick="document.getElementById('accessImportInput').click()">Імпортувати пакет доступу від керівника</button><input id="accessImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importAccessPackage(this)"></div>
+      <p id="authHint" class="muted-note"></p>
+    </div>
+  </div>
+  <section id="branchWorkspace" class="branch-workspace">
+    <div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><div><div class="brand-badge">КАБІНЕТ ВІДДІЛЕННЯ</div><h2 id="branchWelcome">Щоденний звіт</h2><span class="role-chip" id="branchUserLabel"></span></div><button class="btn-secondary" onclick="logoutSystem()">Вийти</button></div><p class="muted-note">Заповніть короткий звіт за зміну. Усі поля, крім дати та відділення, можна залишити порожніми.</p></div>
+    <div class="card"><h3>📦 Операційні показники</h3><div class="branch-grid"><div><label>Дата звіту</label><input type="date" id="brDate"></div><div><label>Працівників на зміні</label><input type="number" id="brStaff" min="0" step="1" placeholder="0"></div><div><label>Прийнято посилок</label><input type="number" id="brReceived" min="0" step="1" placeholder="0"></div><div><label>Видано посилок</label><input type="number" id="brIssued" min="0" step="1" placeholder="0"></div></div></div>
+    <div class="card"><h3>💰 Фінансовий звіт</h3><div class="branch-grid"><div><label>Дохід, категорія</label><select id="brIncomeCat"><option>Комісія за посилки</option><option>Пакування</option><option>Інший дохід</option></select></div><div><label>Сума доходу, ₴</label><input type="number" id="brIncome" min="0" step="0.01" placeholder="0"></div><div><label>Витрата, категорія</label><select id="brExpenseCat"><option>Оренда</option><option>Зарплата</option><option>Закупівля пакування</option><option>Комунальні та зв'язок</option><option>Податки та внески</option><option>Ремонт та обслуговування</option><option>Маркетинг</option><option>Інше</option></select></div><div><label>Сума витрати, ₴</label><input type="number" id="brExpense" min="0" step="0.01" placeholder="0"></div></div><label>Коментар керівнику</label><textarea id="brNote" maxlength="500" placeholder="Проблеми, потреби, нестандартні ситуації..."></textarea><button class="btn-primary" style="margin-top:12px" onclick="submitBranchReport()">Надіслати звіт</button><div id="branchSubmitMsg" class="alert" style="display:none"></div></div>
+    <div class="card"><h3>📚 Мої попередні звіти</h3><div id="branchMyReports" class="ledger-list"></div><button class="btn-secondary" style="margin-top:10px" onclick="exportMyReports()">Експортувати звіти для керівника (JSON)</button></div>
+  </section>
+
+  <!-- TOP STICKY NAVIGATION -->
+  <header class="topbar">
+    <div class="topbar-row">
+      <div class="brand">
+        <span class="brand-badge">NOVA PULSE</span>
+        <span>Система управління мережею</span>
+      </div>
+      <div class="top-actions">
+        <button id="lockToggleBtn" class="btn-pill locked" onclick="toggleSliderLock()">🔒 Повзунки заблоковані</button>
+        <button id="undoBtn" class="btn-pill" onclick="undoChange()" title="Скасувати останню зміну">↩ Назад</button>
+        <button class="btn-pill" onclick="copyReport()">📋 Звіт</button>
+      </div>
+    </div>
+    <nav class="tabs-wrap" id="tabsNav">
+      <button class="tab-btn active" data-tab="tab-unit">1. Точка + Стрес</button>
+      <button class="tab-btn" data-tab="tab-capex">2. Старт (CAPEX) і розгін</button>
+      <button class="tab-btn" data-tab="tab-network">3. Мережа Львівщини</button>
+      <button class="tab-btn" data-tab="tab-goals">4. Мої цілі</button>
+      <button class="tab-btn" data-tab="tab-decisions">5. Рішення і ворота</button>
+      <button class="tab-btn" data-tab="tab-chart">6. Графік росту</button>
+      <button class="tab-btn" data-tab="tab-management">7. Керівник + Фінанси</button>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- ==================== TAB 1: UNIT ECONOMICS & STRESS ==================== -->
+    <section id="tab-unit" class="tab-panel active">
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Чистий прибуток / міс</div>
+          <div class="kpi-val text-green" id="kpiNetProfit">0 ₴</div>
+          <div class="kpi-sub" id="kpiNetSub">Після податків та резерву ТО</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Маржинальність</div>
+          <div class="kpi-val" id="kpiMargin">0%</div>
+          <div class="kpi-sub" id="kpiMarginHint">Ціль: 20–30%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Валовий дохід / міс</div>
+          <div class="kpi-val text-blue" id="kpiGrossIncome">0 ₴</div>
+          <div class="kpi-sub" id="kpiMonthlyParcels">0 посилок / міс</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Точка нуля (беззбитковість)</div>
+          <div class="kpi-val text-amber" id="kpiBreakeven">0 шт/день</div>
+          <div class="kpi-sub" id="kpiSafetyBuffer">Запас міцності: 0%</div>
+        </div>
+      </div>
+
+      <!-- Presets -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📍 Швидкий пресет під локацію Львівщини</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="seg-group">
+            <button class="seg-btn" onclick="applyPreset('suburb')">Передмістя Львова (Сокільники / Зимна Вода)</button>
+            <button class="seg-btn" onclick="applyPreset('district')">Райцентр (Шептицький / Стрий / Дрогобич)</button>
+            <button class="seg-btn" onclick="applyPreset('village')">Велика громада / траса</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Income Mode -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">💰 Розрахунок доходу точки</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="seg-group">
+            <button class="seg-btn active" id="modeParcelsBtn" onclick="setIncomeMode('parcels')">Від кількості посилок за день</button>
+            <button class="seg-btn" id="modeDirectBtn" onclick="setIncomeMode('direct')">Ввести суму доходу за місяць</button>
+          </div>
+
+          <div id="parcelsModeBox">
+            <div class="control-row">
+              <div class="control-top">
+                <span class="control-label">Посилок за день (прийом + видача)</span>
+                <div class="num-box">
+                  <input type="number" id="inParcelsDay" value="150" min="10" max="1000" />
+                  <span class="num-unit">шт/день</span>
+                </div>
+              </div>
+              <div class="slider-wrap">
+                <input type="range" id="slParcelsDay" min="20" max="500" step="5" value="150" />
+              </div>
+              <div style="font-size:12px;color:#93c5fd;margin-top:4px;" id="parcelsMonthSummary">
+                Разом за місяць: 4 500 посилок
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label>Робочих днів у місяці</label>
+                <input type="number" id="inWorkDays" value="30" min="20" max="31" />
+              </div>
+              <div class="field">
+                <label>Середня комісія з 1 посилки, ₴</label>
+                <input type="number" id="inFeePerParcel" value="34" min="10" max="150" step="1" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Дохід від продажу пакування (коробки, пакети, стрейч), ₴/міс</label>
+              <input type="number" id="inPackSales" value="27000" min="0" max="300000" step="1000" />
+            </div>
+          </div>
+
+          <div id="directModeBox" style="display:none;">
+            <div class="control-row">
+              <div class="control-top">
+                <span class="control-label">Очікуваний місячний дохід (комісія + пакування)</span>
+                <div class="num-box">
+                  <input type="number" id="inDirectIncome" value="180000" min="10000" max="1500000" step="1000" />
+                  <span class="num-unit">₴</span>
+                </div>
+              </div>
+              <div class="slider-wrap">
+                <input type="range" id="slDirectIncome" min="30000" max="600000" step="5000" value="180000" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPEX Sliders -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📉 Щомісячні витрати (OPEX) та податки ФОП 3 гр.</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="control-row">
+            <div class="control-top">
+              <span class="control-label">Оренда приміщення</span>
+              <div class="num-box"><input type="number" id="inRent" value="25000" step="500" /><span class="num-unit">₴</span></div>
+            </div>
+            <div class="slider-wrap"><input type="range" id="slRent" min="5000" max="90000" step="1000" value="25000" /></div>
+          </div>
+
+          <div class="control-row">
+            <div class="control-top">
+              <span class="control-label">Базова зарплата операторів (2 позмінно)</span>
+              <div class="num-box"><input type="number" id="inSalary" value="55000" step="1000" /><span class="num-unit">₴</span></div>
+            </div>
+            <div class="slider-wrap"><input type="range" id="slSalary" min="15000" max="150000" step="1000" value="55000" /></div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:10px;">
+            <div class="field">
+              <label>Резерв підмінних операторів / піки (+%)</label>
+              <input type="number" id="inReliefPct" value="15" min="0" max="50" step="1" />
+            </div>
+            <div class="field">
+              <label>Економія ФОП завдяки самопакуванню (-%)</label>
+              <input type="number" id="inSelfServiceSavePct" value="8" min="0" max="30" step="1" />
+            </div>
+          </div>
+
+          <div class="control-row">
+            <div class="control-top">
+              <span class="control-label">Закупівля пакування та витратників (собівартість)</span>
+              <div class="num-box"><input type="number" id="inPackCost" value="18000" step="500" /><span class="num-unit">₴</span></div>
+            </div>
+            <div class="slider-wrap"><input type="range" id="slPackCost" min="2000" max="80000" step="1000" value="18000" /></div>
+          </div>
+
+          <div class="control-row">
+            <div class="control-top">
+              <span class="control-label">Комунальні, 2 канали інтернету (оптика + 4G), зв'язок</span>
+              <div class="num-box"><input type="number" id="inUtilities" value="9500" step="500" /><span class="num-unit">₴</span></div>
+            </div>
+            <div class="slider-wrap"><input type="range" id="slUtilities" min="2000" max="35000" step="500" value="9500" /></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label style="display:flex;align-items:center;gap:6px;">
+                <input type="checkbox" id="chkAutoTax" checked style="width:auto;" />
+                Модельний автоматичний податок (параметри потрібно перевірити)
+              </label>
+              <input type="number" id="inTaxes" value="12702" step="100" />
+              <div class="grid-2" style="margin-top:8px;">
+                <div><small>Змінна ставка, %</small><input type="number" id="inTaxRatePct" value="6" min="0" max="100" step="0.1" /></div>
+                <div><small>Фіксована сума / міс., ₴</small><input type="number" id="inTaxFixed" value="1902.34" min="0" step="0.01" /></div>
+              </div>
+              <div style="margin-top:8px;"><small>Додаткове навантаження на зарплату роботодавця, %</small><input type="number" id="inEmployerBurdenPct" value="0" min="0" max="100" step="0.1" /></div>
+            </div>
+            <div class="field">
+              <label style="display:flex;align-items:center;gap:6px;">
+                <input type="checkbox" id="chkAutoAmort" checked style="width:auto;" />
+                Авторезерв амортизації АКБ / інженерії (з вкладки 2)
+              </label>
+              <input type="number" id="inAmort" value="6500" step="500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stress Test -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">⚡ Стрес-тест «Поганий місяць та блекаути»</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:10px;">
+            <input type="checkbox" id="chkStress" style="width:18px;height:18px;" />
+            Увімкнути стрес-тест (-25% посилок + 7 500 ₴ паливо/генератор)
+          </label>
+          <div id="stressResultBox" class="alert"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: CAPEX, RAMP-UP & LIFECYCLE ==================== -->
+    <section id="tab-capex" class="tab-panel">
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Повний бюджет старту</div>
+          <div class="kpi-val text-blue" id="kpiTotalCapex">0 ₴</div>
+          <div class="kpi-sub">CAPEX + подушка на розгін</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Окупність точки</div>
+          <div class="kpi-val text-green" id="kpiPaybackMonths">0 міс</div>
+          <div class="kpi-sub">З урахуванням кривої розгону</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Касовий розрив на старті</div>
+          <div class="kpi-val text-amber" id="kpiCashGap">0 ₴</div>
+          <div class="kpi-sub">Мінус за перші місяці розкачки</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Резерв ТО інженерії / міс</div>
+          <div class="kpi-val" id="kpiLifecycleReserve">0 ₴</div>
+          <div class="kpi-sub">На заміну АКБ, датчиків, роутерів</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🛠 Кошторис стартових вкладень (CAPEX)</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div id="capexList"></div>
+          <div class="grid-2" style="margin-top:10px;">
+            <input type="text" id="newCapexName" placeholder="Нова стаття (напр. Вивіска LED)" />
+            <div style="display:flex;gap:6px;">
+              <input type="number" id="newCapexCost" placeholder="Сума, ₴" />
+              <button class="btn-primary" onclick="addCapexItem()">+ Додати</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📈 Крива розгону точки (Місяці 1–4) і касовий розрив</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-top:0;">
+            У перші місяці точка набирає потік поступово, тоді як оренда й зарплати йдуть повністю. Модель рахує реальний мінус на розкачці, який треба закласти в стартовий бюджет:
+          </p>
+          <div class="grid-2">
+            <div class="field"><label>Місяць 1 (% від цільового потоку)</label><input type="number" id="ramp1" value="45" min="10" max="100" /></div>
+            <div class="field"><label>Місяць 2 (% від цільового потоку)</label><input type="number" id="ramp2" value="70" min="20" max="100" /></div>
+            <div class="field"><label>Місяць 3 (% від цільового потоку)</label><input type="number" id="ramp3" value="90" min="30" max="100" /></div>
+            <div class="field"><label>Місяць 4+ (% від цільового потоку)</label><input type="number" id="ramp4" value="100" min="50" max="120" /></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Місяць</th><th>Завантаження</th><th>Дохід</th><th>OPEX</th><th>Сальдо місяця</th></tr>
+              </thead>
+              <tbody id="rampTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🔋 Ресурс інженерії та планова заміна обладнання</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div id="lifecycleList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: LVIV REGION NETWORK ==================== -->
+    <section id="tab-network" class="tab-panel">
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Точок у плані</div>
+          <div class="kpi-val text-blue" id="netCount">0</div>
+          <div class="kpi-sub" id="netActiveCount">Активних: 0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Посилок по мережі / день</div>
+          <div class="kpi-val" id="netParcelsDay">0</div>
+          <div class="kpi-sub" id="netParcelsMonth">0 / міс</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Валовий оборот мережі</div>
+          <div class="kpi-val text-blue" id="netGross">0 ₴</div>
+          <div class="kpi-sub">На місяць</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Чистий прибуток мережі</div>
+          <div class="kpi-val text-green" id="netProfit">0 ₴</div>
+          <div class="kpi-sub">Після всіх витрат і податків</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🗺 Локації по Львівській області</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div id="locationsList"></div>
+
+          <h3 style="font-size:13px;margin:14px 0 8px;color:var(--muted);">+ Додати нову локацію Львівщини</h3>
+          <div class="grid-2">
+            <input type="text" id="newLocName" placeholder="Населений пункт / ЖК (напр. Винники)" />
+            <select id="newLocStatus">
+              <option value="active">🟢 Працює / Старт 1-ї черги</option>
+              <option value="plan">🟡 У плані запуску</option>
+            </select>
+            <input type="number" id="newLocParcels" placeholder="Посилок/день (напр. 140)" />
+            <input type="number" id="newLocRent" placeholder="Оренда, ₴/міс (напр. 22000)" oninput="smartPriceAdvice(this)" />
+          </div>
+          <button class="btn-primary" style="margin-top:8px;" onclick="addLocation()">+ Додати точку в мережу</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: CUSTOM GOALS ==================== -->
+    <section id="tab-goals" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🎯 Конструктор власних цілей</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="field">
+              <label>Обери активну ціль або створи свою</label>
+              <select id="goalSelect" onchange="selectGoal(this.value)"></select>
+            </div>
+            <div class="field">
+              <label>Назва цілі (можна вписати будь-яку)</label>
+              <input type="text" id="goalTitle" placeholder="Наприклад: Будинок для батьків" oninput="updateActiveGoal()" />
+            </div>
+            <div class="field">
+              <label>Необхідна сума, ₴</label>
+              <input type="number" id="goalAmount" step="10000" oninput="updateActiveGoal()" />
+            </div>
+            <div class="field">
+              <label>Вже відкладено на цю ціль, ₴</label>
+              <input type="number" id="goalSaved" step="5000" oninput="updateActiveGoal()" />
+            </div>
+            <div class="field">
+              <label>Цільова дата (місяць і рік)</label>
+              <input type="month" id="goalDate" onchange="updateActiveGoal()" />
+            </div>
+            <div class="field">
+              <label>Який % чистого прибутку йде на цю ціль</label>
+              <input type="number" id="goalAllocPct" min="5" max="100" step="5" oninput="updateActiveGoal()" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+            <button class="btn-primary" onclick="createNewGoal()">+ Додати ще одну ціль</button>
+            <button class="btn-secondary" onclick="deleteActiveGoal()">🗑 Видалити поточну ціль</button>
+          </div>
+
+          <div id="goalDashboard" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: DECISIONS, GATES & SCORING ==================== -->
+    <section id="tab-decisions" class="tab-panel">
+      <!-- Profit Allocation -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📊 Розподіл чистого прибутку («Три конверти»)</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="field"><label>Фонд масштабування мережі, %</label><input type="number" id="allocScale" value="40" min="0" max="100" /></div>
+            <div class="field"><label>Резерв безпеки бізнесу, %</label><input type="number" id="allocReserve" value="20" min="0" max="100" /></div>
+          </div>
+          <div id="allocSummary" class="alert"></div>
+        </div>
+      </div>
+
+      <!-- Financing: Owner vs Partner -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🤝 Фінансування старту: 100% свої vs Партнер</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="field"><label>Внесок партнера в CAPEX, %</label><input type="number" id="partnerCapexPct" value="50" min="0" max="100" /></div>
+            <div class="field"><label>Частка партнера в чистому прибутку, %</label><input type="number" id="partnerProfitPct" value="35" min="0" max="80" /></div>
+          </div>
+          <div id="partnerCompareBox" class="alert"></div>
+        </div>
+      </div>
+
+      <!-- 3-Gate Scaling Thresholds -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🚦 Ворота масштабування (2-га, 3-тя і 5+ точка)</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="field"><label>Поточний накопичений резерв OPEX, ₴</label><input type="number" id="curReserveCash" value="180000" step="10000" /></div>
+            <div class="field"><label>Капітал у фонді відкриття нової точки, ₴</label><input type="number" id="curScaleCash" value="250000" step="10000" /></div>
+          </div>
+          <div id="gatesResultBox"></div>
+        </div>
+      </div>
+
+      <!-- Location Scoring 0-100 -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🏢 Скоринг приміщення перед орендою (0–100 балів)</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="field"><label>Під'їзд буса НП і парковка клієнтів (0–25)</label><input type="number" id="scAccess" value="22" min="0" max="25" /></div>
+            <div class="field"><label>1-й поверх без крутих сходів / інклюзивність (0–20)</label><input type="number" id="scFloor" value="18" min="0" max="20" /></div>
+            <div class="field"><label>Площа під склад + зону самопакування (0–20)</label><input type="number" id="scArea" value="17" min="0" max="20" /></div>
+            <div class="field"><label>Електроввід під інвертор/АКБ + 2 канали мережі (0–20)</label><input type="number" id="scPower" value="18" min="0" max="20" /></div>
+            <div class="field"><label>Адекватність оренди до потоку (0–15)</label><input type="number" id="scRentRatio" value="13" min="0" max="15" /></div>
+          </div>
+          <div id="scoringResultBox" class="alert"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: GROWTH CURVE & TIPS ==================== -->
+    <section id="tab-chart" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📈 Крива процвітання бізнесу та межа безпеки</h2>
+          <button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button>
+        </div>
+        <div class="card-body">
+          <div class="seg-group">
+            <button class="seg-btn active" id="chartModeNetBtn" onclick="setChartMode('network')">Загалом по мережі (ріст точок)</button>
+            <button class="seg-btn" id="chartModeSingleBtn" onclick="setChartMode('single')">Одна еталонна точка (розгін)</button>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Горизонт прогнозу</label>
+              <select id="chartHorizon" onchange="recalcAll()">
+                <option value="24" selected>24 місяці (2 роки)</option>
+                <option value="36">36 місяців (3 роки)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Червона межа безпеки (чистий прибуток/міс), ₴</label>
+              <input type="number" id="redLineThreshold" value="25000" step="5000" oninput="recalcAll()" />
+            </div>
+          </div>
+
+          <div class="chart-box">
+            <canvas id="growthCanvas" width="900" height="310"></canvas>
+          </div>
+          <div id="chartHoverInfo" style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center;">
+            Натисни або проведи пальцем по графіку, щоб переглянути показники конкретного місяця
+          </div>
+
+          <div id="chartMilestones" class="kpi-grid" style="margin-top:12px;"></div>
+          <div id="liveAdvisorBox" class="alert good"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-management" class="tab-panel">
+      <div class="card"><div class="card-header"><h2 class="card-title">📊 Панель керівника мережі</h2><span class="muted-note" id="dashboardUpdated">Оновлення: —</span></div><div class="status-line"><span>Фактичний облік і модельний прогноз показуються окремо</span><span id="dashboardMonth"></span></div></div>
+      <div class="dash-grid">
+        <div class="dash-kpi"><div class="k-label">Діючі точки</div><div class="k-value" id="dashActive">0</div><div class="muted-note" id="dashPlanned">У плані: 0</div></div>
+        <div class="dash-kpi"><div class="k-label">Модельний прибуток мережі / міс.</div><div class="k-value" id="dashModelProfit">0 ₴</div><div class="muted-note">За параметрами діючих точок</div></div>
+        <div class="dash-kpi"><div class="k-label">Фактичні надходження цього місяця</div><div class="k-value" id="dashIncome">0 ₴</div><div class="muted-note">За внесеними операціями</div></div>
+        <div class="dash-kpi"><div class="k-label">Фактичні витрати цього місяця</div><div class="k-value" id="dashExpense">0 ₴</div><div class="muted-note">За внесеними операціями</div></div>
+        <div class="dash-kpi"><div class="k-label">Фактичний результат місяця</div><div class="k-value" id="dashNet">0 ₴</div><div class="muted-note">Надходження мінус витрати</div></div>
+        <div class="dash-kpi"><div class="k-label">Орієнтовний залишок коштів</div><div class="k-value" id="dashCash">0 ₴</div><div class="muted-note">Початковий залишок + усі операції</div></div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">💳 Фактичний фінансовий облік</h2></div><p class="muted-note">Вносьте реальні надходження та витрати. Журнал не змінює модельні прогнози, а показує окрему фактичну картину.</p>
+        <div class="ledger-form">
+          <div class="field"><label for="txDate">Дата операції</label><input type="date" id="txDate" /></div>
+          <div class="field"><label for="txType">Тип операції</label><select id="txType"><option value="income">Надходження</option><option value="expense">Витрата</option></select></div>
+          <div class="field"><label for="txCategory">Категорія</label><select id="txCategory" onchange="smartPriceAdvice(document.getElementById('txAmount'))"><option>Комісія за посилки</option><option>Пакування</option><option>Інший дохід</option><option>Оренда</option><option>Зарплата</option><option>Закупівля пакування</option><option>Комунальні та зв'язок</option><option>Податки та внески</option><option>Ремонт та обслуговування</option><option>Маркетинг</option><option>Інвестиції / CAPEX</option><option>Інше</option></select></div>
+          <div class="field"><label for="txLocation">Точка</label><select id="txLocation"><option value="">Уся мережа</option></select></div>
+          <div class="field"><label for="txAmount">Сума, ₴</label><input type="number" id="txAmount" min="0.01" step="0.01" placeholder="0.00" /></div>
+          <div class="field"><label for="txNote">Коментар</label><input type="text" id="txNote" maxlength="120" placeholder="Наприклад: оренда за місяць" /></div>
+          <div class="wide"><button class="btn-primary" onclick="addTransaction()">＋ Додати операцію</button></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">🏦 Початковий залишок коштів</h2></div><div class="field"><label for="openingCashInput">Залишок на початок обліку, ₴</label><input type="number" id="openingCashInput" min="0" step="0.01" value="0" /></div><button class="btn-secondary" onclick="saveOpeningCash()">Зберегти початковий залишок</button></div>
+      <div class="card"><div class="card-header"><h2 class="card-title">📚 Історія фінансових операцій</h2><button class="btn-secondary" onclick="exportTransactionsCSV()">CSV</button></div><div class="field"><label for="ledgerFilter">Показати</label><select id="ledgerFilter" onchange="renderManagement()"><option value="all">Усі операції</option><option value="income">Лише надходження</option><option value="expense">Лише витрати</option></select></div><div id="ledgerList" class="ledger-list"><p class="muted-note">Операцій поки немає.</p></div></div>
+      <div class="card"><div class="card-header"><h2 class="card-title">👥 Працівники та фонд оплати праці</h2></div>
+        <p class="muted-note">Додавайте працівників, прив’язуйте до конкретного відділення та задавайте місячну зарплату до оподаткування. Орієнтовна повна вартість роботодавця рахується як зарплата × 1,22.</p>
+        <div class="ledger-form">
+          <div class="field"><label>ПІБ / позначення</label><input id="empName" type="text" maxlength="80" placeholder="Наприклад: Оператор 1"></div>
+          <div class="field"><label>Посада</label><select id="empRole" oninput="renderSalaryAdvice()" onchange="renderSalaryAdvice()"><option>Оператор / касир</option><option>Оператор поштового відділення</option><option>Вантажник</option><option>Водій</option><option>Старший оператор</option><option>Керівник відділення</option><option>Прибиральник</option><option>Інша посада</option></select></div>
+          <div class="field"><label>Відділення</label><select id="empLocation" onchange="renderSalaryAdvice()"></select></div>
+          <div class="field"><label>Місячна зарплата gross, ₴</label><input id="empSalary" type="number" min="0" step="500" placeholder="25000" oninput="renderSalaryAdvice()"></div><div class="field"><label>Власний ринковий орієнтир gross, ₴ (необов’язково)</label><input id="empRefOverride" type="number" min="0" step="500" placeholder="з ваших вакансій" oninput="renderSalaryAdvice()"></div>
+          <div class="field"><label>Зайнятість, %</label><input id="empLoad" type="number" min="1" max="100" value="100" oninput="renderSalaryAdvice()"></div>
+          <div class="wide"><button class="btn-primary" onclick="addEmployee()">＋ Додати працівника</button></div>
+        </div>
+        <div id="salaryAdvice" class="alert" style="margin-top:12px;">Введіть посаду та зарплату — система покаже ринковий орієнтир і вплив на прибуток відділення.</div>
+        <div id="employeeSummary" class="alert"></div><div id="employeeList"></div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">🏬 Кабінети відділень та звіти</h2><button class="btn-secondary" onclick="logoutSystem()">Вийти</button></div>
+        <p class="muted-note">Створюйте окремі логіни для працівників. На цьому пристрої їхні звіти з'являються тут одразу після надсилання.</p>
+        <div class="ledger-form"><div class="field"><label>Назва працівника</label><input id="userDisplay" type="text" placeholder="Ім'я працівника"></div><div class="field"><label>Логін</label><input id="userLogin" type="text" placeholder="Наприклад: sokilnyky1"></div><div class="field"><label>Пароль (від 6 символів; після створення не відображається — повідомте працівнику)</label><input id="userPassword" type="text" autocomplete="off" placeholder="Створіть пароль"></div><div class="field"><label>Відділення</label><select id="userLocation"></select></div><div class="wide"><button class="btn-primary" onclick="createBranchUser()">＋ Створити кабінет працівника</button></div></div>
+        <div id="branchUsersList" class="ledger-list"></div>
+        <div class="ledger-form" style="margin-top:14px"><div class="field"><label>Новий пароль керівника (від 8 символів)</label><input id="adminNewPassword" type="password" autocomplete="new-password"></div><div class="wide"><button class="btn-secondary" onclick="changeAdminPassword()">🔑 Змінити пароль керівника</button></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn-secondary" onclick="exportAccessPackage()">Експорт пакета доступу працівника</button><button class="btn-secondary" onclick="document.getElementById('reportsImportInput').click()">Імпорт звітів з іншого пристрою</button><input id="reportsImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importBranchReports(this)"></div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">📨 Центральний журнал звітів v6</h2><span id="branchReportCount" class="muted-note">0 звітів</span></div>
+        <div class="v6-report-kpis">
+          <div class="v6-report-kpi"><span class="muted-note">Усього звітів</span><strong id="v6ReportTotal">0</strong></div>
+          <div class="v6-report-kpi"><span class="muted-note">Очікують перевірки</span><strong id="v6ReportPending">0</strong></div>
+          <div class="v6-report-kpi"><span class="muted-note">Доходи зі звітів</span><strong id="v6ReportIncome">0 ₴</strong></div>
+          <div class="v6-report-kpi"><span class="muted-note">Витрати зі звітів</span><strong id="v6ReportExpense">0 ₴</strong></div>
+        </div>
+        <div class="v6-report-tools">
+          <div><label for="v6ReportLocation">Відділення</label><select id="v6ReportLocation" onchange="renderManagerBranchReports()"><option value="">Уся мережа</option></select></div>
+          <div><label for="v6ReportStatus">Статус</label><select id="v6ReportStatus" onchange="renderManagerBranchReports()"><option value="all">Усі звіти</option><option value="pending">Очікують перевірки</option><option value="reviewed">Перевірені</option></select></div>
+          <div><label for="v6ReportFrom">Дата від</label><input id="v6ReportFrom" type="date" onchange="renderManagerBranchReports()"></div>
+          <div><label for="v6ReportTo">Дата до</label><input id="v6ReportTo" type="date" onchange="renderManagerBranchReports()"></div>
+        </div>
+        <div class="v6-report-actions"><button class="btn-secondary" onclick="resetV6ReportFilters()">Скинути фільтри</button><button class="btn-secondary" onclick="exportFilteredBranchReports()">Експорт відфільтрованих звітів</button></div>
+        <div id="managerBranchReports" class="ledger-list"></div></div>
+      <div class="card" id="marketIntelligenceCard"><div class="card-header"><h2 class="card-title">📊 Регіональна база цін та перевірка пропозицій</h2><span class="tag-note">Дані: листопад 2026</span></div>
+        <p class="muted-note">Оберіть місто, вид робіт та введіть ціну за одиницю. Для техніки й інших товарів зберігайте пропозиції постачальників — система порівнюватиме однакові позиції між собою.</p>
+        <div class="grid-2">
+          <div class="field"><label for="marketCity">Місто для порівняння ремонту</label><select id="marketCity" onchange="renderRepairBenchmark()"><option>Львів</option><option>Івано-Франківськ</option><option>Ужгород</option><option>Тернопіль</option></select></div>
+          <div class="field"><label for="marketService">Вид робіт</label><select id="marketService" onchange="renderRepairBenchmark()"><option value="apartment">Комплексний ремонт квартири (грн/м²)</option><option value="bathroom">Комплексний ремонт ванної (грн/м²)</option><option value="kitchen">Комплексний ремонт кухні (грн/м²)</option><option value="tile">Укладання плитки (грн/м²)</option><option value="laminate">Укладання ламінату (грн/м²)</option><option value="paint">Фарбування стін (грн/м²)</option><option value="socket">Монтаж розетки/вимикача (грн/шт.)</option><option value="toilet">Встановлення унітазу (грн/шт.)</option></select></div>
+          <div class="field"><label for="marketUnitPrice">Запропонована ціна за одиницю, ₴</label><input type="number" id="marketUnitPrice" min="0" step="1" placeholder="Введіть ціну" oninput="renderRepairBenchmark()"></div>
+          <div class="field"><label for="marketQuantity">Кількість одиниць</label><input type="number" id="marketQuantity" min="0.01" step="0.01" value="1" oninput="renderRepairBenchmark()"></div>
+        </div>
+        <div id="repairBenchmarkResult" class="alert" style="margin-top:10px">Введіть ціну за одиницю — система порівняє її з регіональним діапазоном.</div>
+        <p class="tag-note">Ремонтні орієнтири — локальні відкриті прайси, перевірені 13–20.11.2026. Склад робіт і включення матеріалів можуть різнитися; порівнюйте однакові комплектації.</p>
+        <div class="field"><label>Джерело локальних ремонтних орієнтирів</label><div id="repairSourceLinks" class="muted-note"></div></div>
+        <hr style="border-color:var(--border);margin:16px 0">
+        <h3 class="card-title" style="font-size:15px">🧾 Власна база цін: техніка, обладнання, ремонт та інші товари</h3>
+        <p class="muted-note">Збережіть щонайменше 2 пропозиції на однакову модель або однаковий обсяг робіт. Після цього система розрахує медіанну ціну та покаже найдешевшу пропозицію. Це працює офлайн і зберігається на цьому пристрої.</p>
+        <div class="grid-2">
+          <div class="field"><label for="quoteItem">Назва позиції / точна модель</label><input id="quoteItem" maxlength="100" placeholder="Наприклад: принтер етикеток, модель…"></div>
+          <div class="field"><label for="quoteCategory">Категорія</label><select id="quoteCategory"><option>Техніка</option><option>Обладнання</option><option>Ремонт</option><option>Меблі</option><option>Матеріали</option><option>Інше</option></select></div>
+          <div class="field"><label for="quoteCity">Місто / регіон</label><input id="quoteCity" maxlength="60" placeholder="Наприклад: Львів"></div>
+          <div class="field"><label for="quoteVendor">Постачальник</label><input id="quoteVendor" maxlength="80" placeholder="Назва магазину або майстра"></div>
+          <div class="field"><label for="quotePrice">Ціна, ₴</label><input id="quotePrice" type="number" min="0.01" step="0.01" placeholder="0"></div>
+          <div class="field"><label for="quoteDetails">Комплектація / гарантія / умови</label><input id="quoteDetails" maxlength="160" placeholder="Модель, стан, доставка, гарантія…"></div>
+          <div class="wide"><button class="btn-primary" onclick="saveMarketQuote()">＋ Зберегти пропозицію</button></div>
+        </div>
+        <div id="marketQuoteAdvice" class="alert" style="margin-top:10px">Щоб порівняти ціну техніки чи товару, додайте пропозиції з однаковими характеристиками.</div>
+        <div id="marketQuotesList" class="ledger-list"></div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">🧾 Податковий профіль і зарплатні нарахування</h2></div>
+        <div class="grid-2">
+          <div class="field"><label>Модель оподаткування</label><select id="taxProfile" onchange="saveTaxProfile()"><option value="fop2">ФОП 2 група — фіксовані платежі</option><option value="fop3_5">ФОП 3 група — 5% без ПДВ</option><option value="fop3_3">ФОП 3 група — 3% + ПДВ</option><option value="custom">Власна модель</option></select></div>
+          <div class="field"><label>Власна змінна ставка, %</label><input id="taxCustomPct" type="number" min="0" max="100" step="0.1" onchange="saveTaxProfile()"></div>
+        </div>
+        <div id="taxProfileInfo" class="alert"></div>
+        <p class="tag-note">Планові параметри 2026 року, не податкова консультація. Для працівників модель використовує ПДФО 18% і військовий збір 5% як утримання із gross та ЄСВ роботодавця 22% як додаткову вартість. Пільги й спеціальні випадки не враховані.</p>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">🏬 Ринкові орієнтири: зарплата й оренда</h2></div>
+        <div class="grid-2">
+          <div class="field"><label>Район / територія</label><select id="benchmarkArea" onchange="renderBenchmarks()"><option value="Сихівський">Сихівський район</option><option value="Франківський">Франківський район</option><option value="Галицький">Галицький район</option><option value="Шевченківський">Шевченківський район</option><option value="Залізничний">Залізничний район</option><option value="Личаківський">Личаківський район</option><option value="Львівська область">Інший населений пункт Львівщини</option></select></div>
+          <div class="field"><label>Площа приміщення, м²</label><input id="benchmarkAreaM2" type="number" min="1" value="100" onchange="renderBenchmarks()"></div>
+        </div>
+        <div id="benchmarkResult" class="alert"></div><div id="salaryBenchmarks"></div>
+        <p class="tag-note">Оренда — орієнтир за обмеженою вибіркою оголошень, не гарантована ринкова ставка. Зарплати — орієнтири вакансій у Львові та області, не офіційні тарифні ставки Нової пошти. Перевіряйте конкретні пропозиції перед бюджетуванням.</p>
+      </div>
+      <div class="card"><h2 class="card-title">ℹ️ Як читати показники</h2><p class="muted-note">«Модельний прибуток» — розрахунок за параметрами мережі. «Фактичний результат» — сума операцій, внесених вручну. «Залишок коштів» — початковий залишок плюс усі надходження мінус усі витрати за журналом. Це управлінський облік, а не бухгалтерський чи податковий звіт.</p></div>
+    </section>
+
+  </main>
+
+  <!-- FLOATING UP/DOWN NAVIGATION -->
+  <div class="float-nav">
+    <button class="float-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="На початок сторінки">↑</button>
+    <button class="float-btn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" title="В кінець сторінки">↓</button>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="backupBanner" class="backup-banner" style="display:none"><span id="backupBannerText"></span><span class="bb-actions"><button class="btn-pill" onclick="exportBackup()">💾 Зберегти копію</button><button class="btn-pill" onclick="hideBackupBanner(true)">Пізніше</button></span></div>
+  <div id="toastMsg" class="toast">Скопійовано!</div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="btn-secondary" onclick="exportBackup()">Експорт резервної копії</button>
+      <button class="btn-secondary" onclick="document.getElementById('backupImportInput').click()">Імпорт копії</button>
+      <input id="backupImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importBackupFile(this)" />
+    </div>
+    <div>NOVA PULSE v6.4 · Локальна версія без сервера</div>
+    <div>© 2026 Всі права захищені</div>
+    <div><strong>РОЗРОБИВ: НАКОНЕЧНИЙ ВОЛОДИМИР МИХАЙЛОВИЧ</strong></div>
+  </footer>
+
+  <div id="smartAdvisor" class="smart-advisor" aria-live="polite" role="status" style="display:none;">
+    <div class="smart-advisor-head"><div><span class="smart-advisor-kicker">NP SMART ADVISOR</span><strong id="smartAdvisorTitle">Рекомендація системи</strong></div><button type="button" class="smart-advisor-close" onclick="closeSmartAdvisor()" aria-label="Закрити">×</button></div>
+    <div id="smartAdvisorBody" class="smart-advisor-body"></div>
+    <div class="smart-advisor-foot" id="smartAdvisorFoot">Орієнтир моделі, не гарантія ринкової ціни.</div>
+  </div>
+  <style>
+    .smart-advisor{position:fixed;z-index:9999;left:12px;right:12px;bottom:14px;max-width:620px;margin:0 auto;padding:14px 15px 12px;border:1px solid rgba(148,163,184,.42);border-radius:16px;background:rgba(13,20,33,.88);color:#eef2f9;box-shadow:0 16px 50px rgba(0,0,0,.48);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:advisorIn .18s ease-out;}
+    @keyframes advisorIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .smart-advisor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:9px}.smart-advisor-head strong{display:block;font-size:15px;line-height:1.25}.smart-advisor-kicker{display:block;color:#93c5fd;font-size:9px;font-weight:900;letter-spacing:1.2px;margin-bottom:3px}.smart-advisor-close{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;border-radius:9px;width:30px;height:30px;font-size:22px;line-height:1;cursor:pointer;flex-shrink:0}.smart-advisor-body{font-size:12px;line-height:1.45;display:grid;gap:7px}.smart-advisor-line{padding:8px 9px;border-radius:10px;background:rgba(255,255,255,.055);border-left:3px solid #60a5fa}.smart-advisor-line b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.45px;color:#a9bddb;margin-bottom:2px}.smart-advisor-line.recommend{border-left-color:#22c55e}.smart-advisor-line.risk{border-left-color:#f59e0b}.smart-advisor-foot{font-size:10px;color:#9aa9c2;margin-top:8px}@media(min-width:700px){.smart-advisor{left:auto;right:22px;bottom:22px}}
+  </style>
+  <script>
+    const STORAGE_KEY = 'np_lviv_pro_v6';
+    const APP_VERSION = '6.4';
+    const SCHEMA_VERSION = 6;
+
+    /* ---- Єдині константи розрахунків (змінюйте тут, а не по коду) ---- */
+    const PAYROLL = { employerEsv: 0.22, netShare: 0.77 }; // ЄСВ роботодавця 22%; на руки = 100% − ПДФО 18% − ВЗ 5%
+    const TAX_CONFIG = {
+      asOf: 'значення з v6.3 — звірте з ДПС перед використанням',
+      esv: 1902.34,                                  // мінімальний ЄСВ за себе, ₴/міс
+      fop2: { ep: 1729.40, vz: 864.70 },             // 2 група: ЄП + ВЗ, ₴/міс
+      fop3_5: { rate: 0.06 },                        // 5% ЄП + 1% ВЗ
+      fop3_3: { rate: 0.04 }                         // 3% ЄП + 1% ВЗ (ПДВ окремо)
+    };
+    const PW_ROUNDS = 20000;
+
+    /* ---- SHA-256 (синхронний, працює і на file://, і на http) ---- */
+    const SHA_K = new Uint32Array([
+      0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+    ]);
+    function sha256(msg) {
+      const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+      const l = msg.length;
+      const padded = new Uint8Array(((l + 9 + 63) >> 6) << 6);
+      padded.set(msg); padded[l] = 0x80;
+      const dv = new DataView(padded.buffer);
+      dv.setUint32(padded.length - 4, (l * 8) >>> 0);
+      dv.setUint32(padded.length - 8, Math.floor(l * 8 / 4294967296));
+      const w = new Uint32Array(64);
+      for (let o = 0; o < padded.length; o += 64) {
+        for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+        for (let i = 16; i < 64; i++) {
+          const a = w[i - 15], b = w[i - 2];
+          const s0 = ((a >>> 7) | (a << 25)) ^ ((a >>> 18) | (a << 14)) ^ (a >>> 3);
+          const s1 = ((b >>> 17) | (b << 15)) ^ ((b >>> 19) | (b << 13)) ^ (b >>> 10);
+          w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+        }
+        let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+        for (let i = 0; i < 64; i++) {
+          const S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+          const ch = (e & f) ^ (~e & g);
+          const t1 = (h + S1 + ch + SHA_K[i] + w[i]) | 0;
+          const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+          const mj = (a & b) ^ (a & c) ^ (b & c);
+          const t2 = (S0 + mj) | 0;
+          h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+        }
+        H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+        H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+      }
+      const out = new Uint8Array(32), odv = new DataView(out.buffer);
+      for (let i = 0; i < 8; i++) odv.setUint32(i * 4, H[i] >>> 0);
+      return out;
+    }
+    function bytesToHex(b) { return Array.from(b, x => x.toString(16).padStart(2, '0')).join(''); }
+    function newSalt() {
+      const a = new Uint8Array(16);
+      if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a);
+      else for (let i = 0; i < 16; i++) a[i] = Math.floor(Math.random() * 256);
+      return bytesToHex(a);
+    }
+    function hashPassword(pw, salt) {
+      const enc = new TextEncoder(), s = enc.encode(String(salt));
+      let h = sha256(enc.encode(salt + '|' + pw));
+      for (let i = 0; i < PW_ROUNDS; i++) {
+        const m = new Uint8Array(h.length + s.length); m.set(h); m.set(s, h.length);
+        h = sha256(m);
+      }
+      return bytesToHex(h);
+    }
+    function safeEqual(a, b) {
+      a = String(a || ''); b = String(b || '');
+      let r = a.length ^ b.length;
+      for (let i = 0; i < Math.max(a.length, b.length); i++) r |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+      return r === 0;
+    }
+
+    /* ---- Санітизація даних (стан із localStorage / імпорту) ---- */
+    const sStr = v => String(v ?? '');
+    const sNum = v => (Number.isFinite(Number(v)) ? Number(v) : 0);
+    const cleanId = v => sStr(v).replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 64);
+    function sanitizeUser(u) {
+      if (!u || typeof u !== 'object') return null;
+      const out = Object.assign({}, u);
+      out.id = cleanId(u.id || ('usr_' + Date.now()));
+      out.role = 'branch';                         // роль керівника не може прийти з файлу
+      out.name = sStr(u.name || u.displayName);
+      out.login = sStr(u.login).trim();
+      out.locationId = cleanId(u.locationId);
+      out.active = u.active !== false;
+      if (typeof u.password === 'string' && !u.hash) {   // міграція старого відкритого пароля
+        out.salt = newSalt(); out.hash = hashPassword(u.password, out.salt);
+      } else { out.salt = sStr(u.salt); out.hash = sStr(u.hash); }
+      delete out.password;
+      return out.login && out.hash && out.salt ? out : null;
+    }
+    function sanitizeReport(r) {
+      if (!r || typeof r !== 'object') return null;
+      const o = Object.assign({}, r);
+      o.id = cleanId(r.id); if (!o.id) return null;
+      o.login = sStr(r.login); o.employee = sStr(r.employee); o.locationId = cleanId(r.locationId);
+      o.date = sStr(r.date).slice(0, 10);
+      ['received', 'issued', 'staff', 'income', 'expense'].forEach(k => { o[k] = Math.max(0, sNum(r[k])); });
+      o.incomeCategory = sStr(r.incomeCategory); o.expenseCategory = sStr(r.expenseCategory); o.note = sStr(r.note);
+      o.reviewed = !!r.reviewed; o.createdAt = sStr(r.createdAt) || new Date().toISOString();
+      return o;
+    }
+    function sanitizeState(s) {
+      const arr = v => (Array.isArray(v) ? v : []);
+      s.locations = arr(s.locations).filter(l => l && typeof l === 'object').map(l => Object.assign({}, l, {
+        id: cleanId(l.id), name: sStr(l.name), status: l.status === 'active' ? 'active' : 'plan',
+        parcelsDay: sNum(l.parcelsDay), rent: sNum(l.rent) }));
+      s.goals = arr(s.goals).filter(g => g && typeof g === 'object').map(g => Object.assign({}, g, {
+        id: cleanId(g.id), title: sStr(g.title), amount: sNum(g.amount), saved: sNum(g.saved),
+        date: sStr(g.date), allocPct: sNum(g.allocPct) }));
+      s.activeGoalId = cleanId(s.activeGoalId);
+      s.capex = arr(s.capex).filter(c => c && typeof c === 'object').map(c => Object.assign({}, c, {
+        id: cleanId(c.id), name: sStr(c.name), cost: sNum(c.cost), enabled: c.enabled !== false }));
+      s.lifecycle = arr(s.lifecycle).filter(c => c && typeof c === 'object').map(c => Object.assign({}, c, {
+        name: sStr(c.name), cost: sNum(c.cost), months: Math.max(1, sNum(c.months) || 12) }));
+      s.employees = arr(s.employees).filter(e => e && typeof e === 'object').map(e => Object.assign({}, e, {
+        id: cleanId(e.id), name: sStr(e.name), role: sStr(e.role), locationId: cleanId(e.locationId),
+        salary: Math.max(0, sNum(e.salary)), load: sNum(e.load) || 100 }));
+      s.transactions = arr(s.transactions).filter(t => t && typeof t === 'object').map(t => Object.assign({}, t, {
+        id: cleanId(t.id), date: sStr(t.date).slice(0, 10), type: t.type === 'income' ? 'income' : 'expense',
+        category: sStr(t.category), locationId: cleanId(t.locationId), amount: sNum(t.amount),
+        note: sStr(t.note), sourceReportId: t.sourceReportId ? cleanId(t.sourceReportId) : undefined }));
+      s.marketQuotes = arr(s.marketQuotes).filter(q => q && typeof q === 'object').map(q => Object.assign({}, q, {
+        id: cleanId(q.id), item: sStr(q.item), category: sStr(q.category), city: sStr(q.city),
+        vendor: sStr(q.vendor), price: sNum(q.price), details: sStr(q.details), date: sStr(q.date) }));
+      s.branchUsers = arr(s.branchUsers).map(sanitizeUser).filter(Boolean);
+      s.branchReports = arr(s.branchReports).map(sanitizeReport).filter(Boolean);
+      if (s.adminAuth && !(typeof s.adminAuth.hash === 'string' && typeof s.adminAuth.salt === 'string')) delete s.adminAuth;
+      s.openingCash = sNum(s.openingCash);
+      return s;
+    }
+    function esvMonthly() {
+      const v = Number(state && state.taxFixedMonthly);
+      return Number.isFinite(v) && v >= 0 ? v : TAX_CONFIG.esv;
+    }
+    function money2(n) { return Number(n).toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    let slidersLocked = true;
+    let historyStack = [];
+    let chartMode = 'network';
+    let lastSimSeries = [];
+
+    const defaultState = {
+      incomeMode: 'parcels',
+      parcelsDay: 150,
+      workDays: 30,
+      feePerParcel: 34,
+      packSales: 27000,
+      directIncome: 180000,
+      rent: 25000,
+      salary: 55000,
+      reliefPct: 15,
+      selfServiceSavePct: 8,
+      packCost: 18000,
+      utilities: 9500,
+      autoTax: true,
+      taxes: 12702,
+      taxRatePct: 6,
+      taxFixedMonthly: TAX_CONFIG.esv,
+      employerBurdenPct: 0,
+      autoAmort: true,
+      amort: 6500,
+      stress: false,
+      ramp: [45, 70, 90, 100],
+      capex: [
+        { id: 'c1', name: 'Ремонт та брендування за стандартами НП', cost: 110000, enabled: true },
+        { id: 'c2', name: 'Інвертор 3–5 кВт + LiFePO4 АКБ (автономність)', cost: 75000, enabled: true },
+        { id: 'c3', name: 'Стелажі, стійка оператора, меблі, примірочна', cost: 65000, enabled: true },
+        { id: 'c4', name: 'Зона самопакування (стійка, диспенсери, ваги)', cost: 22000, enabled: true },
+        { id: 'c5', name: 'Датчики безпеки, відеоаналітика, 2 роутери (оптика+4G)', cost: 28000, enabled: true },
+        { id: 'c6', name: 'Перша партія коробок, пакетів, етикеток і стрейчу', cost: 25000, enabled: true }
+      ],
+      lifecycle: [
+        { name: 'LiFePO4 акумуляторний блок (ресурс 5 років)', cost: 55000, months: 60 },
+        { name: 'Принтер етикеток, сканер, термінал (ресурс 3 роки)', cost: 24000, months: 36 },
+        { name: 'Датчики, реле, резервний 4G роутер (ресурс 3 роки)', cost: 14400, months: 36 },
+        { name: 'Косметичне оновлення залу та стелажів (ресурс 2 роки)', cost: 36000, months: 24 }
+      ],
+      locations: [
+        { id: 'l1', name: 'Сокільники (старт / 1-ша черга)', status: 'active', parcelsDay: 165, rent: 26000 },
+        { id: 'l2', name: 'Зимна Вода (передмістя Львова)', status: 'plan', parcelsDay: 150, rent: 24000 },
+        { id: 'l3', name: 'Шептицький (Червоноград)', status: 'plan', parcelsDay: 145, rent: 18000 },
+        { id: 'l4', name: 'Стрий (спальний район)', status: 'plan', parcelsDay: 135, rent: 17000 }
+      ],
+      goals: [
+        { id: 'g1', title: 'Будинок для батьків', amount: 2000000, saved: 250000, date: '2026-12', allocPct: 50 },
+        { id: 'g2', title: 'Резервний фонд мережі (3 міс OPEX)', amount: 450000, saved: 120000, date: '2026-09', allocPct: 25 }
+      ],
+      activeGoalId: 'g1',
+      allocScale: 40,
+      allocReserve: 20,
+      partnerCapexPct: 50,
+      partnerProfitPct: 35,
+      curReserveCash: 180000,
+      curScaleCash: 250000,
+      openingCash: 0,
+      transactions: [],
+      employees: [],
+      taxProfile: 'fop3_5',
+      taxCustomPct: 6,
+      benchmarkArea: 'Сихівський',
+      benchmarkAreaM2: 100,
+      scoring: { access: 22, floor: 18, area: 17, power: 18, rentRatio: 13 }
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      let raw = null;
+      try {
+        raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(defaultState));
+        const parsed = JSON.parse(raw);
+        const merged = Object.assign(JSON.parse(JSON.stringify(defaultState)), parsed);
+        if (!merged.locations || !Array.isArray(merged.locations) || !merged.locations.length) {
+          merged.locations = Array.isArray(parsed.locations) ? parsed.locations : JSON.parse(JSON.stringify(defaultState.locations));
+        }
+        sanitizeState(merged);
+        merged.schemaVersion = SCHEMA_VERSION;
+        return merged;
+      } catch (e) {
+        // пошкоджені дані не затираємо мовчки — зберігаємо копію
+        try { if (raw) localStorage.setItem(STORAGE_KEY + '_corrupt', raw); } catch (_) {}
+        return JSON.parse(JSON.stringify(defaultState));
+      }
+    }
+
+    let storageWarned = false;
+    function saveState() {
+      try {
+        state.schemaVersion = SCHEMA_VERSION;
+        state.updatedAt = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        return true;
+      } catch (e) {
+        if (!storageWarned) {
+          storageWarned = true;
+          showToast('⚠️ Не вдалося зберегти дані в браузері. Зробіть резервну копію!', 5000);
+        }
+        return false;
+      }
+    }
+
+    function showToast(text, ms) {
+      const el = document.getElementById('toastMsg');
+      if (!el) return;
+      el.textContent = text;
+      el.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => el.classList.remove('show'), ms || 2300);
+    }
+
+    function pushHistory() {
+      historyStack.push(JSON.stringify(state));
+      if (historyStack.length > 15) historyStack.shift();
+    }
+
+    function undoChange() {
+      if (!historyStack.length) {
+        showToast('Немає змін для скасування');
+        return;
+      }
+      state = JSON.parse(historyStack.pop());
+      syncInputsFromState();
+      recalcAll();
+      renderManagement();
+      showToast('Останню зміну скасовано');
+    }
+
+    function fmt(n) {
+      return Math.round(n).toLocaleString('uk-UA') + ' ₴';
+    }
+
+    function toggleSliderLock() {
+      slidersLocked = !slidersLocked;
+      document.body.classList.toggle('sliders-locked', slidersLocked);
+      const btn = document.getElementById('lockToggleBtn');
+      if (slidersLocked) {
+        btn.className = 'btn-pill locked';
+        btn.textContent = '🔒 Повзунки заблоковані';
+        showToast('Повзунки заблоковані для безпечного гортання');
+      } else {
+        btn.className = 'btn-pill unlocked';
+        btn.textContent = '🔓 Повзунки активні';
+        showToast('Повзунки розблоковані');
+      }
+    }
+
+    function toggleCard(btn) {
+      const card = btn.closest('.card');
+      card.classList.toggle('collapsed');
+      btn.textContent = card.classList.contains('collapsed') ? 'Розгорнути ▼' : 'Згорнути ▲';
+    }
+
+    // Tabs switching
+    document.getElementById('tabsNav').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'tab-chart') drawGrowthChart();
+      if (btn.dataset.tab === 'tab-management') renderManagement();
+    });
+
+    function setIncomeMode(mode) {
+      pushHistory();
+      state.incomeMode = mode;
+      document.getElementById('modeParcelsBtn').classList.toggle('active', mode === 'parcels');
+      document.getElementById('modeDirectBtn').classList.toggle('active', mode === 'direct');
+      document.getElementById('parcelsModeBox').style.display = mode === 'parcels' ? 'block' : 'none';
+      document.getElementById('directModeBox').style.display = mode === 'direct' ? 'block' : 'none';
+      recalcAll();
+    }
+
+    function applyPreset(type) {
+      pushHistory();
+      state.incomeMode = 'parcels';
+      if (type === 'suburb') {
+        state.parcelsDay = 175; state.feePerParcel = 35; state.packSales = 32000;
+        state.rent = 28000; state.salary = 58000; state.packCost = 20000; state.utilities = 10000;
+      } else if (type === 'district') {
+        state.parcelsDay = 140; state.feePerParcel = 33; state.packSales = 23000;
+        state.rent = 18000; state.salary = 48000; state.packCost = 15000; state.utilities = 8500;
+      } else {
+        state.parcelsDay = 85; state.feePerParcel = 32; state.packSales = 14000;
+        state.rent = 10000; state.salary = 36000; state.packCost = 9500; state.utilities = 6500;
+      }
+      syncInputsFromState();
+      recalcAll();
+      showToast('Пресет застосовано');
+    }
+
+    // Touch-safe slider binding (ignores vertical scroll swipes)
+    function attachScrollSafeSlider(sliderId, inputId, stateKey) {
+      const sl = document.getElementById(sliderId);
+      const inp = document.getElementById(inputId);
+      let startY = 0;
+      let startVal = sl.value;
+      let cancelledByScroll = false;
+
+      sl.addEventListener('touchstart', (e) => {
+        if (slidersLocked) return;
+        startY = e.touches[0].clientY;
+        startVal = sl.value;
+        cancelledByScroll = false;
+        pushHistory();
+      }, { passive: true });
+
+      sl.addEventListener('touchmove', (e) => {
+        if (slidersLocked || cancelledByScroll) return;
+        const dy = Math.abs(e.touches[0].clientY - startY);
+        if (dy > 10) {
+          cancelledByScroll = true;
+          sl.value = startVal;
+          inp.value = startVal;
+          state[stateKey] = Number(startVal);
+          recalcAll();
+        }
+      }, { passive: true });
+
+      sl.addEventListener('mousedown', () => { if (!slidersLocked) pushHistory(); });
+
+      sl.addEventListener('input', () => {
+        if (slidersLocked || cancelledByScroll) {
+          sl.value = state[stateKey];
+          return;
+        }
+        state[stateKey] = Number(sl.value);
+        inp.value = sl.value;
+        recalcAll();
+      });
+
+      inp.addEventListener('change', () => {
+        pushHistory();
+        const v = Number(inp.value) || 0;
+        state[stateKey] = v;
+        sl.value = v;
+        recalcAll();
+      });
+    }
+
+    function bindDirectInput(id, handler) {
+      const el = document.getElementById(id);
+      el.addEventListener('change', () => { pushHistory(); handler(el); recalcAll(); });
+    }
+
+    function syncInputsFromState() {
+      document.getElementById('modeParcelsBtn').classList.toggle('active', state.incomeMode === 'parcels');
+      document.getElementById('modeDirectBtn').classList.toggle('active', state.incomeMode === 'direct');
+      document.getElementById('parcelsModeBox').style.display = state.incomeMode === 'parcels' ? 'block' : 'none';
+      document.getElementById('directModeBox').style.display = state.incomeMode === 'direct' ? 'block' : 'none';
+
+      document.getElementById('inParcelsDay').value = state.parcelsDay;
+      document.getElementById('slParcelsDay').value = state.parcelsDay;
+      document.getElementById('inWorkDays').value = state.workDays;
+      document.getElementById('inFeePerParcel').value = state.feePerParcel;
+      document.getElementById('inPackSales').value = state.packSales;
+      document.getElementById('inDirectIncome').value = state.directIncome;
+      document.getElementById('slDirectIncome').value = state.directIncome;
+
+      document.getElementById('inRent').value = state.rent;
+      document.getElementById('slRent').value = state.rent;
+      document.getElementById('inSalary').value = state.salary;
+      document.getElementById('slSalary').value = state.salary;
+      document.getElementById('inReliefPct').value = state.reliefPct;
+      document.getElementById('inSelfServiceSavePct').value = state.selfServiceSavePct;
+      document.getElementById('inPackCost').value = state.packCost;
+      document.getElementById('slPackCost').value = state.packCost;
+      document.getElementById('inUtilities').value = state.utilities;
+      document.getElementById('slUtilities').value = state.utilities;
+
+      document.getElementById('chkAutoTax').checked = state.autoTax;
+      document.getElementById('inTaxes').value = state.taxes;
+      document.getElementById('inTaxRatePct').value = state.taxRatePct ?? 6;
+      document.getElementById('inTaxFixed').value = state.taxFixedMonthly ?? 1902.34;
+      document.getElementById('inEmployerBurdenPct').value = state.employerBurdenPct ?? 0;
+      document.getElementById('chkAutoAmort').checked = state.autoAmort;
+      document.getElementById('inAmort').value = state.amort;
+      document.getElementById('chkStress').checked = state.stress;
+
+      document.getElementById('ramp1').value = state.ramp[0];
+      document.getElementById('ramp2').value = state.ramp[1];
+      document.getElementById('ramp3').value = state.ramp[2];
+      document.getElementById('ramp4').value = state.ramp[3];
+
+      document.getElementById('allocScale').value = state.allocScale;
+      document.getElementById('allocReserve').value = state.allocReserve;
+      document.getElementById('partnerCapexPct').value = state.partnerCapexPct;
+      document.getElementById('partnerProfitPct').value = state.partnerProfitPct;
+      document.getElementById('curReserveCash').value = state.curReserveCash;
+      document.getElementById('curScaleCash').value = state.curScaleCash;
+
+      document.getElementById('scAccess').value = state.scoring.access;
+      document.getElementById('scFloor').value = state.scoring.floor;
+      document.getElementById('scArea').value = state.scoring.area;
+      document.getElementById('scPower').value = state.scoring.power;
+      document.getElementById('scRentRatio').value = state.scoring.rentRatio;
+    }
+
+    // CAPEX & Lifecycle render
+    function renderCapexAndLifecycle() {
+      const capexEl = document.getElementById('capexList');
+      capexEl.innerHTML = state.capex.map((item, idx) => `
+        <div class="capex-item">
+          <label style="display:flex;align-items:center;gap:8px;flex:1 1 220px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" ${item.enabled ? 'checked' : ''} onchange="toggleCapex(${idx})" style="width:17px;height:17px;" />
+            <span>${escapeHtml(item.name)}</span>
+          </label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="number" id="capexCost_${idx}" value="${item.cost}" step="1000" style="width:115px;text-align:right;" onchange="updateCapexCost(${idx}, this.value)" />
+            <button class="btn-secondary" style="padding:6px 9px;" onclick="removeCapex(${idx})">✕</button>
+          </div>
+        </div>
+      `).join('');
+
+      const lifeEl = document.getElementById('lifecycleList');
+      lifeEl.innerHTML = state.lifecycle.map((item, idx) => {
+        const perMonth = Math.round(item.cost / Math.max(1, item.months));
+        return `
+          <div class="capex-item">
+            <div style="flex:1 1 220px;">
+              <div style="font-size:13px;font-weight:700;">${escapeHtml(item.name)}</div>
+              <div style="font-size:11px;color:var(--muted);">Вартість: ${fmt(item.cost)} · Ресурс: ${item.months} міс → <strong>${fmt(perMonth)}/міс</strong></div>
+            </div>
+            <input type="number" id="lifeCost_${idx}" value="${item.cost}" step="1000" style="width:115px;text-align:right;" onchange="updateLifeCost(${idx}, this.value)" />
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleCapex(i) { pushHistory(); state.capex[i].enabled = !state.capex[i].enabled; recalcAll(); }
+    function updateCapexCost(i, v) { pushHistory(); state.capex[i].cost = Number(v) || 0; recalcAll(); }
+    function removeCapex(i) { pushHistory(); state.capex.splice(i, 1); renderCapexAndLifecycle(); recalcAll(); }
+    function addCapexItem() {
+      const name = document.getElementById('newCapexName').value.trim();
+      const cost = Number(document.getElementById('newCapexCost').value) || 0;
+      if (!name || cost <= 0) return;
+      pushHistory();
+      state.capex.push({ id: 'c' + Date.now(), name, cost, enabled: true });
+      document.getElementById('newCapexName').value = '';
+      document.getElementById('newCapexCost').value = '';
+      renderCapexAndLifecycle();
+      recalcAll();
+    }
+    function updateLifeCost(i, v) { pushHistory(); state.lifecycle[i].cost = Number(v) || 0; renderCapexAndLifecycle(); recalcAll(); }
+
+    function taxForRevenue(revenue) {
+      return Math.max(0, Number(revenue)||0) * Math.max(0, Number(state.taxRatePct)||0) / 100 + Math.max(0, Number(state.taxFixedMonthly)||0);
+    }
+    function effectivePayroll() {
+      const base=Math.max(0,Number(state.salary)||0);
+      const relief=1+Math.max(0,Number(state.reliefPct)||0)/100;
+      const saving=1-Math.min(100,Math.max(0,Number(state.selfServiceSavePct)||0))/100;
+      const employer=1+Math.max(0,Number(state.employerBurdenPct)||0)/100;
+      return base*relief*saving*employer;
+    }
+    function employeePayrollForLocation(locationId) {
+      const list=(state.employees||[]).filter(e=>e.locationId===locationId);
+      if(!list.length) return effectivePayroll();
+      return list.reduce((sum,e)=>sum+Math.max(0,Number(e.salary)||0)*(Math.max(1,Number(e.load)||100)/100)*(1+PAYROLL.employerEsv),0);
+    }
+    function networkModel() {
+      const active=(state.locations||[]).filter(l=>l.status==='active');
+      const volume=active.reduce((a,l)=>a+Math.max(0,Number(l.parcelsDay)||0),0);
+      const workDays=Math.max(1,Number(state.workDays)||30);
+      const rows=active.map(loc=>{
+        const share=volume>0?Math.max(0,Number(loc.parcelsDay)||0)/volume:0;
+        const gross=state.incomeMode==='parcels' ? Math.max(0,Number(loc.parcelsDay)||0)*workDays*Math.max(0,Number(state.feePerParcel)||0)+Math.max(0,Number(state.packSales)||0)*share : Math.max(0,Number(state.directIncome)||0)*share;
+        const rent=Math.max(0,Number(loc.rent)||0);
+        const payroll=employeePayrollForLocation(loc.id);
+        const packCost=Math.max(0,Number(state.packCost)||0)*share;
+        const utilities=Math.max(0,Number(state.utilities)||0)*share;
+        const amort=Math.max(0,Number(state.amort)||0)*share;
+        return {loc,share,gross,rent,payroll,packCost,utilities,amort};
+      });
+      const gross=rows.reduce((a,r)=>a+r.gross,0);
+      let tax=0;
+      const profile=state.taxProfile||'fop3_5';
+      const esv=esvMonthly();
+      if(profile==='fop2') tax=TAX_CONFIG.fop2.ep+TAX_CONFIG.fop2.vz+esv;
+      else if(profile==='fop3_5') tax=gross*TAX_CONFIG.fop3_5.rate+esv;
+      else if(profile==='fop3_3') tax=gross*TAX_CONFIG.fop3_3.rate+esv;
+      else tax=gross*Math.max(0,Number(state.taxCustomPct)||0)/100+esv;
+      if(profile==='custom' && state.autoTax===false) tax=Math.max(0,Number(state.taxes)||0);
+      rows.forEach(r=>{r.tax=tax*r.share;r.opex=r.rent+r.payroll+r.packCost+r.utilities+r.amort+r.tax;r.net=r.gross-r.opex;});
+      return {rows,gross,tax,opex:rows.reduce((a,r)=>a+r.opex,0),net:rows.reduce((a,r)=>a+r.net,0),volume,activeCount:active.length};
+    }
+    function locationEconomics(loc, totalActiveParcels=0) {
+      const model=networkModel();
+      const row=model.rows.find(r=>r.loc.id===loc.id);
+      if(row) return {monthlyParcels:Math.max(0,Number(loc.parcelsDay)||0)*Math.max(1,Number(state.workDays)||30),gross:row.gross,rent:row.rent,payroll:row.payroll,packCost:row.packCost,utilities:row.utilities,amort:row.amort,fixedTax:row.tax,taxes:row.tax,opex:row.opex,net:row.net};
+      const gross=state.incomeMode==='parcels'?Math.max(0,Number(loc.parcelsDay)||0)*Math.max(1,Number(state.workDays)||30)*state.feePerParcel:state.directIncome*(Math.max(0,Number(loc.parcelsDay)||0)/Math.max(1,Number(state.parcelsDay)||1));
+      return {monthlyParcels:0,gross,rent:Number(loc.rent)||0,payroll:effectivePayroll(),packCost:0,utilities:0,amort:0,fixedTax:0,taxes:0,opex:(Number(loc.rent)||0)+effectivePayroll(),net:gross-(Number(loc.rent)||0)-effectivePayroll()};
+    }
+    function quickBranchTransaction(locationId,type) {
+      const loc=(state.locations||[]).find(l=>l.id===locationId); if(!loc)return;
+      const amountRaw=prompt((type==='income'?'Дохід':'Витрата')+' — '+loc.name+'\nВведіть суму, ₴:');
+      if(amountRaw===null)return;
+      const amount=Number(String(amountRaw).replace(',','.'));
+      if(!Number.isFinite(amount)||amount<=0){showToast('Вкажіть суму більше нуля');return;}
+      const categories=type==='income'?['Комісія за посилки','Пакування','Додаткові послуги','Повернення коштів / коригування','Інший дохід']:['Оренда','Зарплата','Закупівля пакування','Комунальні та зв’язок','Податки та внески','Ремонт та обслуговування','Маркетинг','Банківська комісія','Канцелярія / господарські товари','Інше'];
+      const menu=categories.map((v,i)=>(i+1)+'. '+v).join('\n');
+      const picked=prompt('Оберіть категорію операції — '+loc.name+'\n\n'+menu+'\n\nВведіть номер категорії:','1');
+      if(picked===null)return;const category=categories[Number(picked)-1];if(!category){showToast('Оберіть номер зі списку');return;}
+      const note=prompt('Короткий коментар (необов’язково):','')||'';
+      pushHistory(); state.transactions=Array.isArray(state.transactions)?state.transactions:[];
+      state.transactions.unshift({id:'tx_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),date:localDateISO(),type,category,locationId,amount:Math.round(amount*100)/100,note,createdAt:new Date().toISOString(),source:'owner-quick-entry'});
+      saveState();renderManagement();showToast('Операцію відділення зафіксовано');
+    }
+    function renderLocations() {
+      const box=document.getElementById('locationsList');
+      const model=networkModel();
+      box.innerHTML=state.locations.map((loc,idx)=>{
+        const e=model.rows.find(r=>r.loc.id===loc.id)||locationEconomics(loc);
+        return `<div class="loc-item"><div style="flex:1 1 220px;"><div style="font-weight:800;font-size:14px;">${loc.status==='active'?'🟢':'🟡'} ${escapeHtml(loc.name)}</div><div style="font-size:12px;color:var(--muted);">${loc.parcelsDay} шт/день · Оренда: ${fmt(loc.rent)} · Чистий прибуток: <strong class="${e.net>=0?'text-green':'text-red'}">${fmt(e.net)}/міс</strong></div></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><input type="number" value="${loc.parcelsDay}" title="Посилок/день" style="width:74px;" onchange="updateLoc(${idx}, 'parcelsDay', this.value)" /><input type="number" value="${loc.rent}" step="1000" title="Оренда, ₴" style="width:95px;" onchange="updateLoc(${idx}, 'rent', this.value)" /><button class="btn-secondary" style="padding:6px 8px;" onclick="toggleLocStatus(${idx})">Статус</button><button class="btn-secondary" style="padding:6px 8px;" onclick="removeLoc(${idx})">✕</button></div><div class="branch-actions"><button class="btn-secondary" onclick="quickBranchTransaction('${loc.id}','income')">＋ Дохід відділення</button><button class="btn-secondary" onclick="quickBranchTransaction('${loc.id}','expense')">− Витрата відділення</button></div></div>`;
+      }).join('');
+    }
+    function updateLoc(i, key, val) { pushHistory(); state.locations[i][key] = Number(val) || 0; recalcAll(); }
+    function toggleLocStatus(i) { pushHistory(); state.locations[i].status = state.locations[i].status === 'active' ? 'plan' : 'active'; recalcAll(); }
+    function removeLoc(i) { if(!confirm('Видалити відділення зі списку? Фінансові операції залишаться в журналі.'))return; pushHistory(); state.locations.splice(i, 1); recalcAll(); }
+    function addLocation() {
+      const name = document.getElementById('newLocName').value.trim();
+      const status = document.getElementById('newLocStatus').value;
+      const parcelsDay = Number(document.getElementById('newLocParcels').value) || 130;
+      const rent = Number(document.getElementById('newLocRent').value) || 20000;
+      if (!name) return;
+      pushHistory(); state.locations.push({ id: 'l' + Date.now(), name, status, parcelsDay, rent });
+      document.getElementById('newLocName').value = '';document.getElementById('newLocParcels').value = '';document.getElementById('newLocRent').value = '';
+      recalcAll();
+    }
+
+    // Goals management
+    function renderGoalsUI(unitNetProfit, networkNetProfit) {
+      if (!state.goals.length) {
+        state.goals.push({ id: 'g' + Date.now(), title: 'Власна ціль', amount: 1000000, saved: 0, date: '2027-06', allocPct: 50 });
+        state.activeGoalId = state.goals[0].id;
+      }
+      let g = state.goals.find(x => x.id === state.activeGoalId) || state.goals[0];
+      state.activeGoalId = g.id;
+
+      const sel = document.getElementById('goalSelect');
+      sel.innerHTML = state.goals.map(item => `<option value="${escapeHtml(item.id)}" ${item.id === g.id ? 'selected' : ''}>${escapeHtml(item.title)} (${fmt(item.amount)})</option>`).join('');
+
+      document.getElementById('goalTitle').value = g.title;
+      document.getElementById('goalAmount').value = g.amount;
+      document.getElementById('goalSaved').value = g.saved;
+      document.getElementById('goalDate').value = g.date;
+      document.getElementById('goalAllocPct').value = g.allocPct;
+
+      const remaining = Math.max(0, g.amount - g.saved);
+      const pctDone = Math.min(100, Math.round((g.saved / Math.max(1, g.amount)) * 100));
+
+      const now = new Date();
+      const [yy, mm] = (g.date || '2027-12').split('-').map(Number);
+      const target = new Date(yy, (mm || 12) - 1, 1);
+      const monthsLeft = Math.max(1, (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth()));
+
+      const neededPerMonth = remaining / monthsLeft;
+      const unitContrib = Math.max(1, unitNetProfit * (g.allocPct / 100));
+      const pointsNeeded = unitNetProfit > 0 ? Math.ceil(neededPerMonth / unitContrib) : '∞';
+      const monthsWith1Point = unitNetProfit > 0 ? Math.ceil(remaining / unitContrib) : '∞';
+      const monthsWithNet = networkNetProfit > 0 ? Math.ceil(remaining / (networkNetProfit * (g.allocPct / 100))) : '∞';
+
+      document.getElementById('goalDashboard').innerHTML = `
+        <div class="alert good">
+          <div style="display:flex;justify-content:space-between;font-weight:800;margin-bottom:4px;">
+            <span>Прогрес: ${escapeHtml(g.title)}</span>
+            <span>${pctDone}% (${fmt(g.saved)} з ${fmt(g.amount)})</span>
+          </div>
+          <div class="prog-track"><div class="prog-fill" style="width:${pctDone}%"></div></div>
+          <div style="margin-top:8px;line-height:1.6;">
+            • Залишилось зібрати: <strong>${fmt(remaining)}</strong> (до обраної дати: <strong>${monthsLeft} міс.</strong>)<br/>
+            • Щоб встигнути в строк, потрібно відкладати по <strong>${fmt(neededPerMonth)}/міс</strong>.<br/>
+            • При виділенні <strong>${g.allocPct}%</strong> чистого прибутку потрібно: <strong>${pointsNeeded} точок НП</strong>.<br/>
+            • З 1 поточною точкою ціль закриється за <strong>${monthsWith1Point} міс.</strong>, з усією мережею зі вкладки 3 — за <strong>${monthsWithNet} міс.</strong>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectGoal(id) { state.activeGoalId = id; recalcAll(); }
+    function updateActiveGoal() {
+      const g = state.goals.find(x => x.id === state.activeGoalId);
+      if (!g) return;
+      g.title = document.getElementById('goalTitle').value || 'Без назви';
+      g.amount = Number(document.getElementById('goalAmount').value) || 0;
+      g.saved = Number(document.getElementById('goalSaved').value) || 0;
+      g.date = document.getElementById('goalDate').value || '2027-12';
+      g.allocPct = Number(document.getElementById('goalAllocPct').value) || 50;
+      recalcAll();
+    }
+    function createNewGoal() {
+      pushHistory();
+      const g = { id: 'g' + Date.now(), title: 'Нова ціль #' + (state.goals.length + 1), amount: 500000, saved: 0, date: '2027-06', allocPct: 40 };
+      state.goals.push(g);
+      state.activeGoalId = g.id;
+      recalcAll();
+    }
+    function deleteActiveGoal() {
+      if (state.goals.length <= 1) return;
+      pushHistory();
+      state.goals = state.goals.filter(x => x.id !== state.activeGoalId);
+      state.activeGoalId = state.goals[0].id;
+      recalcAll();
+    }
+
+    // Master Recalculation
+    function recalcAll() {
+      state.workDays = Number(document.getElementById('inWorkDays').value) || 30;
+      state.feePerParcel = Number(document.getElementById('inFeePerParcel').value) || 34;
+      state.packSales = Number(document.getElementById('inPackSales').value) || 0;
+      state.reliefPct = Number(document.getElementById('inReliefPct').value) || 0;
+      state.selfServiceSavePct = Number(document.getElementById('inSelfServiceSavePct').value) || 0;
+      state.autoTax = document.getElementById('chkAutoTax').checked;
+      state.taxRatePct = Math.max(0,Number(document.getElementById('inTaxRatePct').value)||0);
+      state.taxFixedMonthly = Math.max(0,Number(document.getElementById('inTaxFixed').value)||0);
+      state.employerBurdenPct = Math.max(0,Number(document.getElementById('inEmployerBurdenPct').value)||0);
+      state.autoAmort = document.getElementById('chkAutoAmort').checked;
+      state.stress = document.getElementById('chkStress').checked;
+
+      // Lifecycle monthly reserve
+      const lifecycleMonthly = state.lifecycle.reduce((acc, it) => acc + (it.cost / Math.max(1, it.months)), 0);
+      if (state.autoAmort) {
+        state.amort = Math.round(lifecycleMonthly);
+        document.getElementById('inAmort').value = state.amort;
+      } else {
+        state.amort = Number(document.getElementById('inAmort').value) || 0;
+      }
+
+      // Gross Income
+      const monthlyParcels = state.parcelsDay * state.workDays;
+      document.getElementById('parcelsMonthSummary').textContent = `Разом за місяць: ${monthlyParcels.toLocaleString('uk-UA')} посилок`;
+
+      const grossIncome = state.incomeMode === 'parcels'
+        ? (monthlyParcels * state.feePerParcel + state.packSales)
+        : state.directIncome;
+
+      // Effective Payroll
+      const effectiveSalary = effectivePayroll();
+
+      // Taxes FOP Group 3 (2026: 5% EP + 1% VZ + 1902.34 ESV)
+      if (state.autoTax) {
+        state.taxes = Math.round(taxForRevenue(grossIncome) * 100) / 100;
+        document.getElementById('inTaxes').value = state.taxes;
+      document.getElementById('inTaxRatePct').value = state.taxRatePct ?? 6;
+      document.getElementById('inTaxFixed').value = state.taxFixedMonthly ?? 1902.34;
+      document.getElementById('inEmployerBurdenPct').value = state.employerBurdenPct ?? 0;
+      } else {
+        state.taxes = Number(document.getElementById('inTaxes').value) || 0;
+      }
+
+      const totalOpex = state.rent + effectiveSalary + state.packCost + state.utilities + state.taxes + state.amort;
+      const netProfit = grossIncome - totalOpex;
+      const margin = grossIncome > 0 ? (netProfit / grossIncome) * 100 : 0;
+
+      // Breakeven parcels/day
+      const fixedCosts = state.rent + effectiveSalary + state.utilities + state.amort + (state.autoTax ? state.taxFixedMonthly : state.taxes);
+      const netContributionPerParcel = state.feePerParcel * (1 - (state.autoTax ? state.taxRatePct : 0) / 100);
+      const packContribution = state.incomeMode==='parcels' ? (state.packSales * (1 - (state.autoTax ? state.taxRatePct : 0) / 100) - state.packCost) : 0;
+      const beMonthlyParcels = netContributionPerParcel > 0 ? Math.max(0, Math.ceil((fixedCosts - packContribution) / netContributionPerParcel)) : 0;
+      const beDailyParcels = Math.ceil(beMonthlyParcels / Math.max(1, state.workDays));
+      const safetyBuffer = state.parcelsDay > 0 ? Math.round(((state.parcelsDay - beDailyParcels) / state.parcelsDay) * 100) : 0;
+
+      // Update Tab 1 KPIs
+      const kpiNetEl = document.getElementById('kpiNetProfit');
+      kpiNetEl.textContent = fmt(netProfit);
+      kpiNetEl.className = 'kpi-val ' + (netProfit >= 0 ? 'text-green' : 'text-red');
+
+      const kpiMarginEl = document.getElementById('kpiMargin');
+      kpiMarginEl.textContent = margin.toFixed(1) + '%';
+      kpiMarginEl.className = 'kpi-val ' + (margin >= 20 ? 'text-green' : (margin >= 10 ? 'text-amber' : 'text-red'));
+
+      document.getElementById('kpiGrossIncome').textContent = fmt(grossIncome);
+      document.getElementById('kpiMonthlyParcels').textContent = monthlyParcels.toLocaleString('uk-UA') + ' посилок / міс';
+      document.getElementById('kpiBreakeven').textContent = state.incomeMode==='parcels' ? beDailyParcels + ' шт/день' : '—';
+      document.getElementById('kpiSafetyBuffer').textContent = state.incomeMode==='parcels' ? `Запас міцності: ${safetyBuffer}%` : 'Режим прямого доходу';
+
+      // Stress Test
+      const stressIncome = grossIncome * 0.75;
+      const stressTax = state.autoTax ? taxForRevenue(stressIncome) : state.taxes;
+      const stressOpex = state.rent + effectiveSalary + (state.packCost * 0.8) + state.utilities + stressTax + state.amort + 7500;
+      const stressNet = stressIncome - stressOpex;
+      const stressBox = document.getElementById('stressResultBox');
+      stressBox.className = 'alert ' + (stressNet >= 0 ? 'good' : 'bad');
+      stressBox.innerHTML = `
+        <strong>Стрес-сценарій (-25% посилок + 7 500 ₴ генератор/паливо):</strong><br/>
+        Дохід падає до <strong>${fmt(stressIncome)}</strong>, витрати — <strong>${fmt(stressOpex)}</strong>.<br/>
+        Результат місяця: <strong>${fmt(stressNet)}</strong> (${stressNet >= 0 ? 'точка витримує просадку без збитків ✅' : 'виникає мінус — потрібен резерв ⚠️'}).
+      `;
+
+      // Tab 2: CAPEX, Ramp-up & Cash Gap
+      state.ramp = [
+        Number(document.getElementById('ramp1').value) || 45,
+        Number(document.getElementById('ramp2').value) || 70,
+        Number(document.getElementById('ramp3').value) || 90,
+        Number(document.getElementById('ramp4').value) || 100
+      ];
+      const baseCapex = state.capex.reduce((s, x) => s + (x.enabled ? x.cost : 0), 0);
+      let cashGap = 0;
+      let rampHtml = '';
+      state.ramp.forEach((pct, idx) => {
+        const inc = grossIncome * (pct / 100);
+        const tax = state.autoTax ? taxForRevenue(inc) : state.taxes;
+        const op = state.rent + effectiveSalary + (state.packCost * (pct / 100)) + state.utilities + tax + state.amort;
+        const diff = inc - op;
+        if (diff < 0) cashGap += Math.abs(diff);
+        rampHtml += `<tr>
+          <td>Місяць ${idx + 1}</td>
+          <td>${pct}%</td>
+          <td>${fmt(inc)}</td>
+          <td>${fmt(op)}</td>
+          <td class="${diff >= 0 ? 'text-green' : 'text-red'}" style="font-weight:700;">${fmt(diff)}</td>
+        </tr>`;
+      });
+      document.getElementById('rampTableBody').innerHTML = rampHtml;
+
+      const totalStartBudget = baseCapex + cashGap;
+      const paybackMonths = netProfit > 0 ? (totalStartBudget / netProfit).toFixed(1) : '∞';
+      document.getElementById('kpiTotalCapex').textContent = fmt(totalStartBudget);
+      document.getElementById('kpiPaybackMonths').textContent = paybackMonths + ' міс';
+      document.getElementById('kpiCashGap').textContent = fmt(cashGap);
+      document.getElementById('kpiLifecycleReserve').textContent = fmt(lifecycleMonthly);
+
+      // Tab 3: Network Totals
+      renderLocations();
+      const netCount = state.locations.length;
+      const netActive = state.locations.filter(l => l.status === 'active').length;
+      const model=networkModel();
+      const netParcelsDay=model.volume,netGross=model.gross,netProfitTotal=model.net;
+      document.getElementById('netCount').textContent = netCount;
+      document.getElementById('netActiveCount').textContent = `Активних: ${netActive}`;
+      document.getElementById('netParcelsDay').textContent = netParcelsDay + ' шт';
+      document.getElementById('netParcelsMonth').textContent = (netParcelsDay * state.workDays).toLocaleString('uk-UA') + ' / міс';
+      document.getElementById('netGross').textContent = fmt(netGross);
+      document.getElementById('netProfit').textContent = fmt(netProfitTotal);
+
+      // Tab 4: Goals
+      renderGoalsUI(netProfit, netProfitTotal);
+
+      // Tab 5: Allocation, Partner, Gates & Scoring
+      state.allocScale = Number(document.getElementById('allocScale').value) || 0;
+      state.allocReserve = Number(document.getElementById('allocReserve').value) || 0;
+      const allocPersonal = Math.max(0, 100 - state.allocScale - state.allocReserve);
+      const baseProfitForAlloc = Math.max(0, netProfit);
+      document.getElementById('allocSummary').innerHTML = `
+        <strong>З кожної точки (${fmt(baseProfitForAlloc)}/міс):</strong><br/>
+        • У фонд нових точок (${state.allocScale}%): <strong>${fmt(baseProfitForAlloc * state.allocScale / 100)}</strong><br/>
+        • У резерв безпеки (${state.allocReserve}%): <strong>${fmt(baseProfitForAlloc * state.allocReserve / 100)}</strong><br/>
+        • На особисті та сімейні цілі (${allocPersonal}%): <strong>${fmt(baseProfitForAlloc * allocPersonal / 100)}</strong>
+      `;
+
+      state.partnerCapexPct = Number(document.getElementById('partnerCapexPct').value) || 0;
+      state.partnerProfitPct = Number(document.getElementById('partnerProfitPct').value) || 0;
+      const myCapex = totalStartBudget * (1 - state.partnerCapexPct / 100);
+      const myMonthlyWithPartner = netProfit * (1 - state.partnerProfitPct / 100);
+      const myPaybackPartner = myMonthlyWithPartner > 0 ? (myCapex / myMonthlyWithPartner).toFixed(1) : '∞';
+      document.getElementById('partnerCompareBox').innerHTML = `
+        • <strong>100% свої кошти:</strong> вкладаєш ${fmt(totalStartBudget)} → отримуєш <strong>${fmt(netProfit)}/міс</strong> (окупність ${paybackMonths} міс).<br/>
+        • <strong>З партнером:</strong> твій вхід <strong>${fmt(myCapex)}</strong> → отримуєш <strong>${fmt(myMonthlyWithPartner)}/міс</strong> (твоя окупність ${myPaybackPartner} міс).
+      `;
+
+      state.curReserveCash = Number(document.getElementById('curReserveCash').value) || 0;
+      state.curScaleCash = Number(document.getElementById('curScaleCash').value) || 0;
+      const gate1 = margin >= 20 && netProfit > 0;
+      const gate2 = state.curReserveCash >= totalOpex * 2;
+      const gate3 = state.curScaleCash >= totalStartBudget;
+      const allGates = gate1 && gate2 && gate3;
+      document.getElementById('gatesResultBox').innerHTML = `
+        <div class="alert ${allGates ? 'good' : 'warn'}">
+          <div>${gate1 ? '✅' : '❌'} <strong>Ворота 1 (Маржа ≥ 20%):</strong> зараз ${margin.toFixed(1)}%</div>
+          <div>${gate2 ? '✅' : '❌'} <strong>Ворота 2 (Резерв ≥ 2 міс OPEX = ${fmt(totalOpex * 2)}):</strong> зараз ${fmt(state.curReserveCash)}</div>
+          <div>${gate3 ? '✅' : '❌'} <strong>Ворота 3 (Капітал на старт = ${fmt(totalStartBudget)}):</strong> зараз ${fmt(state.curScaleCash)}</div>
+          <div style="margin-top:6px;font-weight:800;">
+            ${allGates ? '🟢 Усі три ворота відкриті — можна безпечно запускати наступну локацію!' : '🟡 Рано відкривати нову точку — спершу закрий червоні пункти вище.'}
+          </div>
+        </div>
+      `;
+
+      state.scoring = {
+        access: Number(document.getElementById('scAccess').value) || 0,
+        floor: Number(document.getElementById('scFloor').value) || 0,
+        area: Number(document.getElementById('scArea').value) || 0,
+        power: Number(document.getElementById('scPower').value) || 0,
+        rentRatio: Number(document.getElementById('scRentRatio').value) || 0
+      };
+      const score = state.scoring.access + state.scoring.floor + state.scoring.area + state.scoring.power + state.scoring.rentRatio;
+      const flags = [];
+      if (state.scoring.access < 15) flags.push("слабкий під'їзд буса/парковка");
+      if (state.scoring.power < 12) flags.push("ризик по електропотужності/зв'язку");
+      if (state.scoring.rentRatio < 9) flags.push('завищена оренда відносно трафіку');
+      const scEl = document.getElementById('scoringResultBox');
+      scEl.className = 'alert ' + (score >= 80 && !flags.length ? 'good' : (score >= 65 ? 'warn' : 'bad'));
+      scEl.innerHTML = `
+        <strong>Оцінка локації: ${score} / 100 балів</strong> — ${score >= 80 ? 'сильне приміщення, можна брати' : (score >= 65 ? 'середній варіант, торгуйся по оренді' : 'високий ризик провалу')}.
+        ${flags.length ? `<br/>🚩 Червоні прапорці: <strong>${flags.join(', ')}</strong>.` : ''}
+      `;
+
+      // Tab 6: Growth Curve Simulation
+      runSimulation(grossIncome, totalOpex, netProfit, totalStartBudget, margin);
+      saveState();
+      if(document.getElementById('tab-management')?.classList.contains('active')) renderManagement();
+    }
+
+    function setChartMode(m) {
+      chartMode = m;
+      document.getElementById('chartModeNetBtn').classList.toggle('active', m === 'network');
+      document.getElementById('chartModeSingleBtn').classList.toggle('active', m === 'single');
+      recalcAll();
+    }
+
+    function runSimulation(grossIncome,totalOpex,netProfit,totalStartBudget,margin){
+      const horizon=Math.max(1,Number(document.getElementById('chartHorizon').value)||24);
+      const redLine=Number(document.getElementById('redLineThreshold').value)||25000;
+      const active=(state.locations||[]).filter(l=>l.status==='active');
+      const activeVolume=active.reduce((a,l)=>a+Math.max(0,Number(l.parcelsDay)||0),0);
+      const baseCapex=(state.capex||[]).reduce((a,x)=>a+(x.enabled?Math.max(0,Number(x.cost)||0):0),0);
+      const rampForAge=age=>age<=4?Math.max(0,Math.min(100,Number(state.ramp[age-1])||0))/100:1;
+      const avg=items=>{const keys=['gross','rent','payroll','packCost','utilities','amort','fixedTax'];const out={};keys.forEach(k=>out[k]=items.length?items.reduce((a,x)=>a+x[k],0)/items.length:0);return out;};
+      const activeEcons=active.map(loc=>locationEconomics(loc,activeVolume));
+      const template=activeEcons.length?avg(activeEcons):locationEconomics({parcelsDay:state.parcelsDay,rent:state.rent},0);
+      const branchMonth=(age,econ)=>{const factor=rampForAge(age),revenue=econ.gross*factor,variablePack=econ.packCost*factor;const tax=(state.autoTax?revenue*Math.max(0,Number(state.taxRatePct)||0)/100:0)+econ.fixedTax;const operating=econ.rent+econ.payroll+variablePack+econ.utilities+econ.amort+tax;return {revenue,net:revenue-operating};};
+      const startupBudget=econ=>{let gap=0;for(let m=1;m<=4;m++){const x=branchMonth(m,econ);if(x.net<0)gap+=-x.net;}return baseCapex+gap;};
+      const series=[];
+      if(chartMode==='single'){
+        const econ=locationEconomics({parcelsDay:state.parcelsDay,rent:state.rent},0);let balance=0;
+        for(let m=1;m<=horizon;m++){const x=branchMonth(m,econ);balance+=x.net;series.push({month:m,points:1,revenue:x.revenue,net:x.net,balance,opened:false});}
+      }else{
+        const branches=active.length?activeEcons.map(e=>({age:5,economics:e})):[];
+        let scaleFund=Math.max(0,Number(state.curScaleCash)||0),balance=0;
+        const newEconomics=Object.assign({},template,{fixedTax:0});
+        const newPointBudget=Math.max(1,startupBudget(newEconomics));
+        for(let m=1;m<=horizon;m++){
+          let opened=false;
+          if(m>1&&branches.length<12&&scaleFund>=newPointBudget){scaleFund-=newPointBudget;balance-=newPointBudget;branches.push({age:1,economics:newEconomics});opened=true;}
+          let revenue=0,net=0;
+          branches.forEach(b=>{const x=branchMonth(b.age,b.economics);revenue+=x.revenue;net+=x.net;b.age++;});
+          if(net>0)scaleFund+=net*Math.min(100,Math.max(0,Number(state.allocScale)||0))/100;
+          balance+=net;
+          series.push({month:m,points:branches.length,revenue,net,balance,opened});
+        }
+      }
+      lastSimSeries=series;
+      const breakMonth=series.find(x=>x.balance>=0),lastPoint=series[series.length-1]||{month:0,points:0,revenue:0,net:0,balance:0};
+      document.getElementById('chartMilestones').innerHTML=`<div class="kpi"><div class="kpi-label">Позитивний накопичений потік</div><div class="kpi-val text-green">${breakMonth?breakMonth.month+'-й міс.':'Пізніше горизонту'}</div><div class="kpi-sub">Від поточного моменту; минулі CAPEX не віднімаються</div></div><div class="kpi"><div class="kpi-label">Точок у кінці періоду</div><div class="kpi-val text-blue">${lastPoint.points}</div><div class="kpi-sub">На ${horizon}-й місяць</div></div><div class="kpi"><div class="kpi-label">Результат на ${horizon}-й міс.</div><div class="kpi-val text-green">${fmt(lastPoint.net)}</div><div class="kpi-sub">Модельний результат за місяць</div></div><div class="kpi"><div class="kpi-label">Накопичений потік</div><div class="kpi-val">${fmt(lastPoint.balance)}</div><div class="kpi-sub">Після модельних витрат на нові точки</div></div>`;
+      const tips=[];if(margin<20)tips.push('Маржа нижче 20%: перевірте дохід, оренду, персонал та інші витрати.');else tips.push(`Маржа ${margin.toFixed(1)}%: звірте модель із фактичними даними.`);if(lastPoint.net<redLine)tips.push('Місячний результат нижче контрольної межі.');if(chartMode==='network'&&lastPoint.points>active.length)tips.push(`Модель показує можливість зростання до ${lastPoint.points} точок за заданих умов.`);
+      document.getElementById('liveAdvisorBox').innerHTML='<strong>💡 Живі підказки:</strong><br/>• '+tips.join('<br/>• ');drawGrowthChart();
+    }
+
+    function drawGrowthChart() {
+      const canvas = document.getElementById('growthCanvas');
+      if (!canvas || !lastSimSeries.length) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const redLine = Number(document.getElementById('redLineThreshold').value) || 25000;
+      const padL = 68, padR = 20, padT = 24, padB = 34;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+
+      const vals = lastSimSeries.map(s => s.net).concat([redLine, 0]);
+      const minV = Math.min(...vals);
+      const maxV = Math.max(...vals) * 1.1 || 100000;
+      const range = Math.max(1, maxV - minV);
+
+      const getX = (idx) => padL + (idx / Math.max(1, lastSimSeries.length - 1)) * plotW;
+      const getY = (v) => padT + plotH - ((v - minV) / range) * plotH;
+
+      // Grid lines
+      ctx.strokeStyle = '#222d42';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + (plotH / 4) * i;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+        const labelVal = Math.round((maxV - (range / 4) * i) / 1000) + 'k';
+        ctx.fillStyle = '#8b99b5';
+        ctx.font = '12px sans-serif';
+        ctx.fillText(labelVal, 8, y + 4);
+      }
+
+      // Red safety threshold line
+      const redY = getY(redLine);
+      ctx.strokeStyle = '#ef233c';
+      ctx.setLineDash([6, 5]);
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(padL, redY); ctx.lineTo(W - padR, redY); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#fca5a5';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('Червона межа: ' + Math.round(redLine / 1000) + 'k ₴', padL + 8, redY - 6);
+
+      // Profit Curve
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      lastSimSeries.forEach((pt, idx) => {
+        const x = getX(idx), y = getY(pt.net);
+        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Points & New Store Milestones
+      lastSimSeries.forEach((pt, idx) => {
+        const x = getX(idx), y = getY(pt.net);
+        ctx.fillStyle = pt.net < redLine ? '#ef233c' : (pt.opened ? '#3b82f6' : '#22c55e');
+        ctx.beginPath();
+        ctx.arc(x, y, pt.opened ? 5.5 : 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        if (idx % 3 === 0 || idx === lastSimSeries.length - 1) {
+          ctx.fillStyle = '#93a1bd';
+          ctx.font = '11px sans-serif';
+          ctx.fillText(pt.month + 'м', x - 8, H - 10);
+        }
+      });
+    }
+
+    // Touch / Click inspection on canvas
+    function inspectCanvas(clientX) {
+      const canvas = document.getElementById('growthCanvas');
+      if (!canvas || !lastSimSeries.length) return;
+      const rect = canvas.getBoundingClientRect();
+      const relX = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      const idx = Math.round(relX * (lastSimSeries.length - 1));
+      const pt = lastSimSeries[idx];
+      if (!pt) return;
+      document.getElementById('chartHoverInfo').innerHTML = `
+        <strong>Місяць ${pt.month}</strong> · Точок: <strong>${pt.points}</strong> · Оборот: <strong>${fmt(pt.revenue)}</strong> · Чистий прибуток: <strong class="${pt.net >= 0 ? 'text-green' : 'text-red'}">${fmt(pt.net)}</strong> · Накопичений баланс: <strong>${fmt(pt.balance)}</strong>
+      `;
+    }
+    const gCanvas = document.getElementById('growthCanvas');
+    gCanvas.addEventListener('click', (e) => inspectCanvas(e.clientX));
+    gCanvas.addEventListener('touchmove', (e) => {
+      if (e.touches[0]) inspectCanvas(e.touches[0].clientX);
+    }, { passive: true });
+
+    function exportBackup(){try{const payload={app:'NOVA PULSE',schema:6,exportedAt:new Date().toISOString(),state};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='nova-pulse-backup-'+localDateISO()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);state.lastBackupAt=new Date().toISOString();saveState();hideBackupBanner();showToast('Резервну копію створено');}catch(e){showToast('Не вдалося створити копію');}}
+    function importBackupFile(input){
+      const file=input.files&&input.files[0];if(!file)return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        try{
+          const parsed=JSON.parse(reader.result),incoming=parsed.state||parsed;
+          if(!incoming||typeof incoming!=='object'||!Array.isArray(incoming.locations))throw new Error('invalid');
+          if(!confirm('Імпортувати копію? Поточні дані будуть збережені у внутрішній резервній копії.')){input.value='';return;}
+          try{localStorage.setItem('np_network_pro_max_before_import',JSON.stringify(state));}catch(_){}
+          const keepAuth=state.adminAuth;
+          const next=Object.assign(JSON.parse(JSON.stringify(defaultState)),incoming);
+          sanitizeState(next);
+          if(keepAuth)next.adminAuth=keepAuth; else delete next.adminAuth;   // пароль керівника не підміняється файлом
+          next.schemaVersion=SCHEMA_VERSION;
+          state=next;
+          saveState();syncInputsFromState();renderCapexAndLifecycle();recalcAll();renderManagement();renderBranchAdmin();
+          showToast('Резервну копію імпортовано');
+        }catch(e){alert('Файл не розпізнано. Дані не змінено.');}
+        input.value='';
+      };
+      reader.readAsText(file);
+    }
+    function localDateISO() { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); }
+    function addTransaction() {
+      const date=document.getElementById('txDate').value||localDateISO(), type=document.getElementById('txType').value;
+      const category=document.getElementById('txCategory').value, locationId=document.getElementById('txLocation').value;
+      const amount=Number(document.getElementById('txAmount').value), note=document.getElementById('txNote').value.trim();
+      if(!date||!Number.isFinite(amount)||amount<=0){showToast('Вкажіть дату та суму більше нуля');return;}
+      pushHistory(); state.transactions=Array.isArray(state.transactions)?state.transactions:[];
+      state.transactions.unshift({id:'tx_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),date,type,category,locationId,amount:Math.round(amount*100)/100,note,createdAt:new Date().toISOString()});
+      document.getElementById('txAmount').value='';document.getElementById('txNote').value='';saveState();renderManagement();showToast('Операцію додано');
+    }
+    function deleteTransaction(id){if(!confirm('Видалити цю операцію?'))return;pushHistory();state.transactions=(state.transactions||[]).filter(t=>t.id!==id);saveState();renderManagement();showToast('Операцію видалено');}
+    function saveOpeningCash(){const v=Number(document.getElementById('openingCashInput').value);if(!Number.isFinite(v)||v<0){showToast('Вкажіть коректний залишок');return;}pushHistory();state.openingCash=Math.round(v*100)/100;saveState();renderManagement();showToast('Початковий залишок збережено');}
+    function renderManagement(){
+      if(!document.getElementById('tab-management'))return;
+      const txs=Array.isArray(state.transactions)?state.transactions:[], month=localDateISO().slice(0,7);
+      const monthly=txs.filter(t=>String(t.date||'').slice(0,7)===month);
+      const income=monthly.filter(t=>t.type==='income').reduce((a,t)=>a+(Number(t.amount)||0),0), expense=monthly.filter(t=>t.type==='expense').reduce((a,t)=>a+(Number(t.amount)||0),0);
+      const allIncome=txs.filter(t=>t.type==='income').reduce((a,t)=>a+(Number(t.amount)||0),0), allExpense=txs.filter(t=>t.type==='expense').reduce((a,t)=>a+(Number(t.amount)||0),0);
+      const active=(state.locations||[]).filter(l=>l.status==='active'), planned=(state.locations||[]).filter(l=>l.status!=='active');
+      const modelProfit=networkModel().net;
+      const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+      set('dashActive',active.length);set('dashPlanned','У плані: '+planned.length);set('dashModelProfit',fmt(modelProfit));set('dashIncome',fmt(income));set('dashExpense',fmt(expense));set('dashNet',fmt(income-expense));set('dashCash',fmt((Number(state.openingCash)||0)+allIncome-allExpense));set('dashboardMonth','Період: '+month);set('dashboardUpdated','Оновлено: '+new Date().toLocaleString('uk-UA'));
+      const opening=document.getElementById('openingCashInput');if(opening&&document.activeElement!==opening)opening.value=Number(state.openingCash)||0;
+      const sel=document.getElementById('txLocation');if(sel){const old=sel.value;sel.replaceChildren();const all=document.createElement('option');all.value='';all.textContent='Уся мережа';sel.appendChild(all);(state.locations||[]).forEach(l=>{const o=document.createElement('option');o.value=l.id;o.textContent=l.name;sel.appendChild(o);});sel.value=old;}
+      const empSel=document.getElementById('empLocation');if(empSel){const oldEmp=empSel.value;empSel.innerHTML=(state.locations||[]).map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(l.name)}</option>`).join('')||'<option value="">Немає відділень</option>';if(oldEmp)empSel.value=oldEmp;}
+      const taxSel=document.getElementById('taxProfile');if(taxSel)taxSel.value=state.taxProfile||'fop3_5';const taxPct=document.getElementById('taxCustomPct');if(taxPct)taxPct.value=state.taxCustomPct??6;
+      const areaSel=document.getElementById('benchmarkArea');if(areaSel)areaSel.value=state.benchmarkArea||'Сихівський';const areaM2=document.getElementById('benchmarkAreaM2');if(areaM2)areaM2.value=state.benchmarkAreaM2||100;
+      renderEmployees();renderTaxProfileInfo();renderBenchmarks();renderSalaryAdvice();renderMarketSources();
+      const filter=document.getElementById('ledgerFilter')?.value||'all', visible=txs.filter(t=>filter==='all'||t.type===filter), list=document.getElementById('ledgerList');list.replaceChildren();
+      if(!visible.length){const p=document.createElement('p');p.className='muted-note';p.textContent='Операцій за вибраним фільтром поки немає.';list.appendChild(p);return;}
+      visible.slice(0,100).forEach(t=>{const row=document.createElement('div');row.className='ledger-row';const left=document.createElement('div'),title=document.createElement('strong'),meta=document.createElement('small');title.textContent=t.category||'Операція';const loc=(state.locations||[]).find(l=>l.id===t.locationId);meta.textContent=(t.date||'')+' · '+(loc?loc.name:'Уся мережа')+(t.note?' · '+t.note:'');left.append(title,meta);const right=document.createElement('div');right.className='ledger-amount';right.style.color=t.type==='income'?'#4ade80':'#fca5a5';right.textContent=(t.type==='income'?'+':'−')+fmt(Number(t.amount)||0);const actions=document.createElement('div');actions.className='ledger-actions';const del=document.createElement('button');del.className='btn-danger';del.textContent='Видалити';del.addEventListener('click',()=>deleteTransaction(t.id));actions.appendChild(del);right.appendChild(actions);row.append(left,right);list.appendChild(row);});
+    }
+    // Регіональні орієнтири зарплат. Джерело: Work.ua, статистика листопада 2026.
+    // Для міста застосовується індекс середньої зарплати міста до середньої по Україні.
+    const salaryRoleMedian={
+      'Оператор / касир':24000,
+      'Оператор поштового відділення':25000,
+      'Вантажник':29000,
+      'Водій':39000,
+      'Старший оператор':28050,
+      'Керівник відділення':34500,
+      'Прибиральник':17000,
+      'Інша посада':0
+    };
+    const citySalaryIndex={
+      'київ':37500,'львів':33500,'ужгород':31500,'івано-франківськ':30000,'тернопіль':29600,
+      'чернівці':29000,'черкаси':28500,'хмельницький':28000,'рівне':27500,'луцьк':27000,
+      'вінниця':28300,'житомир':27000,'дніпро':30000,'одеса':30000,'харків':27500,
+      'полтава':25000,'запоріжжя':25000,'миколаїв':25000,'суми':23000,'чернігів':24200,'херсон':22500
+    };
+    const salaryNationalAverage=31000;
+    // таблиця орієнтирів будується з salaryRoleMedian (gross) ±8%, на руки — через PAYROLL.netShare
+    const salaryRanges=Object.fromEntries(Object.entries(salaryRoleMedian).map(([role,med])=>[role,[
+      med?Math.round(med*.92*PAYROLL.netShare):0,
+      med?Math.round(med*1.08*PAYROLL.netShare):0,
+      med?('Медіана вакансій (gross): '+Math.round(med).toLocaleString('uk-UA')+' ₴'):'Немає надійного аналога']]));
+    const rentPerM2={'Сихівський':181,'Франківський':833,'Галицький':656,'Шевченківський':1009,'Залізничний':604,'Личаківський':null,'Львівська область':null};
+    const repairMarket={
+      'Львів':{url:'https://skilky.com.ua/tsiny/lviv/',checked:'13–14.11.2026',data:{apartment:[10000,14000,'грн/м²'],bathroom:[8000,18000,'грн/м²'],kitchen:[6500,10000,'грн/м²'],tile:[870,1073,'грн/м²'],laminate:[298,314,'грн/м²'],paint:[133,231,'грн/м²'],socket:[141,169,'грн/шт.'],toilet:[1433,1898,'грн/шт.']}},
+      'Івано-Франківськ':{url:'https://skilky.com.ua/tsiny/ivano-frankivsk/',checked:'13–14.11.2026',data:{apartment:[7800,17500,'грн/м²'],bathroom:[8000,18000,'грн/м²'],kitchen:[6500,10000,'грн/м²'],tile:[922,1073,'грн/м²'],laminate:[298,314,'грн/м²'],paint:[194,231,'грн/м²'],socket:[123,123,'грн/шт.'],toilet:[1486,1486,'грн/шт.']}},
+      'Ужгород':{url:'https://skilky.com.ua/tsiny/uzhhorod/',checked:'13–20.11.2026',data:{apartment:[8000,18000,'грн/м²'],bathroom:[8700,20000,'грн/м²'],kitchen:[6500,10000,'грн/м²'],tile:[935,1073,'грн/м²'],laminate:[298,314,'грн/м²'],paint:[191,231,'грн/м²'],socket:[138,160,'грн/шт.'],toilet:[1625,1843,'грн/шт.']}},
+      'Тернопіль':{url:'https://skilky.com.ua/tsiny/ternopil/',checked:'13–20.11.2026',data:{apartment:[7800,16999,'грн/м²'],bathroom:[8700,20000,'грн/м²'],kitchen:[6500,12000,'грн/м²'],tile:[613,1051,'грн/м²'],laminate:[248,314,'грн/м²'],paint:[131,198,'грн/м²'],socket:[120,120,'грн/шт.'],toilet:[1370,1898,'грн/шт.']}}
+    };
+    const repairServiceNames={apartment:'Комплексний ремонт квартири',bathroom:'Комплексний ремонт ванної',kitchen:'Комплексний ремонт кухні',tile:'Укладання плитки',laminate:'Укладання ламінату',paint:'Фарбування стін',socket:'Монтаж розетки/вимикача',toilet:'Встановлення унітазу'};
+    function advisorShow(title, rows, foot){
+      const panel=document.getElementById('smartAdvisor');if(!panel)return;
+      document.getElementById('smartAdvisorTitle').textContent=title;
+      document.getElementById('smartAdvisorBody').innerHTML=rows.map(r=>`<div class="smart-advisor-line ${r.kind||''}"><b>${escapeHtml(r.label)}</b>${escapeHtml(r.text)}</div>`).join('');
+      document.getElementById('smartAdvisorFoot').textContent=foot||'Ринковий орієнтир, а не гарантована ціна конкретного постачальника.';
+      panel.style.display='block';
+    }
+    function closeSmartAdvisor(){const p=document.getElementById('smartAdvisor');if(p)p.style.display='none';}
+    function getRegionLabel(loc){
+      const n=String(loc?.name||'').toLowerCase();
+      if(n.includes('сокільник')||n.includes('зимна вода')||n.includes('львів'))return 'Львівська область (для приміських локацій використано індекс Львова)';
+      if(n.includes('стрий'))return 'Стрий / Львівська область';
+      if(n.includes('шептиць'))return 'Шептицький / Львівська область';
+      return 'регіон не визначено';
+    }
+    const postalOperatorCityMedian={
+      'львів':26000,'ужгород':24500,'івано-франківськ':24500,'київ':27000,'дніпро':21000,'одеса':25700,'полтава':19000
+    };
+    const postalOperatorSource='Work.ua, листопад 2026: Україна — 25 000 грн (1 067 вакансій); Львів — 26 000 грн (63 вакансії); Ужгород та Івано-Франківськ — 24 500 грн. Для інших міст окремих даних недостатньо.';
+    function salaryCityFactor(loc){
+      const n=String(loc?.name||'').toLowerCase();
+      if(n.includes('сокільник')||n.includes('зимна вода'))return {city:'Львів (приміська зона)',factor:citySalaryIndex['львів']/salaryNationalAverage,confidence:'середня',note:'Для передмістя використано статистику Львова як найближчого ринку праці.'};
+      for(const [city,avg] of Object.entries(citySalaryIndex))if(n.includes(city))return {city:city[0].toUpperCase()+city.slice(1),factor:avg/salaryNationalAverage,confidence:'середня',note:'Міський індекс Work.ua порівняно із середнім показником України.'};
+      return {city:'Україна (загальний показник)',factor:1,confidence:'низька',note:'Для цього населеного пункту окремої міської статистики в доступному зрізі немає; використано загальноукраїнський орієнтир.'};
+    }
+    function renderSalaryAdvice(){
+      const box=document.getElementById('salaryAdvice');if(!box)return;
+      const role=document.getElementById('empRole')?.value||'Оператор / касир';
+      const salary=Number(document.getElementById('empSalary')?.value)||0;
+      const load=Math.max(1,Math.min(100,Number(document.getElementById('empLoad')?.value)||100));
+      const locationId=document.getElementById('empLocation')?.value||'';
+      const loc=(state.locations||[]).find(x=>x.id===locationId);
+      if(!salary){box.className='alert';box.textContent='Введіть зарплату — система автоматично покаже коротку рекомендацію.';return;}
+      const net=salary*PAYROLL.netShare*load/100, employer=salary*(1+PAYROLL.employerEsv)*load/100;
+      const city=salaryCityFactor(loc);
+      const locName=String(loc?.name||'').toLowerCase();
+      const postalCity=Object.keys(postalOperatorCityMedian).find(k=>locName.includes(k));
+      const postalRole=role==='Оператор поштового відділення';
+      const override=Number(document.getElementById('empRefOverride')?.value)||0;const roleMedian=postalRole?25000:(salaryRoleMedian[role]||0);
+      const reference=override>0?override:postalRole?(postalCity?postalOperatorCityMedian[postalCity]:25000):(roleMedian?roleMedian*city.factor:0);
+      const low=reference*.92,high=reference*1.08;
+      const currentRow=networkModel().rows.find(r=>r.loc.id===locationId),currentNet=currentRow?currentRow.net:0,projected=currentNet-employer;
+      if(!reference){box.className='alert warn';box.textContent='Для цієї посади немає надійного відповідника в статистиці вакансій.';advisorShow('Потрібно уточнити посаду',[{label:'Рекомендація',text:'Не встановлюю ринкову суму без відповідної професії. Оберіть найближчу посаду або додайте власні порівнювані вакансії.',kind:'recommend'},{label:'Ризик',text:'Неправильний аналог може суттєво спотворити бюджет найму.',kind:'risk'}],'Джерело базових зарплат: Work.ua, листопад 2026.');return;}
+      const scaledLow=low*load/100,scaledHigh=high*load/100;
+      const status=salary<scaledLow*.9?'bad':salary>scaledHigh*1.1?'warn':'good';
+      const recommendation=salary<scaledLow?`Підвищити орієнтир до ${fmt(scaledLow)}–${fmt(scaledHigh)} ₴ gross/міс.`:salary>scaledHigh?`Можна розглянути ${fmt(scaledLow)}–${fmt(scaledHigh)} ₴ gross/міс.; вища ставка виправдана за додаткові обов’язки або досвід.`:`Залишити в межах ${fmt(scaledLow)}–${fmt(scaledHigh)} ₴ gross/міс.`;
+      const why=override>0?('Використано ваш власний ринковий орієнтир: '+fmt(override)+' ₴/міс. (з ваших вакансій чи пропозицій).'):postalRole
+        ? (postalCity?`Для операторів поштових відділень у ${postalCity[0].toUpperCase()+postalCity.slice(1)} медіана Work.ua — ${fmt(reference)} ₴/міс. Це прямі дані за посадою й містом, а не перерахунок середньої зарплати всіх професій.`:`Для операторів поштових відділень загальноукраїнська медіана Work.ua — ${fmt(reference)} ₴/міс. Для цього міста окремої вибірки не знайдено, тому це лише загальноукраїнський орієнтир.`)
+        : `Для ролі «${role}» базовий показник вакансій — близько ${fmt(roleMedian)} ₴/міс.; регіональний коефіцієнт ${city.factor.toFixed(2)} (${city.city}). Це орієнтир вакансій, а не тариф конкретної компанії.`;
+      const risk=salary<scaledLow?`Ставка нижча за орієнтир: може бути менше відгуків, довший пошук і більша плинність.`:salary>scaledHigh?`Ставка помітно вища: витрати зростуть; варто закріпити додаткові задачі та показники результату.`:`Сума в ринковому коридорі. Якщо не врахувати графік, навантаження та бонуси, можна неправильно оцінити реальну конкурентність.`;
+      box.className='alert '+status;box.textContent='Коротка рекомендація відображається у напівпрозорому вікні.';
+      advisorShow('Зарплата: '+role,[{label:'Що краще запропонувати',text:recommendation,kind:'recommend'},{label:'Чому саме так',text:why+' '+city.note},{label:'Якщо не врахувати',text:risk,kind:'risk'},{label:'Вплив на відділення',text:`На руки орієнтовно ${fmt(net)} ₴; повна вартість роботодавця близько ${fmt(employer)} ₴/міс. Прогнозний результат після найму: ${fmt(projected)} ₴/міс.${projected<0?' Модель показує ризик збитку.':''}`}],`Місто/регіон: ${postalRole?(postalCity?postalCity[0].toUpperCase()+postalCity.slice(1):'Україна — без локальної вибірки'):city.city}. ${postalRole?postalOperatorSource:'Ринкові дані Work.ua: листопад 2026.'} Формат gross/net у вакансіях може відрізнятися — уточніть його до погодження оферу.`);
+    }
+    function renderRepairBenchmark(){
+      const city=document.getElementById('marketCity')?.value||'Львів',service=document.getElementById('marketService')?.value||'apartment',price=Number(document.getElementById('marketUnitPrice')?.value)||0,qty=Math.max(0,Number(document.getElementById('marketQuantity')?.value)||0),pack=repairMarket[city],v=pack?.data?.[service];
+      const out=document.getElementById('repairBenchmarkResult');if(!out||!v)return;
+      const [lo,hi,unit]=v,total=price*qty,rangeText=`${fmt(lo)}–${fmt(hi)} ${unit}`;
+      let message=`Орієнтир для ${repairServiceNames[service].toLowerCase()} у місті ${city}: ${rangeText}.`;
+      if(price>0){const low=price<lo*.8,high=price>hi*1.2,within=price>=lo&&price<=hi;
+        message+=` Ваша ціна: ${fmt(price)} ${unit}; кількість: ${qty}; загалом: ${fmt(total)} ₴. `;
+        message+=low?'Ціна значно нижча за діапазон — перевірте, чи включені всі роботи, підготовка, матеріали та гарантія.':high?'Ціна значно вища — попросіть деталізований кошторис і ще 2 пропозиції з однаковим обсягом робіт.':within?'Ціна всередині регіонального діапазону. Порівняйте склад робіт і гарантію.':'Ціна близька до межі діапазону; уточніть обсяг і додаткові платежі.';
+        out.className='alert '+(low||high?'warn':'good');
+      }else{out.className='alert';message+=' Введіть свою ціну, щоб отримати оцінку.';}
+      out.textContent=message;
+      const links=document.getElementById('repairSourceLinks');if(links)links.innerHTML=`<a href="${pack.url}" target="_blank" rel="noopener">Відкрити локальні ціни для міста ${city}</a> · перевірено ${pack.checked}.`;
+      if(price>0){advisorShow('Перевірка вартості: '+repairServiceNames[service],[{label:'Ринковий діапазон',text:`${city}: ${rangeText}. Загальна сума за введений обсяг — ${fmt(total)} ₴.`,kind:'recommend'},{label:'Пояснення',text:'Порівняння коректне лише за однаковою одиницею виміру та однаковим складом робіт. Матеріали, демонтаж, доставка й вивезення сміття можуть оплачуватися окремо.'},{label:'Якщо не перевірити',text:price<lo*.8?'Низька ціна може означати неповний кошторис або доплати в процесі.':price>hi*1.2?'Можлива переплата за роботи, які можна замовити дешевше.':'Навіть ринкова ціна не гарантує повний обсяг — зафіксуйте перелік робіт письмово.',kind:'risk'}],`Джерело: Skilky.com.ua, локальні довідники міста ${city}; дата перевірки ${pack.checked}.`);}
+    }
+    function saveMarketQuote(){
+      const item=document.getElementById('quoteItem').value.trim(),category=document.getElementById('quoteCategory').value,city=document.getElementById('quoteCity').value.trim(),vendor=document.getElementById('quoteVendor').value.trim(),price=Number(document.getElementById('quotePrice').value),details=document.getElementById('quoteDetails').value.trim();
+      if(!item||!price||price<=0){showToast('Вкажіть позицію та коректну ціну');return;}
+      state.marketQuotes=Array.isArray(state.marketQuotes)?state.marketQuotes:[];state.marketQuotes.push({id:'mq_'+Date.now(),item,category,city,vendor,price,details,date:new Date().toISOString().slice(0,10)});saveState();
+      document.getElementById('quoteVendor').value='';document.getElementById('quotePrice').value='';document.getElementById('quoteDetails').value='';renderMarketQuotes();showToast('Пропозицію збережено');
+    }
+    function deleteMarketQuote(id){state.marketQuotes=(state.marketQuotes||[]).filter(q=>q.id!==id);saveState();renderMarketQuotes();}
+    function renderMarketQuotes(){
+      const list=document.getElementById('marketQuotesList');if(!list)return;const quotes=state.marketQuotes||[];
+      list.innerHTML=quotes.slice().reverse().map(q=>`<div class="ledger-row"><div><strong>${escapeHtml(q.item)}</strong><small>${escapeHtml(q.category)} · ${escapeHtml(q.city||'регіон не вказано')} · ${escapeHtml(q.vendor||'постачальник не вказаний')} · ${escapeHtml(q.date||'')}</small><small>${escapeHtml(q.details||'Без додаткових умов')}</small></div><div class="ledger-amount">${fmt(q.price)} ₴<br><button class="btn-danger" onclick="deleteMarketQuote('${q.id}')">Видалити</button></div></div>`).join('')||'<p class="muted-note">Збережених пропозицій поки немає.</p>';
+      const advice=document.getElementById('marketQuoteAdvice');if(advice){const groups={};quotes.forEach(q=>{const k=(q.item||'').trim().toLowerCase()+'|'+(q.city||'').trim().toLowerCase()+'|'+(q.category||'');(groups[k]??=[]).push(q);});const comparable=Object.values(groups).filter(a=>a.length>=2).sort((a,b)=>b.length-a.length)[0];if(comparable){const sorted=comparable.map(q=>q.price).sort((a,b)=>a-b),median=sorted.length%2?sorted[(sorted.length-1)/2]:(sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;advice.className='alert good';advice.textContent=`Для «${comparable[0].item}» збережено ${sorted.length} пропозиції. Медіанна ціна: ${fmt(median)} ₴; найнижча: ${fmt(sorted[0])} ₴. Перед вибором перевірте однаковість моделі, комплектації, доставки та гарантії.`;}else{advice.className='alert';advice.textContent='Додайте ще одну пропозицію на ту саму позицію — після 2 і більше система покаже медіану та найнижчу ціну.';}}
+    }
+    function smartPriceAdvice(input){
+      if(!input||!input.id)return;const val=Number(input.value);if(!Number.isFinite(val)||val<=0){closeSmartAdvisor();return;}
+      const id=input.id,locId=document.getElementById('txLocation')?.value||document.getElementById('empLocation')?.value||'',loc=(state.locations||[]).find(x=>x.id===locId);let item='',category='';
+      if(id==='txAmount'){category=document.getElementById('txCategory')?.value||'Інше';item=category;}
+      else if(id==='newCapexCost'){item=document.getElementById('newCapexName')?.value.trim()||'Нова закупівля';category='CAPEX';}
+      else if(id==='newLocRent'){item='Оренда нового відділення';category='Оренда';}
+      else if(id==='inRent'){item='Оренда приміщення';category='Оренда';}
+      else if(id==='inPackCost'){item='Пакування';category='Закупівля';}
+      else if(id==='inUtilities'){item='Комунальні та зв’язок';category='Комунальні';}
+      else if(id.startsWith('capexCost_')){const ix=Number(id.split('_')[1]),it=state.capex?.[ix];item=it?.name||'Обладнання';category='Обладнання';}
+      else if(id.startsWith('lifeCost_')){const ix=Number(id.split('_')[1]),it=state.lifecycle?.[ix];item=it?.name||'Техніка';category='Техніка';}else return;
+      const region=getRegionLabel(loc);
+      const locName=String(loc?.name||'').toLowerCase();
+      const expectedCity=locName.includes('сокільник')||locName.includes('зимна вода')||locName.includes('львів')?'львів':locName.includes('стрий')?'стрий':locName.includes('шептиць')?'шептицький':'';
+      const quotes=(state.marketQuotes||[]).filter(q=>{const same=(q.item||'').trim().toLowerCase()===item.trim().toLowerCase()&&q.price>0;const qc=String(q.city||'').toLowerCase();return same&&expectedCity&&qc.includes(expectedCity);});
+      if(quotes.length>=2){const vals=quotes.map(q=>q.price).sort((a,b)=>a-b),median=vals.length%2?vals[(vals.length-1)/2]:(vals[vals.length/2-1]+vals[vals.length/2])/2,delta=(val-median)/median*100;
+        advisorShow('Перевірка ціни: '+item,[{label:'Рекомендація',text:`Ваше значення ${fmt(val)} ₴. Медіана ${quotes.length} збережених пропозицій — ${fmt(median)} ₴. ${delta>15?'Ціна вища більш ніж на 15% — запросіть додаткову пропозицію.':delta< -20?'Ціна нижча більш ніж на 20% — перевірте модель, комплект і гарантію.':'Ціна близька до ваших порівнюваних пропозицій.'}`,kind:'recommend'},{label:'Чому',text:`Порівняння зроблено з ${quotes.length} пропозиціями для однакової назви позиції; розбіжність ${delta>0?'+':''}${delta.toFixed(1)}%.`},{label:'Якщо не перевірити',text:'Різні моделі, комплектація, доставка та гарантія можуть зробити найдешевшу пропозицію дорожчою у підсумку.',kind:'risk'}],`Регіон операції: ${region}. Це ваша база пропозицій, не повна статистика ринку.`);
+      }else{
+        advisorShow('Перевірка ціни: '+item,[{label:'Рекомендація',text:`Введено ${fmt(val)} ₴. Для «${item}» у відповідному регіоні ще немає щонайменше двох однакових пропозицій. Збережіть 2–3 ціни в цьому місті з однаковою моделлю та комплектацією — система розрахує медіану.`,kind:'recommend'},{label:'Чому',text:'Для техніки й товарів важливі точна модель, стан, гарантія, доставка та комплектація. Загальні середні ціни можуть ввести в оману.'},{label:'Якщо не перевірити',text:'Є ризик переплатити або придбати несумісну чи неповну комплектацію.',kind:'risk'}],`Регіон: ${region}. Ремонтні ціни перевіряються окремим калькулятором за одиницю виміру.`);
+      }
+    }
+    function renderMarketSources(){renderRepairBenchmark();renderMarketQuotes();}
+    document.addEventListener('input',e=>{if(e.target?.id==='empSalary'||e.target?.id==='empLoad')renderSalaryAdvice();else smartPriceAdvice(e.target);});
+    document.addEventListener('change',e=>{if(['empRole','empLocation','empLoad'].includes(e.target?.id))renderSalaryAdvice();else smartPriceAdvice(e.target);});
+    function addEmployee(){
+      const name=document.getElementById('empName').value.trim(),role=document.getElementById('empRole').value,locationId=document.getElementById('empLocation').value,salary=Number(document.getElementById('empSalary').value),load=Math.max(1,Math.min(100,Number(document.getElementById('empLoad').value)||100));
+      if(!name||!locationId||!Number.isFinite(salary)||salary<=0){showToast('Заповніть ім’я, відділення та зарплату');return;}
+      pushHistory();state.employees=Array.isArray(state.employees)?state.employees:[];state.employees.push({id:'emp_'+Date.now(),name,role,locationId,salary,load});
+      document.getElementById('empName').value='';document.getElementById('empSalary').value='';saveState();renderManagement();recalcAll();renderSalaryAdvice();showToast('Працівника додано');
+    }
+    function deleteEmployee(id){if(!confirm('Видалити працівника з моделі?'))return;pushHistory();state.employees=(state.employees||[]).filter(e=>e.id!==id);saveState();renderManagement();recalcAll();}
+    function renderEmployees(){
+      const list=document.getElementById('employeeList');if(!list)return;const emps=state.employees||[];let gross=0,cost=0;
+      list.innerHTML=emps.map(e=>{const loc=(state.locations||[]).find(l=>l.id===e.locationId);const g=(Number(e.salary)||0)*(Number(e.load)||100)/100;gross+=g;cost+=g*(1+PAYROLL.employerEsv);return `<div class="employee-row"><div><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.role)} · ${escapeHtml(loc?loc.name:'Відділення не знайдено')} · ${Number(e.load)||100}% зайнятості</small><small>На руки орієнтовно: ${fmt(g*PAYROLL.netShare)} · Вартість роботодавця: ${fmt(g*(1+PAYROLL.employerEsv))}</small></div><div style="text-align:right"><strong>${fmt(g)}</strong><br><button class="btn-danger" onclick="deleteEmployee('${e.id}')">Видалити</button></div></div>`;}).join('')||'<p class="muted-note">Працівників ще не додано. Поки для відділення без окремих працівників модель використовує стару загальну суму зарплат з основної вкладки.</p>';
+      const summary=document.getElementById('employeeSummary');if(summary)summary.innerHTML=`Працівників: <strong>${emps.length}</strong> · Нарахована зарплата gross: <strong>${fmt(gross)}</strong> · Орієнтовна повна вартість роботодавця: <strong>${fmt(cost)}</strong>`;
+    }
+    function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function saveTaxProfile(){pushHistory();state.taxProfile=document.getElementById('taxProfile').value;state.taxCustomPct=Number(document.getElementById('taxCustomPct').value)||0;saveState();renderTaxProfileInfo();recalcAll();}
+    function renderTaxProfileInfo(){const el=document.getElementById('taxProfileInfo');if(!el)return;const p=state.taxProfile||'fop3_5',esv=money2(esvMonthly());let msg='';
+      if(p==='fop2')msg=`ФОП 2 група: ЄП ${money2(TAX_CONFIG.fop2.ep)} ₴/міс + військовий збір ${money2(TAX_CONFIG.fop2.vz)} ₴/міс + ЄСВ за себе ${esv} ₴/міс. Разом орієнтовно ${money2(TAX_CONFIG.fop2.ep+TAX_CONFIG.fop2.vz+esvMonthly())} ₴/міс. Перевірте право на групу, місцеву ставку та винятки.`;
+      else if(p==='fop3_5')msg=`ФОП 3 група без ПДВ: ${(TAX_CONFIG.fop3_5.rate*100).toFixed(0)}% від доходу (ЄП + військовий збір) + ЄСВ за себе ${esv} ₴/міс.`;
+      else if(p==='fop3_3')msg=`ФОП 3 група з ПДВ: ${(TAX_CONFIG.fop3_3.rate*100).toFixed(0)}% від доходу (ЄП + військовий збір) + ЄСВ за себе ${esv} ₴/міс. ПДВ обліковується окремо.`;
+      else msg=`Власна модель: ${Number(state.taxCustomPct)||0}% від доходу + ЄСВ за себе ${esv} ₴/міс.`;
+      el.textContent=msg+' Ставки задано в блоці TAX_CONFIG ('+TAX_CONFIG.asOf+'); підтвердіть режим з бухгалтером/ДПС.';}
+    function renderBenchmarks(){
+      const area=document.getElementById('benchmarkArea')?.value||state.benchmarkArea||'Сихівський',m2=Math.max(1,Number(document.getElementById('benchmarkAreaM2')?.value)||100);state.benchmarkArea=area;state.benchmarkAreaM2=m2;
+      const rate=rentPerM2[area],rent=rate===null||rate===undefined?null:rate*m2;const box=document.getElementById('benchmarkResult');if(box)box.innerHTML=rent===null?`Для території «${area}» немає достатньої підтвердженої вибірки орендних оголошень. Введіть фактичну пропозицію орендодавця та порівняйте 3–5 аналогічних приміщень.`:`Орієнтир оголошень: <strong>${rate} ₴/м²</strong>. Для ${m2} м² це близько <strong>${fmt(rent)}/міс</strong>. Вибірка була малою (2–6 оголошень), тому це лише початковий орієнтир, а не ринкова медіана.`;
+      const list=document.getElementById('salaryBenchmarks');if(list)list.innerHTML='<div class="table-wrap"><table class="benchmark-table"><thead><tr><th>Посада</th><th>Орієнтир на руки / міс.</th><th>Еквівалент gross*</th><th>Вартість роботодавця*</th></tr></thead><tbody>'+Object.entries(salaryRanges).map(([role,v])=>`<tr><td>${role}<div class="tag-note">${v[2]}</div></td><td>${v[0]&&v[1]?fmt(v[0])+' – '+fmt(v[1]):'Не визначено'}</td><td>${v[0]&&v[1]?fmt(v[0]/PAYROLL.netShare)+' – '+fmt(v[1]/PAYROLL.netShare):'—'}</td><td>${v[0]&&v[1]?fmt(v[0]/PAYROLL.netShare*(1+PAYROLL.employerEsv))+' – '+fmt(v[1]/PAYROLL.netShare*(1+PAYROLL.employerEsv)):'—'}</td></tr>`).join('')+'</tbody></table></div><p class="tag-note">* Зарплатні дані — загальноукраїнські показники Work.ua за листопад 2026; регіональний коефіцієнт використовується в індивідуальній рекомендації. Для поштового оператора використовується окремий показник Work.ua за посадою й містом, якщо є вибірка. Вакансії можуть указувати gross або net по-різному — уточнюйте формат оплати.</p>';
+      saveState();
+    }
+
+    // Локальні ролі. Це зручність інтерфейсу, а не серверний захист доступу.
+    let activeSession = null;
+    function ensureBranchData(){state.branchUsers=Array.isArray(state.branchUsers)?state.branchUsers:[];state.branchReports=Array.isArray(state.branchReports)?state.branchReports:[];}
+    let authFails=0,authLockUntil=0;
+    function refreshAuthMode(){
+      const setup=!(state.adminAuth&&state.adminAuth.hash);
+      const set=(id,fn)=>{const e=document.getElementById(id);if(e)fn(e);};
+      set('authTitle',e=>e.textContent=setup?'Перше налаштування':'Вхід до системи');
+      set('authLead',e=>e.textContent=setup?'Створіть пароль керівника. Логін: admin.':'Введіть логін і пароль.');
+      set('authConfirmWrap',e=>e.style.display=setup?'block':'none');
+      set('authSubmitBtn',e=>e.textContent=setup?'Створити пароль і увійти':'Увійти');
+      set('authHint',e=>e.textContent=setup?'Пароль керівника — від 8 символів. Його не можна відновити: якщо забудете, доведеться скинути дані браузера або імпортувати резервну копію.':'');
+      set('authPassword',e=>e.autocomplete=setup?'new-password':'current-password');
+    }
+    function loginSystem(){
+      ensureBranchData();
+      const login=document.getElementById('authLogin').value.trim(),pass=document.getElementById('authPassword').value;
+      const err=document.getElementById('authError');
+      const fail=msg=>{err.style.display='block';err.textContent=msg;};
+      if(Date.now()<authLockUntil){fail('Забагато спроб. Зачекайте '+Math.ceil((authLockUntil-Date.now())/1000)+' с.');return;}
+      const setup=!(state.adminAuth&&state.adminAuth.hash);
+      let user=null;
+      if(setup){
+        if(login!=='admin'){fail('Для першого налаштування введіть логін admin.');return;}
+        const p2=document.getElementById('authPassword2').value;
+        if(pass.length<8){fail('Пароль керівника — від 8 символів.');return;}
+        if(pass!==p2){fail('Паролі не збігаються.');return;}
+        const salt=newSalt();state.adminAuth={salt,hash:hashPassword(pass,salt)};saveState();
+        user={role:'manager',name:'Керівник мережі'};
+      }else if(login==='admin'){
+        if(safeEqual(hashPassword(pass,state.adminAuth.salt),state.adminAuth.hash))user={role:'manager',name:'Керівник мережі'};
+      }else{
+        const u=state.branchUsers.find(x=>x.login===login&&x.active!==false);
+        if(u&&safeEqual(hashPassword(pass,u.salt),u.hash))user=u;
+        else hashPassword(pass,'decoy');   // вирівнюємо час відповіді
+      }
+      if(!user){
+        authFails++;
+        if(authFails>=5){authLockUntil=Date.now()+30000;authFails=0;fail('Забагато невдалих спроб. Зачекайте 30 с.');}
+        else fail('Невірний логін або пароль.');
+        return;
+      }
+      authFails=0;
+      activeSession={role:user.role||'branch',name:user.name||user.displayName||login,login:user.login||login,locationId:user.locationId||''};
+      err.style.display='none';document.getElementById('authScreen').style.display='none';
+      document.getElementById('authPassword').value='';const p2el=document.getElementById('authPassword2');if(p2el)p2el.value='';
+      document.body.classList.remove('logged-out','branch-mode');
+      if(activeSession.role==='manager'){document.body.classList.remove('branch-mode');renderManagement();renderBranchAdmin();checkBackupReminder();}
+      else {document.body.classList.add('branch-mode');const loc=(state.locations||[]).find(x=>x.id===activeSession.locationId);document.getElementById('branchWelcome').textContent=loc?loc.name:'Відділення';document.getElementById('branchUserLabel').textContent=activeSession.name+' · '+(loc?loc.name:'');document.getElementById('brDate').value=localDateISO();renderMyBranchReports();}
+    }
+    function changeAdminPassword(){
+      if(!activeSession||activeSession.role!=='manager'){showToast('Доступно лише керівнику');return;}
+      const el=document.getElementById('adminNewPassword'),pw=el?el.value:'';
+      if(pw.length<8){showToast('Пароль керівника — від 8 символів');return;}
+      const salt=newSalt();state.adminAuth={salt,hash:hashPassword(pw,salt)};saveState();el.value='';
+      showToast('Пароль керівника змінено');
+    }
+    function checkBackupReminder(){
+      try{
+        const has=((state.transactions||[]).length+(state.branchReports||[]).length)>0;
+        const last=state.lastBackupAt?Date.parse(state.lastBackupAt):0;
+        const b=document.getElementById('backupBanner'),t=document.getElementById('backupBannerText');
+        if(!b||!t||!has||sessionStorage.getItem('np_backup_snooze'))return;
+        if(Date.now()-last>7*864e5){
+          t.textContent=last?('💾 Остання резервна копія: '+new Date(last).toLocaleDateString('uk-UA')+'. Дані зберігаються лише в цьому браузері.'):'💾 Резервної копії ще не було. Дані зберігаються лише в цьому браузері.';
+          b.style.display='flex';
+        }
+      }catch(_){}
+    }
+    function hideBackupBanner(snooze){
+      const b=document.getElementById('backupBanner');if(b)b.style.display='none';
+      if(snooze){try{sessionStorage.setItem('np_backup_snooze','1');}catch(_){}}
+    }
+    function logoutSystem(){activeSession=null;document.body.classList.remove('branch-mode');document.getElementById('authScreen').style.display='flex';document.getElementById('authPassword').value='';document.getElementById('authLogin').value='';const p2=document.getElementById('authPassword2');if(p2)p2.value='';refreshAuthMode();}
+    function createBranchUser(){ensureBranchData();const name=document.getElementById('userDisplay').value.trim(),login=document.getElementById('userLogin').value.trim(),password=document.getElementById('userPassword').value,locationId=document.getElementById('userLocation').value;
+      if(!name||!login||password.length<6||!locationId){showToast('Заповніть усі поля; пароль — від 6 символів');return;}
+      if(login.toLowerCase()==='admin'||state.branchUsers.some(u=>u.login.toLowerCase()===login.toLowerCase())){showToast('Такий логін уже зайнятий');return;}
+      const salt=newSalt();
+      state.branchUsers.push({id:'usr_'+Date.now(),role:'branch',name,login,salt,hash:hashPassword(password,salt),locationId:cleanId(locationId),active:true,createdAt:new Date().toISOString()});saveState();
+      document.getElementById('userDisplay').value='';document.getElementById('userLogin').value='';document.getElementById('userPassword').value='';renderBranchAdmin();showToast('Кабінет створено. Пароль більше не відображається — передайте його працівнику.',4500);
+    }
+    function renderBranchAdmin(){ensureBranchData();const sel=document.getElementById('userLocation');if(sel){const old=sel.value;sel.innerHTML=(state.locations||[]).map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(l.name)}</option>`).join('');if(old)sel.value=old;}
+      const ul=document.getElementById('branchUsersList');if(ul)ul.innerHTML=state.branchUsers.map(u=>{const l=(state.locations||[]).find(x=>x.id===u.locationId);return `<div class="ledger-row"><div><strong>${escapeHtml(u.name)}</strong><small>Логін: ${escapeHtml(u.login)} · ${escapeHtml(l?l.name:'Відділення не знайдено')} · ${u.active===false?'Вимкнено':'Активний'}</small></div><div><button class="btn-danger" onclick="toggleBranchUser('${u.id}')">${u.active===false?'Увімкнути':'Вимкнути'}</button></div></div>`;}).join('')||'<p class="muted-note">Облікових записів працівників ще немає.</p>';
+      renderManagerBranchReports();
+    }
+    function toggleBranchUser(id){const u=state.branchUsers.find(x=>x.id===id);if(!u)return;u.active=u.active===false;saveState();renderBranchAdmin();}
+    function submitBranchReport(){if(!activeSession||activeSession.role==='manager')return;ensureBranchData();const date=document.getElementById('brDate').value||localDateISO(),received=Number(document.getElementById('brReceived').value)||0,issued=Number(document.getElementById('brIssued').value)||0,staff=Number(document.getElementById('brStaff').value)||0,income=Number(document.getElementById('brIncome').value)||0,expense=Number(document.getElementById('brExpense').value)||0;
+      if([received,issued,staff,income,expense].some(v=>v<0)){showToast('Значення не можуть бути від’ємними');return;}
+      const report={id:'br_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),date,locationId:activeSession.locationId,employee:activeSession.name,login:activeSession.login,staff,received,issued,income,incomeCategory:document.getElementById('brIncomeCat').value,expense,expenseCategory:document.getElementById('brExpenseCat').value,note:document.getElementById('brNote').value.trim(),createdAt:new Date().toISOString(),reviewed:false};
+      state.branchReports.unshift(report);
+      if(income>0)state.transactions.unshift({id:report.id+'_i',date,type:'income',category:report.incomeCategory,locationId:report.locationId,amount:income,note:'Звіт: '+report.employee,createdAt:report.createdAt,sourceReportId:report.id});
+      if(expense>0)state.transactions.unshift({id:report.id+'_e',date,type:'expense',category:report.expenseCategory,locationId:report.locationId,amount:expense,note:'Звіт: '+report.employee,createdAt:report.createdAt,sourceReportId:report.id});
+      saveState();['brReceived','brIssued','brStaff','brIncome','brExpense','brNote'].forEach(id=>document.getElementById(id).value='');const msg=document.getElementById('branchSubmitMsg');msg.style.display='block';msg.className='alert good';msg.textContent='Звіт збережено. У центральному кабінеті цього браузера він з’явився одразу.';renderMyBranchReports();
+    }
+    function reportHtml(r,manager){const loc=(state.locations||[]).find(x=>x.id===r.locationId);return `<div class="ledger-row"><div><strong>${escapeHtml(r.date)} · ${escapeHtml(loc?loc.name:'Відділення')}</strong><small>${escapeHtml(r.employee)} · Прийнято: ${r.received||0} · Видано: ${r.issued||0} · Зміна: ${r.staff||0}</small><small>Дохід: ${fmt(Number(r.income)||0)} (${escapeHtml(r.incomeCategory||'—')}) · Витрати: ${fmt(Number(r.expense)||0)} (${escapeHtml(r.expenseCategory||'—')}) · Результат: ${fmt((Number(r.income)||0)-(Number(r.expense)||0))}</small>${r.note?`<small>Коментар: ${escapeHtml(r.note)}</small>`:''}<small>Надіслано: ${new Date(r.createdAt).toLocaleString('uk-UA')} · ${r.reviewed?'Перевірено':'Очікує перевірки'}</small></div>${manager?`<div><button class="btn-secondary" onclick="markReportReviewed('${r.id}')">${r.reviewed?'Перевірено ✓':'Перевірити'}</button></div>`:''}</div>`;}
+    function renderMyBranchReports(){const el=document.getElementById('branchMyReports');if(!el||!activeSession)return;const a=(state.branchReports||[]).filter(r=>r.login===activeSession.login);el.innerHTML=a.map(r=>reportHtml(r,false)).join('')||'<p class="muted-note">Ваших звітів поки немає.</p>';}
+    function renderManagerBranchReports(){
+      const el=document.getElementById('managerBranchReports');if(!el)return;
+      const all=Array.isArray(state.branchReports)?state.branchReports:[];
+      const pending=all.filter(r=>!r.reviewed);
+      const totalIncome=all.reduce((n,r)=>n+(Number(r.income)||0),0),totalExpense=all.reduce((n,r)=>n+(Number(r.expense)||0),0);
+      const set=(id,v)=>{const x=document.getElementById(id);if(x)x.textContent=v;};
+      set('v6ReportTotal',all.length);set('v6ReportPending',pending.length);set('v6ReportIncome',fmt(totalIncome));set('v6ReportExpense',fmt(totalExpense));
+      const count=document.getElementById('branchReportCount');
+      const locSel=document.getElementById('v6ReportLocation');
+      if(locSel){const keep=locSel.value;locSel.innerHTML='<option value="">Уся мережа</option>'+(state.locations||[]).map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(l.name)}</option>`).join('');locSel.value=keep;}
+      const loc=document.getElementById('v6ReportLocation')?.value||'',status=document.getElementById('v6ReportStatus')?.value||'all',from=document.getElementById('v6ReportFrom')?.value||'',to=document.getElementById('v6ReportTo')?.value||'';
+      const filtered=all.filter(r=>(!loc||r.locationId===loc)&&(status==='all'||(status==='pending'?!r.reviewed:!!r.reviewed))&&(!from||String(r.date||'')>=from)&&(!to||String(r.date||'')<=to));
+      if(count)count.textContent=filtered.length+' із '+all.length+' звітів';
+      el.innerHTML=filtered.map(r=>reportHtml(r,true)).join('')||'<p class="muted-note">За вибраними фільтрами звітів немає.</p>';
+    }
+    function resetV6ReportFilters(){['v6ReportLocation','v6ReportFrom','v6ReportTo'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});const st=document.getElementById('v6ReportStatus');if(st)st.value='all';renderManagerBranchReports();}
+    function exportFilteredBranchReports(){const loc=document.getElementById('v6ReportLocation')?.value||'',status=document.getElementById('v6ReportStatus')?.value||'all',from=document.getElementById('v6ReportFrom')?.value||'',to=document.getElementById('v6ReportTo')?.value||'';const reports=(state.branchReports||[]).filter(r=>(!loc||r.locationId===loc)&&(status==='all'||(status==='pending'?!r.reviewed:!!r.reviewed))&&(!from||String(r.date||'')>=from)&&(!to||String(r.date||'')<=to));downloadJson({app:'NP_BRANCH_REPORTS',version:2,exportedAt:new Date().toISOString(),reports},'np-network-reports-v6-'+localDateISO()+'.json');}
+function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id===id);if(!r)return;r.reviewed=true;r.reviewedAt=new Date().toISOString();saveState();renderManagerBranchReports();}
+    function downloadJson(obj,name){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+    function exportAccessPackage(){const login=document.getElementById('userLogin').value.trim();const u=state.branchUsers.find(x=>x.login===login)||state.branchUsers[state.branchUsers.length-1];if(!u){showToast('Спочатку створіть кабінет працівника');return;}
+      const user={id:u.id,role:'branch',name:u.name,login:u.login,salt:u.salt,hash:u.hash,locationId:u.locationId,active:u.active!==false};
+      downloadJson({app:'NP_BRANCH_ACCESS',version:2,user,location:(state.locations||[]).find(l=>l.id===u.locationId)},'np-access-'+u.login.replace(/[^A-Za-z0-9_-]/g,'_')+'.json');}
+    function importAccessPackage(input){const f=input.files&&input.files[0];if(!f)return;const rd=new FileReader();
+      rd.onload=()=>{try{
+        const p=JSON.parse(rd.result);
+        if(p.app!=='NP_BRANCH_ACCESS'||!p.user||!p.user.login)throw Error('bad');
+        if(p.user.password&&!p.user.hash){alert('Це пакет старого формату (з відкритим паролем). Він більше не підтримується — попросіть керівника створити пакет заново.');input.value='';return;}
+        const user=sanitizeUser(p.user);if(!user)throw Error('bad');
+        ensureBranchData();
+        state.branchUsers=state.branchUsers.filter(x=>x.login!==user.login);state.branchUsers.push(user);
+        if(p.location&&typeof p.location==='object'){
+          const loc=Object.assign({},p.location,{id:cleanId(p.location.id),name:sStr(p.location.name),status:p.location.status==='active'?'active':'plan',parcelsDay:sNum(p.location.parcelsDay),rent:sNum(p.location.rent)});
+          if(loc.id&&!state.locations.some(x=>x.id===loc.id))state.locations.push(loc);
+        }
+        saveState();alert('Пакет доступу імпортовано. Тепер увійдіть за логіном працівника.');
+      }catch(e){alert('Файл пакета доступу не розпізнано.');}input.value='';};rd.readAsText(f);}
+    function exportMyReports(){if(!activeSession)return;const reports=(state.branchReports||[]).filter(r=>r.login===activeSession.login);downloadJson({app:'NP_BRANCH_REPORTS',version:1,exportedAt:new Date().toISOString(),reports},'np-reports-'+activeSession.login+'-'+localDateISO()+'.json');}
+    function importBranchReports(input){const f=input.files&&input.files[0];if(!f)return;const rd=new FileReader();
+      rd.onload=()=>{try{
+        const p=JSON.parse(rd.result);if(p.app!=='NP_BRANCH_REPORTS'||!Array.isArray(p.reports))throw Error('bad');
+        ensureBranchData();let n=0;
+        p.reports.forEach(raw=>{const r=sanitizeReport(raw);if(!r||state.branchReports.some(x=>x.id===r.id))return;
+          state.branchReports.unshift(r);n++;
+          if(r.income>0)state.transactions.unshift({id:r.id+'_i',date:r.date,type:'income',category:r.incomeCategory,locationId:r.locationId,amount:r.income,note:'Імпорт звіту: '+r.employee,createdAt:r.createdAt,sourceReportId:r.id});
+          if(r.expense>0)state.transactions.unshift({id:r.id+'_e',date:r.date,type:'expense',category:r.expenseCategory,locationId:r.locationId,amount:r.expense,note:'Імпорт звіту: '+r.employee,createdAt:r.createdAt,sourceReportId:r.id});
+        });
+        saveState();renderManagement();renderBranchAdmin();alert('Імпортовано нових звітів: '+n);
+      }catch(e){alert('Файл звітів не розпізнано.');}input.value='';};rd.readAsText(f);}
+
+    function exportTransactionsCSV(){const rows=[['Дата','Тип','Категорія','Точка','Сума','Коментар']];(state.transactions||[]).forEach(t=>{const loc=(state.locations||[]).find(l=>l.id===t.locationId);rows.push([t.date,t.type==='income'?'Надходження':'Витрата',t.category,loc?loc.name:'Уся мережа',t.amount,t.note||'']);});const csv='\uFEFF'+rows.map(r=>r.map(v=>{let s=String(v??'');if(typeof v==='string'&&/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}).join(';')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='np-network-finance-'+localDateISO()+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);showToast('CSV сформовано');}
+
+    function copyReport() {
+      const g = state.goals.find(x => x.id === state.activeGoalId) || state.goals[0];
+      const text = [
+        '📊 ЗВІТ БІЗНЕС-МОДЕЛІ НП (ЛЬВІВЩИНА)',
+        `• Потік 1 точки: ${state.parcelsDay} посилок/день (${state.parcelsDay * state.workDays}/міс)`,
+        `• Валовий дохід точки: ${document.getElementById('kpiGrossIncome').textContent}`,
+        `• Чистий прибуток точки: ${document.getElementById('kpiNetProfit').textContent} (маржа ${document.getElementById('kpiMargin').textContent})`,
+        `• Повний бюджет старту (CAPEX + розгін): ${document.getElementById('kpiTotalCapex').textContent} (окупність ${document.getElementById('kpiPaybackMonths').textContent})`,
+        `• Активна ціль: ${g ? escapeHtml(g.title) + ' — ' + fmt(g.amount) : ''}`,
+        '© 2026 Всі права захищені | РОЗРОБИВ: НАКОНЕЧНИЙ ВОЛОДИМИР МИХАЙЛОВИЧ'
+      ].join('\n');
+
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Звіт скопійовано в буфер обміну!');
+      } catch (err) {
+        showToast('Не вдалося скопіювати');
+      }
+      document.body.removeChild(ta);
+    }
+
+    // Bind events
+    attachScrollSafeSlider('slParcelsDay', 'inParcelsDay', 'parcelsDay');
+    attachScrollSafeSlider('slDirectIncome', 'inDirectIncome', 'directIncome');
+    attachScrollSafeSlider('slRent', 'inRent', 'rent');
+    attachScrollSafeSlider('slSalary', 'inSalary', 'salary');
+    attachScrollSafeSlider('slPackCost', 'inPackCost', 'packCost');
+    attachScrollSafeSlider('slUtilities', 'inUtilities', 'utilities');
+
+    ['inWorkDays','inFeePerParcel','inPackSales','inReliefPct','inSelfServiceSavePct',
+     'chkAutoTax','inTaxes','inTaxRatePct','inTaxFixed','inEmployerBurdenPct','chkAutoAmort','inAmort','chkStress',
+     'ramp1','ramp2','ramp3','ramp4','allocScale','allocReserve',
+     'partnerCapexPct','partnerProfitPct','curReserveCash','curScaleCash',
+     'scAccess','scFloor','scArea','scPower','scRentRatio'].forEach(id => {
+      bindDirectInput(id, () => {});
+    });
+
+    // Init
+    document.getElementById('txDate').value = localDateISO();
+    syncInputsFromState();
+    renderCapexAndLifecycle();
+    recalcAll();
+    renderManagement();
+    ensureBranchData();
+    renderBranchAdmin();
+
+    // v6.4: режим входу, Enter, постійне сховище, PWA
+    refreshAuthMode();
+    ['authLogin','authPassword','authPassword2'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loginSystem();}});
+    });
+    try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(_){}
+    if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+      window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+    }
+  </script>
+</body>
+</html>
