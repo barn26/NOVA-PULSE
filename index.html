@@ -1,9 +1,12 @@
 <!DOCTYPE html>
+<!-- NOVA PULSE v6.4 · © 2026 Наконечний Володимир Михайлович. Усі права захищені. Див. файл LICENSE. -->
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <meta name="theme-color" content="#0b0f17" />
+  <meta name="author" content="Наконечний Володимир Михайлович" />
+  <meta name="copyright" content="© 2026 Наконечний Володимир Михайлович. Усі права захищені." />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.webmanifest" />
@@ -634,7 +637,7 @@
         </div>
         <div class="card-body">
           <div class="seg-group">
-            <button class="seg-btn" onclick="applyPreset('suburb')">Передмістя Львова (Сокільники / Зимна Вода)</button>
+            <button class="seg-btn" onclick="applyPreset('suburb')">Передмістя обласного центру</button>
             <button class="seg-btn" onclick="applyPreset('district')">Райцентр (Шептицький / Стрий / Дрогобич)</button>
             <button class="seg-btn" onclick="applyPreset('village')">Велика громада / траса</button>
           </div>
@@ -935,7 +938,7 @@
             </div>
             <div class="field">
               <label>Назва цілі (можна вписати будь-яку)</label>
-              <input type="text" id="goalTitle" placeholder="Наприклад: Будинок для батьків" oninput="updateActiveGoal()" />
+              <input type="text" id="goalTitle" placeholder="Наприклад: Придбання майна" oninput="updateActiveGoal()" />
             </div>
             <div class="field">
               <label>Необхідна сума, ₴</label>
@@ -1194,6 +1197,7 @@
       <input id="backupImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importBackupFile(this)" />
     </div>
     <div>NOVA PULSE v6.4 · Локальна версія без сервера</div>
+    <div>© 2026 Наконечний Володимир Михайлович. Усі права захищені.</div>
     <div>© 2026 Всі права захищені</div>
     <div><strong>РОЗРОБИВ: НАКОНЕЧНИЙ ВОЛОДИМИР МИХАЙЛОВИЧ</strong></div>
   </footer>
@@ -1398,13 +1402,13 @@
         { name: 'Косметичне оновлення залу та стелажів (ресурс 2 роки)', cost: 36000, months: 24 }
       ],
       locations: [
-        { id: 'l1', name: 'Сокільники (старт / 1-ша черга)', status: 'active', parcelsDay: 165, rent: 26000 },
-        { id: 'l2', name: 'Зимна Вода (передмістя Львова)', status: 'plan', parcelsDay: 150, rent: 24000 },
-        { id: 'l3', name: 'Шептицький (Червоноград)', status: 'plan', parcelsDay: 145, rent: 18000 },
-        { id: 'l4', name: 'Стрий (спальний район)', status: 'plan', parcelsDay: 135, rent: 17000 }
+        { id: 'l1', name: 'Відділення 1 (Львів, старт)', status: 'active', parcelsDay: 165, rent: 26000 },
+        { id: 'l2', name: 'Відділення 2 (Львів, передмістя)', status: 'plan', parcelsDay: 150, rent: 24000 },
+        { id: 'l3', name: 'Відділення 3 (Шептицький)', status: 'plan', parcelsDay: 145, rent: 18000 },
+        { id: 'l4', name: 'Відділення 4 (Стрий)', status: 'plan', parcelsDay: 135, rent: 17000 }
       ],
       goals: [
-        { id: 'g1', title: 'Будинок для батьків', amount: 2000000, saved: 250000, date: '2026-12', allocPct: 50 },
+        { id: 'g1', title: 'Приклад: придбання майна', amount: 1000000, saved: 100000, date: '2026-12', allocPct: 50 },
         { id: 'g2', title: 'Резервний фонд мережі (3 міс OPEX)', amount: 450000, saved: 120000, date: '2026-09', allocPct: 25 }
       ],
       activeGoalId: 'g1',
