@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NOVA PULSE v6.5 · © 2026 Наконечний Володимир Михайлович. Усі права захищені. Див. файл LICENSE. -->
+<!-- NOVA PULSE v6.6 · © 2026 Наконечний Володимир Михайлович. Усі права захищені. Див. файл LICENSE. -->
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
@@ -44,7 +44,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <title>NOVA PULSE v6.5 — Регіональний SMART ADVISOR</title>
+  <title>NOVA PULSE v6.6 — Регіональний SMART ADVISOR</title>
   <style>
     :root {
       --bg: #0b0f17;
@@ -696,6 +696,7 @@
       <button class="tab-btn" data-tab="tab-scenarios">8. Що, якщо?</button>
       <button class="tab-btn" data-tab="tab-newbranch">9. Нове відділення</button>
       <button class="tab-btn" data-tab="tab-balance">10. Баланс</button>
+      <button class="tab-btn" data-tab="tab-planfact">11. План і факт</button>
     </nav>
   </header>
 
@@ -1308,6 +1309,23 @@
       <div class="card"><div class="card-header"><h2 class="card-title">Результат</h2></div><div class="card-body" id="nbOut"></div></div>
     </section>
 
+    <!-- ==================== TAB 11: PLAN VS FACT ==================== -->
+    <section id="tab-planfact" class="tab-panel">
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">📊 План і факт</h2><button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button></div>
+        <div class="card-body">
+          <p class="muted-note">Факт береться зі щоденних звітів відділень. Коли по відділенню набирається 10 днів звітів, модель мережі сама рахує за фактом, а ваш план лишається для порівняння.</p>
+          <div class="grid-2">
+            <div class="field"><label>Період порівняння</label><select id="pfWindow" onchange="pfSet('pfWindow',this.value)"><option value="7">7 днів</option><option value="14">14 днів</option><option value="28">28 днів</option></select></div>
+            <div class="field"><label>Що вважати потоком</label><select id="pfFlow" onchange="pfSet('factFlowMode',this.value)"><option value="both">Прийняті + видані</option><option value="issued">Лише видані</option><option value="received">Лише прийняті</option></select></div>
+            <div class="field"><label>Модель мережі</label><select id="pfMode" onchange="pfSet('factMode',this.value)"><option value="auto">Автоматично брати факт</option><option value="off">Лише мій план</option></select></div>
+            <div class="field"><label>Тариф за посилку</label><select id="pfFee" onchange="pfSet('factFee',this.value==='1')"><option value="0">Мій тариф</option><option value="1">Фактичний зі звітів</option></select></div>
+          </div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">Результат</h2></div><div class="card-body" id="pfOut"></div></div>
+    </section>
+
     <!-- ==================== TAB 10: BALANCE ==================== -->
     <section id="tab-balance" class="tab-panel">
       <div class="card">
@@ -1315,6 +1333,7 @@
         <div class="card-body">
           <p class="muted-note">Кошти беруться з журналу операцій (вкладка 7), решту введіть вручну й оновлюйте раз на місяць. Це керівний огляд, а не бухгалтерська звітність.</p>
           <div id="balFields"></div>
+          <div id="balTaxBox"></div>
           <div class="nv-save"><button class="btn-secondary" onclick="balSnap()">📌 Зафіксувати на сьогодні</button></div>
         </div>
       </div>
@@ -1343,12 +1362,15 @@
 <li><b>Що, якщо?</b>: порівняння сценаріїв (потік, тариф, оренда, зарплати, запуск або пауза відділень), чутливість, збереження сценаріїв</li>
 <li><b>Нове відділення</b>: помісячний розгін, беззбитковість, потрібний стартовий капітал, окупність</li>
 <li><b>Міні-баланс</b>: активи, зобов’язання, власний капітал, на скільки місяців вистачає каси, історія</li>
+<li><b>План і факт</b>: реальний потік зі щоденних звітів, відхилення від плану, прогноз на 30 днів із діапазоном (з урахуванням днів тижня та тренду); з 10 днів звітів модель мережі сама рахує за фактом</li>
+<li><b>Звірка звітів</b>: автоматичні позначки, коли комісія не сходиться з кількістю посилок, а також дублі, різкі викиди й пропущені дні</li>
+<li><b>Податковий резерв</b>: податок і внески нараховуються самі з доходів журналу, кнопка «Сплачено» фіксує оплату</li>
 <li>Цілі та розподіл прибутку, «ворота» рішень</li>
 <li>Журнал фінансів, експорт у CSV</li>
 <li>Працівники, ринкові орієнтири зарплат (довідково), кабінети відділень</li>
 <li>Щоденні звіти відділень з перевіркою керівником</li>
 <li>Тема: авто (за часом доби), світла, темна</li>
-<li>Резервні копії (JSON), скасування останніх змін, офлайн-режим</li>
+<li>Резервні копії (JSON), кнопка «Надіслати копію» (на Android: Диск, Telegram тощо), скасування останніх змін, офлайн-режим</li>
 </ul>
 <h3>Запуск</h3>
 <ol>
@@ -1432,17 +1454,18 @@ are not tax, legal or financial advice.</pre></div>
       </div>
     </div>
   </div>
-  <div id="backupBanner" class="backup-banner" style="display:none"><span id="backupBannerText"></span><span class="bb-actions"><button class="btn-pill" onclick="exportBackup()">💾 Зберегти копію</button><button class="btn-pill" onclick="hideBackupBanner(true)">Пізніше</button></span></div>
+  <div id="backupBanner" class="backup-banner" style="display:none"><span id="backupBannerText"></span><span class="bb-actions"><button class="btn-pill" onclick="shareBackup()">📤 Надіслати копію</button><button class="btn-pill" onclick="exportBackup()">💾 Зберегти файл</button><button class="btn-pill" onclick="hideBackupBanner(true)">Пізніше</button></span></div>
   <div id="toastMsg" class="toast">Скопійовано!</div>
 
   <!-- FOOTER -->
   <footer>
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="btn-secondary" onclick="shareBackup()">📤 Надіслати копію</button>
       <button class="btn-secondary" onclick="exportBackup()">Експорт резервної копії</button>
       <button class="btn-secondary" onclick="document.getElementById('backupImportInput').click()">Імпорт копії</button>
       <input id="backupImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importBackupFile(this)" />
     </div>
-    <div>NOVA PULSE v6.5 · Локальна версія без сервера</div>
+    <div>NOVA PULSE v6.6 · Локальна версія без сервера</div>
     <div>© 2026 Наконечний Володимир Михайлович. Усі права захищені.</div>
     <div><strong>РОЗРОБИВ: НАКОНЕЧНИЙ ВОЛОДИМИР МИХАЙЛОВИЧ</strong></div>
     <div><button class="about-link" onclick="openAbout('info')">📄 Про програму</button> · <button class="about-link" onclick="openAbout('lic')">⚖️ Ліцензія</button></div>
@@ -1460,7 +1483,7 @@ are not tax, legal or financial advice.</pre></div>
   </style>
   <script>
     const STORAGE_KEY = 'np_lviv_pro_v6';
-    const APP_VERSION = '6.5';
+    const APP_VERSION = '6.6';
     const SCHEMA_VERSION = 6;
 
     /* ---- Єдині константи розрахунків (змінюйте тут, а не по коду) ---- */
@@ -1504,6 +1527,15 @@ are not tax, legal or financial advice.</pre></div>
       s.balanceSnaps = arr(s.balanceSnaps).slice(-36).filter(x => x && typeof x === 'object').map(x => ({
         date: String(x.date ?? '').slice(0, 10), assets: num(x.assets), liab: num(x.liab), equity: num(x.equity), cash: num(x.cash)
       }));
+      s.factMode = s.factMode === 'off' ? 'off' : 'auto';
+      s.factFee = s.factFee === true;
+      s.factFlowMode = ['both', 'issued', 'received'].includes(s.factFlowMode) ? s.factFlowMode : 'both';
+      s.pfWindow = [7, 14, 28].includes(Number(s.pfWindow)) ? Number(s.pfWindow) : 28;
+      s.pfChartLoc = cleanId(s.pfChartLoc);
+      s.reconTolPct = clamp(num(s.reconTolPct) || 15, 3, 60);
+      s.taxStartDate = /^\d{4}-\d{2}-\d{2}$/.test(String(s.taxStartDate || '')) ? String(s.taxStartDate) : '';
+      s.taxCarry = clamp(num(s.taxCarry), -1e9, 1e9);
+      s.taxPayments = arr(s.taxPayments).slice(0, 12).filter(x => x && typeof x === 'object').map(x => ({ date: String(x.date ?? '').slice(0, 10), amount: num(x.amount), accrued: num(x.accrued) }));
       return s;
     }
 
@@ -1711,7 +1743,9 @@ are not tax, legal or financial advice.</pre></div>
       branchDraft: {},
       branchPlans: [],
       balance: {},
-      balanceSnaps: []
+      balanceSnaps: [],
+      factMode: 'auto', factFee: false, factFlowMode: 'both', pfWindow: 28, pfChartLoc: '',
+      reconTolPct: 15, taxStartDate: '', taxCarry: 0, taxPayments: []
     };
 
     let state = loadState();
@@ -1816,6 +1850,7 @@ are not tax, legal or financial advice.</pre></div>
       if (btn.dataset.tab === 'tab-scenarios') scInit();
       if (btn.dataset.tab === 'tab-newbranch') nbInit();
       if (btn.dataset.tab === 'tab-balance') balInit();
+      if (btn.dataset.tab === 'tab-planfact') pfInit();
     });
 
     function setIncomeMode(mode) {
@@ -2017,11 +2052,11 @@ are not tax, legal or financial advice.</pre></div>
     }
     function networkModel() {
       const active=(state.locations||[]).filter(l=>l.status==='active');
-      const volume=active.reduce((a,l)=>a+Math.max(0,Number(l.parcelsDay)||0),0);
+      const volume=active.reduce((a,l)=>a+locParcels(l),0);
       const workDays=Math.max(1,Number(state.workDays)||30);
       const rows=active.map(loc=>{
-        const share=volume>0?Math.max(0,Number(loc.parcelsDay)||0)/volume:0;
-        const gross=state.incomeMode==='parcels' ? Math.max(0,Number(loc.parcelsDay)||0)*workDays*Math.max(0,Number(state.feePerParcel)||0)+Math.max(0,Number(state.packSales)||0) : Math.max(0,Number(state.directIncome)||0)*(Math.max(0,Number(loc.parcelsDay)||0)/Math.max(1,Number(state.parcelsDay)||1));
+        const share=volume>0?locParcels(loc)/volume:0;
+        const gross=state.incomeMode==='parcels' ? locParcels(loc)*workDays*feeEff()+Math.max(0,Number(state.packSales)||0) : Math.max(0,Number(state.directIncome)||0)*(locParcels(loc)/Math.max(1,Number(state.parcelsDay)||1));
         const rent=Math.max(0,Number(loc.rent)||0);
         const payroll=employeePayrollForLocation(loc.id);
         const packCost=Math.max(0,Number(state.packCost)||0);
@@ -2044,7 +2079,7 @@ are not tax, legal or financial advice.</pre></div>
     function locationEconomics(loc, totalActiveParcels=0) {
       const model=networkModel();
       const row=model.rows.find(r=>r.loc.id===loc.id);
-      if(row) return {monthlyParcels:Math.max(0,Number(loc.parcelsDay)||0)*Math.max(1,Number(state.workDays)||30),gross:row.gross,rent:row.rent,payroll:row.payroll,packCost:row.packCost,utilities:row.utilities,amort:row.amort,fixedTax:row.tax,taxes:row.tax,opex:row.opex,net:row.net};
+      if(row) return {monthlyParcels:locParcels(loc)*Math.max(1,Number(state.workDays)||30),gross:row.gross,rent:row.rent,payroll:row.payroll,packCost:row.packCost,utilities:row.utilities,amort:row.amort,fixedTax:row.tax,taxes:row.tax,opex:row.opex,net:row.net};
       const gross=state.incomeMode==='parcels'?Math.max(0,Number(loc.parcelsDay)||0)*Math.max(1,Number(state.workDays)||30)*state.feePerParcel:state.directIncome*(Math.max(0,Number(loc.parcelsDay)||0)/Math.max(1,Number(state.parcelsDay)||1));
       return {monthlyParcels:0,gross,rent:Number(loc.rent)||0,payroll:effectivePayroll(),packCost:0,utilities:0,amort:0,fixedTax:0,taxes:0,opex:(Number(loc.rent)||0)+effectivePayroll(),net:gross-(Number(loc.rent)||0)-effectivePayroll()};
     }
@@ -2068,7 +2103,7 @@ are not tax, legal or financial advice.</pre></div>
       const model=networkModel();
       box.innerHTML=state.locations.map((loc,idx)=>{
         const e=model.rows.find(r=>r.loc.id===loc.id)||locationEconomics(loc);
-        return `<div class="loc-item"><div style="flex:1 1 220px;"><div style="font-weight:800;font-size:14px;">${loc.status==='active'?'🟢':'🟡'} ${escapeHtml(loc.name)}</div><div style="font-size:12px;color:var(--muted);">${loc.parcelsDay} шт/день · Оренда: ${fmt(loc.rent)} · Чистий прибуток: <strong class="${e.net>=0?'text-green':'text-red'}">${fmt(e.net)}/міс</strong></div></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><input type="number" value="${loc.parcelsDay}" title="Посилок/день" style="width:74px;" onchange="updateLoc(${idx}, 'parcelsDay', this.value)" /><input type="number" value="${loc.rent}" step="1000" title="Оренда, ₴" style="width:95px;" onchange="updateLoc(${idx}, 'rent', this.value)" /><button class="btn-secondary" style="padding:6px 8px;" onclick="toggleLocStatus(${idx})">Статус</button><button class="btn-secondary" style="padding:6px 8px;" onclick="removeLoc(${idx})">✕</button></div><div class="branch-actions"><button class="btn-secondary" onclick="quickBranchTransaction('${loc.id}','income')">＋ Дохід відділення</button><button class="btn-secondary" onclick="quickBranchTransaction('${loc.id}','expense')">− Витрата відділення</button></div></div>`;
+        return `<div class="loc-item"><div style="flex:1 1 220px;"><div style="font-weight:800;font-size:14px;">${loc.status==='active'?'🟢':'🟡'} ${escapeHtml(loc.name)}</div><div style="font-size:12px;color:var(--muted);">${loc.parcelsDay} шт/день (план)${factBadge(loc)} · Оренда: ${fmt(loc.rent)} · Чистий прибуток: <strong class="${e.net>=0?'text-green':'text-red'}">${fmt(e.net)}/міс</strong></div></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><input type="number" value="${loc.parcelsDay}" title="Посилок/день" style="width:74px;" onchange="updateLoc(${idx}, 'parcelsDay', this.value)" /><input type="number" value="${loc.rent}" step="1000" title="Оренда, ₴" style="width:95px;" onchange="updateLoc(${idx}, 'rent', this.value)" /><button class="btn-secondary" style="padding:6px 8px;" onclick="toggleLocStatus(${idx})">Статус</button><button class="btn-secondary" style="padding:6px 8px;" onclick="removeLoc(${idx})">✕</button></div><div class="branch-actions"><button class="btn-secondary" onclick="quickBranchTransaction('${loc.id}','income')">＋ Дохід відділення</button><button class="btn-secondary" onclick="quickBranchTransaction('${loc.id}','expense')">− Витрата відділення</button></div></div>`;
       }).join('');
     }
     function updateLoc(i, key, val) { pushHistory(); state.locations[i][key] = Number(val) || 0; recalcAll(); }
@@ -2371,7 +2406,7 @@ are not tax, legal or financial advice.</pre></div>
       const horizon=Math.max(1,Number(document.getElementById('chartHorizon').value)||24);
       const redLine=Number(document.getElementById('redLineThreshold').value)||25000;
       const active=(state.locations||[]).filter(l=>l.status==='active');
-      const activeVolume=active.reduce((a,l)=>a+Math.max(0,Number(l.parcelsDay)||0),0);
+      const activeVolume=active.reduce((a,l)=>a+locParcels(l),0);
       const baseCapex=(state.capex||[]).reduce((a,x)=>a+(x.enabled?Math.max(0,Number(x.cost)||0):0),0);
       const rampForAge=age=>age<=4?Math.max(0,Math.min(100,Number(state.ramp[age-1])||0))/100:1;
       const avg=items=>{const keys=['gross','rent','payroll','packCost','utilities','amort','fixedTax'];const out={};keys.forEach(k=>out[k]=items.length?items.reduce((a,x)=>a+x[k],0)/items.length:0);return out;};
@@ -2930,7 +2965,8 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       p = Object.assign({}, SC_ZERO, p || {});
       const backup = state;
       const tmp = Object.assign({}, state);                       // легка копія: журнал і звіти не клонуємо
-      tmp.locations = (state.locations || []).map(l => Object.assign({}, l));
+      tmp.locations = (state.locations || []).map(l => Object.assign({}, l, { parcelsDay: locParcels(l) }));
+      tmp.factMode = 'off'; tmp.factFee = false;
       tmp.employees = (state.employees || []).map(e => Object.assign({}, e));
       const inc = new Set(p.include), exc = new Set(p.exclude);
       tmp.locations.forEach(l => {
@@ -2941,7 +2977,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
           l.rent = Math.max(0, (Number(l.rent) || 0) * (1 + p.rent / 100));
         }
       });
-      tmp.feePerParcel = Math.max(0, (Number(state.feePerParcel) || 0) * (1 + p.fee / 100));
+      tmp.feePerParcel = Math.max(0, feeEff() * (1 + p.fee / 100));
       tmp.salary = Math.max(0, (Number(state.salary) || 0) * (1 + p.payroll / 100));
       tmp.employees.forEach(e => { e.salary = Math.max(0, (Number(e.salary) || 0) * (1 + p.payroll / 100)); });
       state = tmp;
@@ -3141,10 +3177,10 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
     ];
     function nbDefaults() {
       const act = (state.locations || []).filter(l => l.status === 'active');
-      const avg = act.length ? act.reduce((a, l) => a + (Number(l.parcelsDay) || 0), 0) / act.length : 120;
+      const avg = act.length ? act.reduce((a, l) => a + locParcels(l), 0) / act.length : 120;
       const capex = (state.capex || []).reduce((s, x) => s + (x.enabled ? (Number(x.cost) || 0) : 0), 0);
       return {
-        name: 'Нове відділення', parcels: Math.round(avg), fee: Number(state.feePerParcel) || 34,
+        name: 'Нове відділення', parcels: Math.round(avg), fee: feeEff() || 34,
         pack: Math.round(Number(state.packSales) || 0), rent: 25000, depositMonths: 2,
         payroll: Math.round(effectivePayroll()), utilities: Math.round(Number(state.utilities) || 0),
         packCost: Math.round(Number(state.packCost) || 0), other: 0, capex: Math.round(capex), buffer: 2
@@ -3214,7 +3250,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       const fund = Number(state.curScaleCash) || 0;
       out.push({ t: fund >= r.needTotal ? 'good' : 'warn', x: `На старт потрібно ≈ <b>${fmt(r.needTotal)}</b>: вкладення ${fmt(d.capex)} + застава ${fmt(r.deposit)}${r.lossRamp > 0 ? ` + збитки розгону ${fmt(r.lossRamp)}` : ''} + подушка ${fmt(r.bufferCash)}. У фонді розвитку зараз ${fmt(fund)}${fund >= r.needTotal ? ': вистачає, залишок ' + fmt(fund - r.needTotal) + '.' : `: бракує ${fmt(r.needTotal - fund)}.`}` });
       if (act.length) {
-        const avg = act.reduce((a, l) => a + (Number(l.parcelsDay) || 0), 0) / act.length;
+        const avg = act.reduce((a, l) => a + locParcels(l), 0) / act.length;
         if (d.parcels > avg * 1.25) out.push({ t: 'warn', x: `Ви закладаєте ${Math.round(d.parcels)} посилок на день, це помітно більше за середнє по вашій мережі (${Math.round(avg)}). Якщо немає причини (трафік, вузол, ТРЦ поруч), перевірте прогноз на нижчому значенні.` });
       }
       if (r.deposit > 0) out.push({ t: 'good', x: `Застава ${fmt(r.deposit)} тут у складі стартових грошей, але вона повертається з виходом із оренди; у балансі її можна вказати як актив.` });
@@ -3284,7 +3320,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
     function balInit() {
       const box = document.getElementById('balFields');
       if (box && !box.dataset.built) {
-        const mk = g => BAL_FIELDS.filter(f => f.g === g).map(f => `<div class="field"><label>${f.label}</label><input id="bal_${f.k}" type="number" min="0" step="500" oninput="balSet('${f.k}',this.value)"></div>`).join('');
+        const mk = g => BAL_FIELDS.filter(f => f.g === g).map(f => f.k === 'taxDue' ? '<div class="field"><label>Податки та внески до сплати (рахується автоматично, див. нижче)</label><input id="bal_taxDue" type="text" disabled></div>' : `<div class="field"><label>${f.label}</label><input id="bal_${f.k}" type="number" min="0" step="500" oninput="balSet('${f.k}',this.value)"></div>`).join('');
         box.innerHTML = `<div class="grid-2"><div><h3 class="sub-title">Що у вас є</h3><div class="field"><label>Кошти (рахується з журналу автоматично)</label><input id="bal_cash" type="text" disabled></div>${mk('a')}</div><div><h3 class="sub-title">Що ви винні</h3>${mk('l')}</div></div>`;
         box.dataset.built = '1';
       }
@@ -3294,14 +3330,15 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       const b = state.balance || {};
       BAL_FIELDS.forEach(f => { const el = document.getElementById('bal_' + f.k); if (el && document.activeElement !== el) el.value = Number(b[f.k]) || 0; });
       const c = document.getElementById('bal_cash'); if (c) c.value = fmt(balCash());
+      const td = document.getElementById('bal_taxDue'); if (td) td.value = fmt(taxAccrual().total);
       const eq = document.getElementById('bal_equipment'); if (eq) eq.placeholder = 'для довідки: вкладення за планом ≈ ' + Math.round((state.capex || []).reduce((s, x) => s + (x.enabled ? (Number(x.cost) || 0) : 0), 0));
     }
     function balSet(k, v) { state.balance = Object.assign({}, state.balance || {}); state.balance[k] = Math.max(0, Number(v) || 0); saveSoon(); renderBalance(); }
     function balTotals() {
       const b = state.balance || {}, n = k => Number(b[k]) || 0, cash = balCash();
       const assets = cash + n('deposits') + n('equipment') + n('inventory') + n('receivables') + n('otherAssets');
-      const liab = n('loans') + n('payables') + n('taxDue') + n('otherLiab');
-      return { cash, assets, liab, equity: assets - liab, n };
+      const taxDue = taxAccrual().total, liab = n('loans') + n('payables') + taxDue + n('otherLiab');
+      return { cash, assets, liab, equity: assets - liab, n, taxDue };
     }
     function balSnap() {
       const t = balTotals();
@@ -3311,8 +3348,9 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
     }
     function renderBalance() {
       const out = document.getElementById('balOut'); if (!out) return;
+      renderTaxBox();
       const t = balTotals(), n = t.n, burn = monthlyBurn(), m = networkModel();
-      const cur = n('payables') + n('taxDue') + n('otherLiab'), liquid = t.cash + n('receivables');
+      const cur = n('payables') + t.taxDue + n('otherLiab'), liquid = t.cash + n('receivables');
       const runway = burn.v > 0 ? t.cash / burn.v : 0;
       const adv = [];
       if (t.equity < 0) adv.push({ t: 'bad', x: `Зобов’язання (${fmt(t.liab)}) перевищують активи (${fmt(t.assets)}): власний капітал від’ємний, ${fmt(t.equity)}. Спершу варто закрити найближчі платежі та не брати нових зобов’язань.` });
@@ -3324,8 +3362,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       if (cur > 0) {
         adv.push({ t: liquid >= cur ? 'good' : 'warn', x: `Найближчі платежі (борги постачальникам, податки тощо): ${fmt(cur)}. Готівки з очікуваними виплатами є ${fmt(liquid)}${liquid >= cur ? ': покриває з запасом ' + fmt(liquid - cur) + '.' : ', тож бракує ' + fmt(cur - liquid) + '.'}` });
       }
-      if (n('taxDue') === 0 && m.tax > 0) adv.push({ t: 'warn', x: `Податки не відкладені: за моделлю на місяць виходить ≈ ${fmt(m.tax)} (податок на дохід + ЄСВ). Якщо відкладати їх щотижня окремо, ця сума не стане несподіванкою в день сплати.` });
-      if (n('loans') > 0 && m.net > 0) adv.push({ t: 'warn', x: `Кредити ${fmt(n('loans'))}: при чистому прибутку мережі ${fmt(m.net)}/міс це приблизно ${monthsTxt(n('loans') / m.net)}, якби весь прибуток іти на погашення.` });
+      if (n('loans') > 0 && m.net > 0) adv.push({ t: 'warn', x: `Кредити ${fmt(n('loans'))}: при чистому прибутку мережі ${fmt(m.net)}/міс ${n('loans') / m.net < 1 ? 'це менше ніж місяць прибутку' : 'це приблизно ' + monthsTxt(n('loans') / m.net) + ' прибутку'}, якби весь він ішов на погашення.` });
       const snaps = state.balanceSnaps || [];
       const prev = snaps.length ? snaps[snaps.length - 1] : null;
       if (prev && prev.date !== localDateISO()) {
@@ -3394,8 +3431,9 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
           else out.push({ t: 'good', x: `До цілі «${escapeHtml(g.title)}» лишилось ${fmt(left)}: за поточного темпу це ≈ ${need} міс.` });
         }
       }
+      try { insightsV66(out, m, base); } catch (e) { console.error(e); }
       const rank = { bad: 0, warn: 1, good: 2 };
-      return out.sort((a, b) => rank[a.t] - rank[b.t]).slice(0, 5);
+      return out.sort((a, b) => rank[a.t] - rank[b.t]).slice(0, 6);
     }
     function renderInsights() {
       const el = document.getElementById('insightsBody'); if (!el) return;
@@ -3407,6 +3445,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       if (act.id === 'tab-scenarios') { scSyncControls(); renderScenarios(); }
       if (act.id === 'tab-newbranch') nbRender();
       if (act.id === 'tab-balance') { balSync(); renderBalance(); }
+      if (act.id === 'tab-planfact') pfRender();
     }
 
     /* ---------- Вікно «Про програму та ліцензія» ---------- */
@@ -3421,6 +3460,374 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
     function openAbout(w) { aboutTab(w); document.getElementById('aboutOv').classList.add('open'); }
     function closeAbout() { document.getElementById('aboutOv').classList.remove('open'); }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAbout(); });
+
+    /* ===================== v6.6: факт, прогноз, план/факт, звірка, податковий резерв ===================== */
+    const FACT_MIN_DAYS = 10;
+    const DAY_MS = 864e5;
+    const WD_NAMES = ['нд', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+    const fMean = a => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
+    const fMedian = a => { if (!a.length) return 0; const s = a.slice().sort((x, y) => x - y), h = s.length >> 1; return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2; };
+    const plural = (n, one, few, many) => { const a = Math.abs(n) % 100, b = a % 10; return a > 10 && a < 20 ? many : b === 1 ? one : b >= 2 && b <= 4 ? few : many; };
+    const fStd = a => { if (a.length < 2) return 0; const m = fMean(a); return Math.sqrt(a.reduce((s, x) => s + (x - m) * (x - m), 0) / (a.length - 1)); };
+    const isoAdd = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+    const isoWeekday = iso => new Date(iso + 'T12:00:00').getDay();
+    const dmTxt = iso => String(iso).slice(8, 10) + '.' + String(iso).slice(5, 7);
+    const locNameById = id => (((state.locations || []).find(l => l.id === id)) || {}).name || id || '—';
+
+    /* ---------- Факти зі звітів ---------- */
+    function flowOf(r) {
+      const rc = Number(r.received) || 0, is = Number(r.issued) || 0, m = state.factFlowMode;
+      return m === 'issued' ? is : m === 'received' ? rc : rc + is;
+    }
+    let _factKey = '', _factCache = null;
+    function factData() {
+      const rs = Array.isArray(state.branchReports) ? state.branchReports : [];
+      const today = localDateISO();
+      const key = rs.length + '|' + (rs[0] ? rs[0].id : '') + '|' + today + '|' + state.factFlowMode;
+      if (key === _factKey && _factCache) return _factCache;
+      const seen = new Set(), byLoc = {};
+      rs.forEach(r => {
+        if (!r || !r.date || r.date > today) return;
+        const sig = [r.locationId, r.date, r.login, r.received, r.issued, r.income].join('|');
+        if (seen.has(sig)) return; seen.add(sig);
+        const L = byLoc[r.locationId] || (byLoc[r.locationId] = {});
+        const d = L[r.date] || (L[r.date] = { date: r.date, flow: 0, income: 0, expense: 0, com: 0, comFlow: 0, n: 0 });
+        const flow = flowOf(r), inc = Number(r.income) || 0;
+        d.flow += flow; d.income += inc; d.expense += Number(r.expense) || 0; d.n++;
+        if (/комісі/i.test(r.incomeCategory || '') && inc > 0) { d.com += inc; d.comFlow += flow; }
+      });
+      const out = {};
+      Object.keys(byLoc).forEach(id => { out[id] = Object.values(byLoc[id]).sort((a, b) => (a.date < b.date ? -1 : 1)); });
+      _factKey = key; _factCache = out; return out;
+    }
+    function factStats(locId, days) {
+      days = days || 28;
+      const from = isoAdd(localDateISO(), -(days - 1));
+      const s = (factData()[locId] || []).filter(d => d.date >= from);
+      const comI = s.reduce((a, d) => a + d.com, 0), comF = s.reduce((a, d) => a + d.comFlow, 0);
+      return { days: s.length, series: s, avg: fMean(s.map(d => d.flow)), fee: comF > 0 && comI > 0 ? comI / comF : 0, avgIncome: fMean(s.map(d => d.income)), span: days };
+    }
+    function locParcels(loc) {
+      const plan = Math.max(0, Number(loc.parcelsDay) || 0);
+      if (state.factMode !== 'auto') return plan;
+      const f = factStats(loc.id, 28);
+      return f.days >= FACT_MIN_DAYS && f.avg > 0 ? f.avg : plan;
+    }
+    function feeEff() {
+      const base = Math.max(0, Number(state.feePerParcel) || 0);
+      if (!state.factFee) return base;
+      let inc = 0, fl = 0;
+      (state.locations || []).filter(l => l.status === 'active').forEach(l => {
+        const f = factStats(l.id, 28);
+        if (f.days >= FACT_MIN_DAYS) f.series.forEach(d => { inc += d.com; fl += d.comFlow; });
+      });
+      return fl > 0 && inc > 0 ? inc / fl : base;
+    }
+    function factBadge(loc) {
+      if (state.factMode !== 'auto') return '';
+      const f = factStats(loc.id, 28);
+      return f.days >= FACT_MIN_DAYS && f.avg > 0 ? ` · <span style="color:var(--blue)">факт ${Math.round(f.avg)}</span>` : '';
+    }
+
+    /* ---------- Розумний прогноз ---------- */
+    function forecastLoc(locId, horizon) {
+      horizon = horizon || 30;
+      const today = localDateISO(), s = (factData()[locId] || []).filter(d => d.date >= isoAdd(today, -55));
+      if (s.length < 5) return null;
+      // робастність: разові викиди всередині свого дня тижня обрізаємо, щоб вони не зсували рівень
+      const groups = Array.from({ length: 7 }, () => []);
+      s.forEach(d => groups[isoWeekday(d.date)].push(d.flow));
+      const cl = s.map(d => {
+        const g = groups[isoWeekday(d.date)]; if (g.length < 3) return d.flow;
+        const md = fMedian(g), mad = fMedian(g.map(x => Math.abs(x - md))) * 1.4826, b = 3 * Math.max(mad, 0.08 * md);
+        return Math.min(md + b, Math.max(md - b, d.flow));
+      });
+      const m = fMean(cl); if (m <= 0) return null;
+      const sums = Array(7).fill(0), cnt = Array(7).fill(0);
+      s.forEach((d, i) => { const w = isoWeekday(d.date); sums[w] += cl[i]; cnt[w]++; });
+      const K = 0.75;
+      let fac = sums.map((x, w) => (cnt[w] ? ((x / cnt[w]) / m * cnt[w] + K) / (cnt[w] + K) : 1));
+      const nf = fMean(fac); fac = fac.map(x => x / nf);
+      const useW = s.length >= 14, f = w => (useW ? fac[w] : 1);
+      const ds0 = s.map((d, i) => cl[i] / Math.max(0.3, f(isoWeekday(d.date))));
+      const med = fMedian(ds0), mad0 = fMedian(ds0.map(x => Math.abs(x - med))) * 1.4826, band = 3 * Math.max(mad0, 0.05 * med);
+      const ds = ds0.map(x => Math.min(med + band, Math.max(med - band, x)));
+      let level = ds[0]; for (let i = 1; i < ds.length; i++) level = 0.2 * ds[i] + 0.8 * level;
+      let trend = 0;
+      if (ds.length >= 20) { trend = (fMean(ds.slice(-10)) - fMean(ds.slice(-20, -10))) / 10; const cap = level * 0.015; trend = Math.max(-cap, Math.min(cap, trend)); }
+      const sigma = fStd(ds.slice(-28)), PHI = 0.92;
+      let S = 0, sum = 0; const daily = [];
+      for (let h = 1; h <= horizon; h++) {
+        S += Math.pow(PHI, h);
+        const date = isoAdd(today, h), v = Math.max(0, (level + trend * S) * f(isoWeekday(date)));
+        daily.push({ date, v }); sum += v;
+      }
+      const neff = Math.min(s.length, 10);
+      const sd = Math.sqrt(horizon * sigma * sigma + Math.pow(horizon * sigma / Math.sqrt(neff), 2));
+      const low = Math.max(0, sum - 1.28 * sd), high = sum + 1.28 * sd;
+      const st = factStats(locId, 28), fee = st.fee > 0 ? st.fee : (Number(state.feePerParcel) || 0);
+      const shift = trend * Array.from({ length: horizon }, (_, i) => Math.pow(PHI, i + 1)).reduce((a, b) => a + b, 0);
+      return {
+        sum, avgDaily: sum / horizon, low, high, fee, income: sum * fee, incomeLow: low * fee, incomeHigh: high * fee,
+        level, trendPct: level > 0 ? shift / level * 100 : 0, daily, factors: fac, weekly: useW, n: s.length,
+        conf: s.length < 7 ? 'low' : s.length < 21 ? 'mid' : 'high'
+      };
+    }
+    function forecastNetwork() {
+      const act = (state.locations || []).filter(l => l.status === 'active'), fee = feeEff();
+      let F = 0, lo = 0, hi = 0, have = 0; const per = [];
+      act.forEach(l => {
+        const fc = forecastLoc(l.id, 30), plan = Number(l.parcelsDay) || 0;
+        if (fc && fc.n >= 7) { F += fc.income; lo += fc.incomeLow; hi += fc.incomeHigh; have++; per.push({ l, fc }); }
+        else { const inc = plan * 30 * fee; F += inc; lo += inc; hi += inc; per.push({ l, fc: null }); }
+      });
+      const pack = (state.incomeMode === 'parcels' ? Math.max(0, Number(state.packSales) || 0) : 0) * act.length;
+      F += pack; lo += pack; hi += pack;
+      const m = networkModel(), nonTax = m.opex - m.tax, profile = state.taxProfile || 'fop3_5';
+      const fixed = profile === 'fop2' ? TAX_CONFIG.fop2.ep + TAX_CONFIG.fop2.vz + esvMonthly() : esvMonthly();
+      const pf = x => x - nonTax - (x * marginalTaxRate() + fixed);
+      return { have, total: act.length, revenue: F, low: lo, high: hi, profit: pf(F), profitLow: pf(lo), profitHigh: pf(hi), per };
+    }
+
+    /* ---------- Звірка звітів ---------- */
+    function reconAll() {
+      const today = localDateISO(), from = isoAdd(today, -27), tol = Math.max(3, Number(state.reconTolPct) || 15) / 100;
+      const fd = factData(), ref = {};
+      Object.keys(fd).forEach(id => {
+        const s = fd[id].filter(d => d.date >= from);
+        const fees = s.filter(d => d.comFlow > 0 && d.com > 0).map(d => d.com / d.comFlow).sort((a, b) => a - b);
+        const flows = s.map(d => d.flow);
+        ref[id] = { fee: fees.length >= 5 ? fees[Math.floor(fees.length / 2)] : (Number(state.feePerParcel) || 0), mean: fMean(flows), sd: fStd(flows), n: s.length };
+      });
+      const reps = (state.branchReports || []).filter(r => r && r.date >= from).slice(0, 800);
+      const sigOf = r => [r.locationId, r.date, r.login, r.received, r.issued, r.income].join('|');
+      const sigCount = {}; reps.forEach(r => { const k = sigOf(r); sigCount[k] = (sigCount[k] || 0) + 1; });
+      const seenSig = new Set(), flags = [];
+      reps.forEach(r => {
+        const f = [], flow = flowOf(r), inc = Number(r.income) || 0, exp = Number(r.expense) || 0;
+        const rf = ref[r.locationId] || { fee: Number(state.feePerParcel) || 0, n: 0, mean: 0, sd: 0 };
+        const isCom = /комісі/i.test(r.incomeCategory || '');
+        if (r.date > today) f.push({ s: 'bad', x: 'Дата в майбутньому.' });
+        if (isCom && flow > 0 && inc > 0 && rf.fee > 0) {
+          const e = flow * rf.fee, diff = inc - e, lim = Math.max(tol * e, 300);
+          if (Math.abs(diff) > lim) f.push({ s: Math.abs(diff) > 2 * lim ? 'bad' : 'warn', x: `Комісія ${fmt(inc)} при ${flow} посилках, тобто ${(inc / flow).toFixed(1).replace('.', ',')} ₴/посилку, а зазвичай ≈ ${rf.fee.toFixed(1).replace('.', ',')} (${diff > 0 ? '+' : ''}${Math.round(diff / e * 100)}%).` });
+        }
+        if (isCom && flow > 0 && inc === 0) f.push({ s: 'warn', x: 'Посилки є, а комісія 0.' });
+        if (isCom && flow === 0 && inc > 0) f.push({ s: 'warn', x: 'Комісія є, а посилок немає.' });
+        if (rf.n >= 10 && flow > 0 && rf.sd > 0) {
+          const z = (flow - rf.mean) / Math.max(rf.sd, rf.mean * 0.1);
+          if (Math.abs(z) > 3) f.push({ s: 'warn', x: `Потік ${flow} різко відрізняється від звичайних ≈ ${Math.round(rf.mean)}/день.` });
+        }
+        const sig = sigOf(r);
+        if (sigCount[sig] > 1) { if (seenSig.has(sig)) f.push({ s: 'bad', x: 'Точний дубль іншого звіту.' }); seenSig.add(sig); }
+        if (inc > 0 && exp > inc) f.push({ s: 'info', x: `Витрати (${fmt(exp)}) більші за дохід у цьому звіті.` });
+        if (f.length) flags.push({ r, f });
+      });
+      const missing = {};
+      (state.locations || []).filter(l => l.status === 'active').forEach(l => {
+        const days = (fd[l.id] || []).filter(d => d.date >= from);
+        if (days.length < 3) return;
+        const have = new Set(days.map(d => d.date)), first = days[0].date, wdCnt = Array(7).fill(0);
+        days.forEach(d => { wdCnt[isoWeekday(d.date)]++; });
+        const closed = w => days.length >= 14 && wdCnt[w] === 0;           // у цей день тижня звітів ніколи немає, тобто вихідний
+        const list = [];
+        for (let i = 14; i >= 1; i--) { const d = isoAdd(today, -i); if (d >= first && !have.has(d) && !closed(isoWeekday(d))) list.push(d); }
+        if (list.length) missing[l.id] = list;
+      });
+      const rank = { bad: 0, warn: 1, info: 2 };
+      flags.sort((a, b) => Math.min(...a.f.map(x => rank[x.s])) - Math.min(...b.f.map(x => rank[x.s])) || (a.r.date < b.r.date ? 1 : -1));
+      return { flags, missing, bad: flags.filter(x => x.f.some(y => y.s !== 'info')).length, count: reps.length, ref };
+    }
+
+    /* ---------- Вкладка «План і факт» ---------- */
+    function pfSet(k, v) {
+      if (k === 'factMode') state.factMode = v === 'off' ? 'off' : 'auto';
+      else if (k === 'factFlowMode') state.factFlowMode = ['both', 'issued', 'received'].includes(v) ? v : 'both';
+      else if (k === 'factFee') state.factFee = !!v;
+      else if (k === 'pfWindow') state.pfWindow = [7, 14, 28].includes(Number(v)) ? Number(v) : 28;
+      else if (k === 'pfChartLoc') state.pfChartLoc = cleanId(v);
+      _factKey = '';
+      saveState();
+      if (k === 'pfWindow' || k === 'pfChartLoc') pfRender(); else recalcAll();
+    }
+    function pfInit() { pfRender(); }
+    function pfSyncControls() {
+      const set = (id, v) => { const e = document.getElementById(id); if (e && document.activeElement !== e) e.value = v; };
+      set('pfWindow', String(state.pfWindow)); set('pfFlow', state.factFlowMode); set('pfMode', state.factMode); set('pfFee', state.factFee ? '1' : '0');
+    }
+    function pfChartSvg(locId) {
+      const l = (state.locations || []).find(x => x.id === locId); if (!l) return '';
+      const st = factStats(locId, 28), fc = forecastLoc(locId, 14), plan = Number(l.parcelsDay) || 0, today = localDateISO();
+      const map = {}; st.series.forEach(d => { map[d.date] = d.flow; });
+      const bars = []; for (let i = 27; i >= 0; i--) { const d = isoAdd(today, -i); bars.push({ d, v: map[d] === undefined ? null : map[d], f: false }); }
+      if (fc) fc.daily.slice(0, 14).forEach(x => bars.push({ d: x.date, v: x.v, f: true }));
+      const top = Math.max(plan, ...bars.map(b => b.v || 0), 1) * 1.12, W = 360, H = 150, pl = 30, pb = 18, pt = 8, bw = (W - pl - 4) / bars.length, ch = H - pb - pt;
+      const y = v => H - pb - (v / top) * ch;
+      let g = bars.map((b, i) => b.v === null ? '' : `<rect x="${(pl + i * bw + 0.6).toFixed(1)}" y="${y(b.v).toFixed(1)}" width="${Math.max(1, bw - 1.2).toFixed(1)}" height="${Math.max(0.5, (b.v / top) * ch).toFixed(1)}" rx="1.5" fill="${b.f ? 'var(--green)' : 'var(--blue)'}" opacity="${b.f ? 0.55 : 0.9}"/>`).join('');
+      bars.forEach((b, i) => { if (i % 7 === 0) g += `<text x="${(pl + i * bw).toFixed(1)}" y="${H - 4}" font-size="8" fill="var(--muted)">${dmTxt(b.d)}</text>`; });
+      const xs = pl + 28 * bw;
+      g += `<line x1="${xs.toFixed(1)}" y1="${pt}" x2="${xs.toFixed(1)}" y2="${H - pb}" stroke="var(--muted)" stroke-dasharray="2 3" opacity=".6"/>`;
+      if (plan > 0) g += `<line x1="${pl}" y1="${y(plan).toFixed(1)}" x2="${W - 4}" y2="${y(plan).toFixed(1)}" stroke="var(--amber)" stroke-dasharray="5 3" stroke-width="1.4"/><text x="${W - 6}" y="${(y(plan) - 3).toFixed(1)}" font-size="8" text-anchor="end" fill="var(--amber)">план ${Math.round(plan)}</text>`;
+      g += `<text x="2" y="${y(0) + 3}" font-size="8" fill="var(--muted)">0</text><text x="2" y="${(y(top / 1.12) + 3).toFixed(1)}" font-size="8" fill="var(--muted)">${Math.round(top / 1.12)}</text>`;
+      return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Потік за 28 днів і прогноз на 14">${g}</svg>`;
+    }
+    function pfRender() {
+      const out = document.getElementById('pfOut'); if (!out) return;
+      pfSyncControls();
+      const act = (state.locations || []).filter(l => l.status === 'active'), win = state.pfWindow || 28, fee = feeEff();
+      if (!act.length) { out.innerHTML = '<div class="alert warn">Немає активних відділень. Позначте хоча б одне активним на вкладці «Мережа».</div>'; return; }
+      const rows = act.map(l => {
+        const st = factStats(l.id, win), plan = Number(l.parcelsDay) || 0, fc = forecastLoc(l.id, 30), mst = factStats(l.id, 28);
+        const d = st.days >= 3 && plan > 0 ? (st.avg - plan) / plan : null;
+        return { l, st, plan, fc, d, usedByModel: state.factMode === 'auto' && mst.days >= FACT_MIN_DAYS && mst.avg > 0, mdays: mst.days };
+      });
+      const withData = rows.filter(r => r.d !== null), anyData = rows.some(r => r.st.days > 0);
+      const sp = withData.reduce((a, r) => a + r.plan, 0), sf = withData.reduce((a, r) => a + r.st.avg, 0);
+      const dNet = sp > 0 ? (sf - sp) / sp : null, fn = forecastNetwork(), rc = reconAll();
+      const dCls = x => x === null ? '' : x <= -0.1 ? 'text-red' : x >= 0.1 ? 'text-green' : '';
+      const dTxt = x => x === null ? '—' : (x > 0 ? '+' : '') + pctTxt(x * 100, 0);
+      const trendTxt = fc => !fc ? '—' : Math.abs(fc.trendPct) < 3 ? 'стабільно' : (fc.trendPct > 0 ? '↗ +' : '↘ ') + pctTxt(fc.trendPct, 0) + '/міс';
+      const conf = fc => !fc ? '' : fc.conf === 'low' ? ' <small>(мало даних)</small>' : fc.conf === 'mid' ? ' <small>(орієнтовно)</small>' : '';
+      const modelLines = rows.map(r => r.usedByModel
+        ? `<li><b>${escapeHtml(r.l.name)}</b>: модель бере факт ${Math.round(r.st.avg ? factStats(r.l.id, 28).avg : 0)} посилок/день (у плані ${Math.round(r.plan)}).</li>`
+        : `<li><b>${escapeHtml(r.l.name)}</b>: модель бере ваш план (${Math.round(r.plan)}/день); ${r.mdays ? `у звітах поки ${r.mdays} з потрібних ${FACT_MIN_DAYS} днів` : 'звітів поки немає'}.</li>`).join('');
+      const alerts = [];
+      rows.forEach(r => {
+        if (r.st.days < 5 || r.plan <= 0) return;
+        const last7 = r.st.series.filter(d => d.date >= isoAdd(localDateISO(), -6)), below = last7.filter(d => d.flow < r.plan * 0.85).length;
+        if (below >= 4) alerts.push({ t: 'warn', x: `«${escapeHtml(r.l.name)}»: ${below} із ${last7.length} останніх днів потік нижчий за план більш ніж на 15%.` });
+        if (r.d !== null && r.d <= -0.2) alerts.push({ t: 'bad', x: `«${escapeHtml(r.l.name)}» відстає від плану на ${pctTxt(-r.d * 100, 0)} (${Math.round(r.st.avg)} проти ${Math.round(r.plan)} посилок/день).` });
+        else if (r.d !== null && r.d >= 0.15) alerts.push({ t: 'good', x: `«${escapeHtml(r.l.name)}» перевиконує план на ${pctTxt(r.d * 100, 0)}. Якщо це стабільно, план варто підняти.` });
+      });
+      const f28 = act.map(l => factStats(l.id, 28)).filter(s => s.fee > 0);
+      const factFee = f28.length ? f28.reduce((a, s) => a + s.fee * s.days, 0) / f28.reduce((a, s) => a + s.days, 0) : 0;
+      let feeNote = '';
+      if (factFee > 0 && Number(state.feePerParcel) > 0) {
+        const dd = (factFee - state.feePerParcel) / state.feePerParcel;
+        if (Math.abs(dd) >= 0.08) feeNote = `<div class="alert warn">Фактична комісія зі звітів ≈ ${factFee.toFixed(1).replace('.', ',')} ₴/посилку, а у вашому тарифі ${Number(state.feePerParcel).toFixed(1).replace('.', ',')} (${dd > 0 ? '+' : ''}${pctTxt(dd * 100, 0)}). ${state.factFee ? 'Модель уже рахує за фактом.' : 'Щоб модель бралa фактичну, оберіть вище «Тариф: фактичний зі звітів».'}</div>`;
+      }
+      const tbl = rows.map(r => `<tr><td>${escapeHtml(r.l.name)}</td><td>${Math.round(r.plan)}</td><td>${r.st.days ? '<b>' + Math.round(r.st.avg) + '</b>' : '—'}</td><td class="${dCls(r.d)}">${dTxt(r.d)}</td><td>${r.st.days}/${win}</td><td>${trendTxt(r.fc)}</td><td>${r.fc ? '≈ ' + fmt(r.fc.income) + '<small style="display:block;color:var(--muted)">' + fmt(r.fc.incomeLow) + ' – ' + fmt(r.fc.incomeHigh) + '</small>' + conf(r.fc) : 'немає даних'}</td></tr>`).join('');
+      const chartLoc = act.some(l => l.id === state.pfChartLoc) ? state.pfChartLoc : act[0].id;
+      const sel = `<select id="pfChartSel" onchange="pfSet('pfChartLoc',this.value)">${act.map(l => `<option value="${escapeHtml(l.id)}" ${l.id === chartLoc ? 'selected' : ''}>${escapeHtml(l.name)}</option>`).join('')}</select>`;
+      const fcChart = forecastLoc(chartLoc, 14);
+      let wdTxt = '';
+      if (fcChart && fcChart.weekly) { const o = [1, 2, 3, 4, 5, 6, 0]; wdTxt = '<div class="muted-note">Ваш звичний тиждень (1,00 = середній день): ' + o.map(w => `${WD_NAMES[w]} ${fcChart.factors[w].toFixed(2).replace('.', ',')}`).join(' · ') + '.</div>'; }
+      const flagRows = rc.flags.slice(0, 25).map(x => `<tr><td>${dmTxt(x.r.date)}</td><td>${escapeHtml(locNameById(x.r.locationId))}</td><td>${escapeHtml(x.r.employee || x.r.login || '')}</td><td>${x.f.map(y => `<span class="${y.s === 'bad' ? 'text-red' : y.s === 'warn' ? 'text-amber' : ''}">${y.x}</span>`).join('<br>')}</td></tr>`).join('');
+      const missLines = Object.keys(rc.missing).map(id => `<li><b>${escapeHtml(locNameById(id))}</b>: немає звітів за ${rc.missing[id].length} ${plural(rc.missing[id].length, 'день', 'дні', 'днів')} (${rc.missing[id].slice(-6).map(dmTxt).join(', ')}${rc.missing[id].length > 6 ? '…' : ''})</li>`).join('');
+      out.innerHTML = `
+        ${anyData ? '' : `<div class="alert warn">Фактичних даних поки немає. Щойно працівники вноситимуть щоденні звіти (кабінет відділення), тут з’являться факт і прогноз, а після ${FACT_MIN_DAYS} днів звітів модель мережі сама перейде з плану на факт.</div>`}
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Потік: факт проти плану</div><div class="kpi-val ${dCls(dNet)}">${dTxt(dNet)}</div><small class="muted-note">${withData.length ? Math.round(sf) + ' проти ' + Math.round(sp) + ' шт/день' : 'немає даних'}</small></div>
+          <div class="kpi"><div class="kpi-label">Прогноз виручки, 30 днів</div><div class="kpi-val">${fmt(fn.revenue)}</div><small class="muted-note">${fn.have ? fmt(fn.low) + ' – ' + fmt(fn.high) : 'за вашим планом'}</small></div>
+          <div class="kpi"><div class="kpi-label">Прогноз прибутку</div><div class="kpi-val ${fn.profit >= 0 ? 'text-green' : 'text-red'}">${fmt(fn.profit)}</div><small class="muted-note">${fn.have ? fmt(fn.profitLow) + ' – ' + fmt(fn.profitHigh) : 'орієнтовно'}</small></div>
+          <div class="kpi"><div class="kpi-label">Звітів без проблем</div><div class="kpi-val">${rc.count ? rc.count - rc.bad : '—'}${rc.count ? '<small> / ' + rc.count + '</small>' : ''}</div><small class="muted-note">за 28 днів</small></div>
+        </div>
+        ${alerts.map(a => `<div class="alert ${a.t}" style="margin-bottom:6px">${a.x}</div>`).join('')}${feeNote}
+        <h3 class="sub-title">План і факт по відділеннях (останні ${win} дн.)</h3>
+        <div class="table-wrap"><table class="benchmark-table"><thead><tr><th>Відділення</th><th>План/день</th><th>Факт/день</th><th>Різниця</th><th>Днів зі звітом</th><th>Тренд</th><th>Прогноз 30 дн.</th></tr></thead><tbody>${tbl}</tbody></table></div>
+        <p class="muted-note">Прогноз враховує дні тижня, поступовий тренд (із затуханням) і розкид ваших даних; діапазон показує, де з імовірністю близько 80% опиниться результат. Виручка прогнозу: комісія за посилки за фактичною ставкою (${fee.toFixed(1).replace('.', ',')} ₴, якщо немає даних) плюс пакування за моделлю.</p>
+        <h3 class="sub-title">Що бере модель мережі</h3><ul class="sc-list">${modelLines}</ul>
+        <h3 class="sub-title">Потік за 28 днів і прогноз на 14</h3>
+        <div class="nv-save" style="margin:0 0 6px">${sel}<small class="muted-note">блакитні стовпчики: факт, зелені: прогноз, пунктир: ваш план</small></div>
+        ${pfChartSvg(chartLoc)}${wdTxt}
+        <h3 class="sub-title">Звірка звітів</h3>
+        ${rc.flags.length ? `<div class="table-wrap"><table class="benchmark-table"><thead><tr><th>Дата</th><th>Відділення</th><th>Працівник</th><th>Що не так</th></tr></thead><tbody>${flagRows}</tbody></table></div>${rc.flags.length > 25 ? '<div class="muted-note">Показано 25 найважливіших.</div>' : ''}` : `<div class="alert good">${rc.count ? 'У звітах за 28 днів розбіжностей не знайдено.' : 'Звітів за 28 днів ще немає, звіряти нічого.'}</div>`}
+        ${missLines ? `<h3 class="sub-title">Пропущені звіти (14 днів)</h3><ul class="sc-list">${missLines}</ul>` : ''}
+        <p class="muted-note">Допуск розбіжності комісії: ±${state.reconTolPct}% (не менше 300 ₴). Вихідні відділення визначаються автоматично: якщо в певний день тижня звітів ніколи немає, його не рахують пропуском.</p>`;
+    }
+
+    /* ---------- Податковий резерв ---------- */
+    function taxAccrual() {
+      const today = localDateISO(); let start = state.taxStartDate;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(start || '')) start = today.slice(0, 8) + '01';
+      const base = (state.transactions || []).reduce((a, t) => (t.type === 'income' && t.date >= start && t.date <= today ? a + (Number(t.amount) || 0) : a), 0);
+      const rate = marginalTaxRate(), pr = state.taxProfile || 'fop3_5';
+      const diff = (new Date(today + 'T12:00:00') - new Date(start + 'T12:00:00')) / DAY_MS, days = diff < 0 ? 0 : diff + 1, months = days / 30.4375;
+      const fixedM = pr === 'fop2' ? TAX_CONFIG.fop2.ep + TAX_CONFIG.fop2.vz + esvMonthly() : esvMonthly();
+      const variable = base * rate, fixed = fixedM * months, carry = Number(state.taxCarry) || 0;
+      return { start, base, rate, variable, fixed, fixedM, months, carry, total: Math.max(0, variable + fixed + carry) };
+    }
+    function taxSetStart(v) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(v || '')) return;
+      state.taxStartDate = v; state.taxCarry = 0; saveState(); renderBalance(); renderInsights();
+    }
+    function taxPay() {
+      const a = taxAccrual(), inp = document.getElementById('taxPayAmount');
+      let amount = Number(inp && inp.value); if (!(amount > 0)) amount = Math.round(a.total);
+      if (!(amount > 0)) { showToast('Нічого сплачувати'); return; }
+      if (!confirm('Записати сплату ' + fmt(amount) + '?\nБуде додано витрату «Податки та внески», а нарахування почнеться заново з завтрашнього дня.')) return;
+      pushHistory();
+      const today = localDateISO();
+      state.transactions.unshift({ id: 'tax_' + Date.now().toString(36), date: today, type: 'expense', category: 'Податки та внески', locationId: '', amount: Math.round(amount), note: 'Сплата податків (резерв)', createdAt: new Date().toISOString() });
+      state.taxPayments = [{ date: today, amount: Math.round(amount), accrued: Math.round(a.total) }].concat(state.taxPayments || []).slice(0, 12);
+      state.taxCarry = Math.round(a.total - amount);                 // недоплата лишається боргом, переплата зменшує наступне нарахування
+      state.taxStartDate = isoAdd(today, 1);
+      saveState(); recalcAll(); renderBalance(); showToast('Сплату записано');
+    }
+    function renderTaxBox() {
+      const el = document.getElementById('balTaxBox'); if (!el) return;
+      const keep = document.getElementById('taxPayAmount') ? document.getElementById('taxPayAmount').value : '';
+      const a = taxAccrual(), m = networkModel(), cash = balCash(), weekly = m.tax / 4.345, hasTx = (state.transactions || []).length > 0;
+      const free = cash - a.total - (Number((state.balance || {}).payables) || 0);
+      const tone = !hasTx ? 'warn' : a.total > cash ? 'bad' : a.total > cash * 0.5 ? 'warn' : 'good';
+      const pay = (state.taxPayments || []).slice(0, 5).map(p => `<tr><td>${escapeHtml(p.date)}</td><td>${fmt(p.amount)}</td><td>${fmt(p.accrued)}</td></tr>`).join('');
+      el.innerHTML = `
+        <h3 class="sub-title">🧾 Податковий резерв: рахується сам</h3>
+        <div class="alert ${tone}">Нараховано до сплати: <b>${fmt(a.total)}</b>. ${!hasTx ? 'У журналі ще немає доходів, тож база нульова: фіксований ЄСВ уже накопичується.' : a.total > cash ? `У касі ${fmt(cash)}, цього не вистачає на сплату.` : `Каса ${fmt(cash)}; після резерву вільно ≈ ${fmt(free)}${free < 0 ? ' (з урахуванням ваших боргів)' : ''}.`}</div>
+        <ul class="sc-list">
+          <li>Податок з доходів: ${fmt(a.base)} × ${pctTxt(a.rate * 100, 1)} = <b>${fmt(a.variable)}</b></li>
+          <li>Фіксовані внески: ${fmt(a.fixedM)}/міс × ${(a.months).toFixed(1).replace('.', ',')} міс = <b>${fmt(a.fixed)}</b></li>
+          ${a.carry ? `<li>${a.carry > 0 ? 'Недоплата з минулого разу' : 'Переплата з минулого разу'}: <b>${fmt(a.carry)}</b></li>` : ''}
+        </ul>
+        <p class="muted-note">Щоб резерв не «танув», відкладайте близько <b>${fmt(weekly)}</b> на тиждень (${fmt(m.tax)} на місяць за моделлю). Поріг і ставки перевіряйте в ДПС, бо реальна сплата залежить від групи, кварталу та дат.</p>
+        <div class="grid-2">
+          <div class="field"><label>Рахувати з дати (остання сплата)</label><input type="date" id="taxStart" value="${a.start}" onchange="taxSetStart(this.value)"></div>
+          <div class="field"><label>Сума сплати, ₴ (порожньо = усе нараховане)</label><input id="taxPayAmount" type="number" min="0" step="100" placeholder="${Math.round(a.total)}" value="${escapeHtml(keep)}"></div>
+        </div>
+        <div class="nv-save"><button class="btn-secondary" onclick="taxPay()">✅ Сплачено</button></div>
+        ${pay ? `<div class="table-wrap"><table class="benchmark-table"><thead><tr><th>Дата</th><th>Сплачено</th><th>Було нараховано</th></tr></thead><tbody>${pay}</tbody></table></div>` : ''}`;
+    }
+
+    /* ---------- Android: надіслати копію через системне меню ---------- */
+    async function shareBackup() {
+      try {
+        const payload = { app: 'NOVA PULSE', schema: SCHEMA_VERSION, exportedAt: new Date().toISOString(), state };
+        const file = new File([JSON.stringify(payload, null, 2)], 'nova-pulse-backup-' + localDateISO() + '.json', { type: 'application/json' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'NOVA PULSE: резервна копія' });
+          state.lastBackupAt = new Date().toISOString(); saveState(); hideBackupBanner(); showToast('Копію надіслано');
+        } else exportBackup();
+      } catch (e) { if (!e || e.name !== 'AbortError') exportBackup(); }
+    }
+
+    /* ---------- Додаткові поради з фактичних даних ---------- */
+    function insightsV66(out, m, base) {
+      const act = (state.locations || []).filter(l => l.status === 'active'), today = localDateISO();
+      let usedFact = 0;
+      act.forEach(l => {
+        const st = factStats(l.id, 28), plan = Number(l.parcelsDay) || 0;
+        if (st.days < FACT_MIN_DAYS || st.avg <= 0 || plan <= 0) return;
+        if (state.factMode === 'auto') usedFact++;
+        const d = (st.avg - plan) / plan;
+        if (d <= -0.1) out.push({ t: d <= -0.2 ? 'bad' : 'warn', x: `«${escapeHtml(l.name)}» за 28 днів дає ${Math.round(st.avg)} посилок на день проти ${Math.round(plan)} у плані (${pctTxt(d * 100, 0)}). ${state.factMode === 'auto' ? 'Модель уже рахує за фактом.' : 'Модель ще рахує за вашим планом.'}` });
+        else if (d >= 0.15) out.push({ t: 'good', x: `«${escapeHtml(l.name)}» перевиконує план на ${pctTxt(d * 100, 0)}: ${Math.round(st.avg)} проти ${Math.round(plan)} посилок на день.` });
+      });
+      const rc = reconAll(), miss = Object.keys(rc.missing);
+      if (miss.length) out.push({ t: 'warn', x: `Немає звітів: ${miss.slice(0, 3).map(id => `«${escapeHtml(locNameById(id))}» (${rc.missing[id].length} ${plural(rc.missing[id].length, 'день', 'дні', 'днів')})`).join(', ')}. Без них факт і прогноз неточні.` });
+      if (rc.bad > 0) out.push({ t: rc.flags.some(x => x.f.some(y => y.s === 'bad')) ? 'bad' : 'warn', x: `У звітах за 28 днів ${rc.bad} ${plural(rc.bad, 'підозрілий запис', 'підозрілі записи', 'підозрілих записів')}: виручка не сходиться з кількістю посилок, дублі чи різкі викиди. Дивіться вкладку «План і факт».` });
+      const fn = forecastNetwork();
+      if (fn.have > 0) out.push({ t: fn.profit < 0 ? 'bad' : fn.profitLow < 0 ? 'warn' : 'good', x: `Прогноз на 30 днів: виручка ≈ ${fmt(fn.revenue)} (імовірно ${fmt(fn.low)} – ${fmt(fn.high)}), орієнтовний прибуток ≈ ${fmt(fn.profit)}${fn.profitLow < 0 && fn.profit >= 0 ? '. У гіршому з імовірних варіантів мережа може вийти в мінус' : ''}.` });
+      const tx = taxAccrual(), cash = balCash();
+      if ((state.transactions || []).length && tx.total > 0) {
+        if (tx.total > cash) out.push({ t: 'bad', x: `Нараховано ${fmt(tx.total)} податків і внесків, а в касі ${fmt(cash)}. Сплатити буде нічим, тож починайте відкладати щотижня.` });
+        else if (tx.total > cash * 0.5) out.push({ t: 'warn', x: `Податковий резерв ${fmt(tx.total)} уже складає понад половину каси (${fmt(cash)}). Не витрачайте ці гроші.` });
+      }
+      const y = isoAdd(today, -1), yFlow = act.reduce((a, l) => { const d = (factData()[l.id] || []).find(x => x.date === y); return a + (d ? d.flow : 0); }, 0);
+      if (yFlow > 0 && act.length) {
+        const plan = act.reduce((a, l) => a + (Number(l.parcelsDay) || 0), 0), dd = plan > 0 ? (yFlow - plan) / plan : 0;
+        out.push({ t: 'good', x: `Вчора мережа обробила ${Math.round(yFlow)} посилок (за планом ${Math.round(plan)}, ${dd >= 0 ? '+' : ''}${pctTxt(dd * 100, 0)}).` });
+      }
+    }
 
     // Init
     document.getElementById('txDate').value = localDateISO();
