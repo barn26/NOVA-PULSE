@@ -1,17 +1,50 @@
 <!DOCTYPE html>
-<!-- NOVA PULSE v6.4 · © 2026 Наконечний Володимир Михайлович. Усі права захищені. Див. файл LICENSE. -->
+<!-- NOVA PULSE v6.5 · © 2026 Наконечний Володимир Михайлович. Усі права захищені. Див. файл LICENSE. -->
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <meta name="theme-color" content="#0b0f17" />
+  <script>
+  (function () {
+    var KEY = 'nova_pulse_theme', root = document.documentElement, LAT = 49.8, LON = 24.0;
+    function mode() { try { var m = localStorage.getItem(KEY); return (m === 'light' || m === 'dark') ? m : 'auto'; } catch (e) { return 'auto'; } }
+    // День = від сходу до заходу сонця (+30 хв сутінків) для широти Львівщини; без геолокації
+    function isDay(d) {
+      d = d || new Date();
+      var n = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
+      var decl = 23.44 * Math.sin(2 * Math.PI * (284 + n) / 365) * Math.PI / 180, lat = LAT * Math.PI / 180;
+      var c = Math.max(-1, Math.min(1, -Math.tan(lat) * Math.tan(decl)));
+      var half = Math.acos(c) * 180 / Math.PI / 15;
+      var off = -d.getTimezoneOffset() / 60, noon = 12 + (off * 15 - LON) / 15;
+      var h = d.getHours() + d.getMinutes() / 60;
+      return h >= noon - half && h < noon + half + 0.5;
+    }
+    function resolve() { var m = mode(); return m === 'auto' ? (isDay() ? 'light' : 'dark') : m; }
+    function apply() {
+      var t = resolve(), changed = root.getAttribute('data-theme') !== t;
+      root.setAttribute('data-theme', t); root.setAttribute('data-theme-mode', mode());
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', t === 'light' ? '#f2f5fa' : '#0b0f17');
+      if (changed && window.NovaTheme && typeof NovaTheme.onChange === 'function') { try { NovaTheme.onChange(t); } catch (e) {} }
+    }
+    function cycle() {
+      var m = mode(), next = m === 'auto' ? 'light' : (m === 'light' ? 'dark' : 'auto');
+      try { localStorage.setItem(KEY, next); } catch (e) {}
+      apply(); return next;
+    }
+    window.NovaTheme = { mode: mode, isDay: isDay, apply: apply, cycle: cycle, onChange: null };
+    apply();
+    setInterval(function () { if (mode() === 'auto') apply(); }, 300000);
+  })();
+  </script>
   <meta name="author" content="Наконечний Володимир Михайлович" />
   <meta name="copyright" content="© 2026 Наконечний Володимир Михайлович. Усі права захищені." />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <title>NOVA PULSE v6.4 — Регіональний SMART ADVISOR</title>
+  <title>NOVA PULSE v6.5 — Регіональний SMART ADVISOR</title>
   <style>
     :root {
       --bg: #0b0f17;
@@ -556,6 +589,65 @@
     .backup-banner .bb-actions { display: flex; gap: 6px; }
     body.branch-mode .backup-banner { display: none !important; }
     .auth-confirm { display: none; }
+    /* v6.5: світла тема та нові модулі */
+    :root { --chart-grid: #222d42; --chart-text: #8b99b5; --chart-red: #fca5a5; }
+    :root[data-theme="light"] {
+      --bg: #f2f5fa; --bg-card: #ffffff; --bg-card-2: #eaeff7; --bg-input: #ffffff; --border: #d3dbe9;
+      --text: #111a2b; --muted: #586783; --accent: #d91e36; --accent-soft: rgba(217, 30, 54, 0.10);
+      --green: #15803d; --green-soft: rgba(21, 128, 61, 0.12); --amber: #b45309; --amber-soft: rgba(180, 83, 9, 0.12);
+      --blue: #1d4ed8; --blue-soft: rgba(29, 78, 216, 0.10);
+      --chart-grid: #dbe2ee; --chart-text: #586783; --chart-red: #b91c1c;
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] { color-scheme: dark; }
+    html[data-theme="light"] { background: #f2f5fa; }
+    html[data-theme="dark"] { background: #0b0f17; }
+    :root[data-theme="light"] .topbar { background: rgba(255, 255, 255, 0.94); }
+    :root[data-theme="light"] .btn-pill.locked { color: #92400e; }
+    :root[data-theme="light"] .btn-pill.unlocked { color: #166534; }
+    :root[data-theme="light"] .seg-btn.active { color: #1d4ed8; }
+    :root[data-theme="light"] .alert.good { color: #14532d; border-color: rgba(21, 128, 61, 0.35); }
+    :root[data-theme="light"] .alert.warn { color: #78350f; border-color: rgba(180, 83, 9, 0.35); }
+    :root[data-theme="light"] .alert.bad { color: #7f1d1d; border-color: rgba(217, 30, 54, 0.4); }
+    :root[data-theme="light"] .float-btn { background: rgba(255, 255, 255, 0.96); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); }
+    :root[data-theme="light"] .toast { color: #fff; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
+    :root[data-theme="light"] .btn-danger { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+    :root[data-theme="light"] .v6-report-kpi { background: rgba(0, 0, 0, 0.03); }
+    :root[data-theme="light"] .backup-banner { color: #78350f; }
+    :root[data-theme="light"] .auth-screen { background: radial-gradient(circle at top, #ffffff, #dfe6f2 70%); }
+    :root[data-theme="light"] .auth-card { background: #ffffff; border-color: #cfd8e8; box-shadow: 0 20px 60px rgba(27, 41, 64, 0.18); }
+    :root[data-theme="light"] .auth-card p { color: #586783; }
+    :root[data-theme="light"] .auth-card input, :root[data-theme="light"] .branch-workspace input,
+    :root[data-theme="light"] .branch-workspace select, :root[data-theme="light"] .branch-workspace textarea { background: #ffffff; border-color: #cfd8e8; color: #111a2b; }
+    :root[data-theme="light"] .auth-card label, :root[data-theme="light"] .branch-workspace label { color: #4a5a76; }
+    :root[data-theme="light"] .branch-workspace .card { background: #ffffff; border-color: #d3dbe9; }
+    :root[data-theme="light"] .auth-note { color: #92400e !important; }
+    :root[data-theme="light"] .role-chip { background: #eaeff7; border-color: #cfd8e8; color: #1d4ed8; }
+    body.sliders-locked input[type="range"].free-slider { pointer-events: auto; opacity: 1; }
+    .nv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
+    .nv-save { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+    .nv-save input[type="text"] { flex: 1 1 180px; background: var(--bg-input); color: var(--text); border: 1px solid var(--border); border-radius: 9px; padding: 9px; font-size: 14px; }
+    .sub-title { font-size: 14px; margin: 16px 0 6px; }
+    .sc-text { margin: 0 0 6px; font-size: 14px; }
+    .sc-list { margin: 0 0 6px; padding-left: 18px; font-size: 14px; }
+    .sc-check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; padding: 5px 0; }
+    .sc-check input { margin-top: 3px; }
+    .benchmark-table th, .benchmark-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .benchmark-table th { color: var(--muted); font-weight: 700; font-size: 12px; }
+    /* v6.5: вікно «Про програму» */
+    .about-ov { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,.55); display: none; align-items: center; justify-content: center; padding: 14px; }
+    .about-ov.open { display: flex; }
+    .about-box { width: min(100%, 640px); max-height: 88vh; display: flex; flex-direction: column; background: var(--bg-card); color: var(--text); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 70px rgba(0,0,0,.4); }
+    .about-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    .about-head b { font-size: 15px; }
+    .about-tabs { display: flex; gap: 6px; padding: 10px 14px 0; }
+    .about-body { padding: 4px 16px 16px; overflow: auto; font-size: 14px; line-height: 1.55; }
+    .about-body h3 { font-size: 15px; margin: 16px 0 6px; }
+    .about-body p { margin: 6px 0; } .about-body ul, .about-body ol { margin: 6px 0; padding-left: 20px; }
+    .about-body code { background: var(--bg-card-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 5px; font-size: 12.5px; }
+    .about-pre { white-space: pre-wrap; word-wrap: break-word; font-family: inherit; font-size: 13px; margin: 8px 0 0; }
+    .about-tw { overflow-x: auto; }
+    .about-link { background: none; border: none; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 12px; padding: 4px; }
   </style>
   <div id="authScreen" class="auth-screen">
     <div class="auth-card">
@@ -569,6 +661,7 @@
       <div class="auth-note">Демо-режим без сервера: облікові записи та дані зберігаються лише в цьому браузері. Це не захищена серверна авторизація.</div>
       <div style="margin-top:12px"><button class="btn-secondary" onclick="document.getElementById('accessImportInput').click()">Імпортувати пакет доступу від керівника</button><input id="accessImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importAccessPackage(this)"></div>
       <p id="authHint" class="muted-note"></p>
+      <p style="text-align:center;margin:10px 0 0"><button class="about-link" onclick="openAbout('info')">📄 Про програму</button> · <button class="about-link" onclick="openAbout('lic')">⚖️ Ліцензія</button></p>
     </div>
   </div>
   <section id="branchWorkspace" class="branch-workspace">
@@ -588,6 +681,7 @@
       <div class="top-actions">
         <button id="lockToggleBtn" class="btn-pill locked" onclick="toggleSliderLock()">🔒 Повзунки заблоковані</button>
         <button id="undoBtn" class="btn-pill" onclick="undoChange()" title="Скасувати останню зміну">↩ Назад</button>
+        <button id="themeBtn" class="btn-pill" onclick="cycleTheme()" title="Тема: Авто, Світла, Темна">🌓 Тема</button>
         <button class="btn-pill" onclick="copyReport()">📋 Звіт</button>
       </div>
     </div>
@@ -599,6 +693,9 @@
       <button class="tab-btn" data-tab="tab-decisions">5. Рішення і ворота</button>
       <button class="tab-btn" data-tab="tab-chart">6. Графік росту</button>
       <button class="tab-btn" data-tab="tab-management">7. Керівник + Фінанси</button>
+      <button class="tab-btn" data-tab="tab-scenarios">8. Що, якщо?</button>
+      <button class="tab-btn" data-tab="tab-newbranch">9. Нове відділення</button>
+      <button class="tab-btn" data-tab="tab-balance">10. Баланс</button>
     </nav>
   </header>
 
@@ -606,6 +703,7 @@
 
     <!-- ==================== TAB 1: UNIT ECONOMICS & STRESS ==================== -->
     <section id="tab-unit" class="tab-panel active">
+      <div class="card"><div class="card-header"><h2 class="card-title">🧭 Головне зараз</h2><button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button></div><div class="card-body" id="insightsBody"></div></div>
       <div class="kpi-grid">
         <div class="kpi">
           <div class="kpi-label">Чистий прибуток / міс</div>
@@ -1177,6 +1275,52 @@
       <div class="card"><h2 class="card-title">ℹ️ Як читати показники</h2><p class="muted-note">«Модельний прибуток» — розрахунок за параметрами мережі. «Фактичний результат» — сума операцій, внесених вручну. «Залишок коштів» — початковий залишок плюс усі надходження мінус усі витрати за журналом. Це управлінський облік, а не бухгалтерський чи податковий звіт.</p></div>
     </section>
 
+
+    <!-- ==================== TAB 8: WHAT-IF ==================== -->
+    <section id="tab-scenarios" class="tab-panel">
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">🔀 Що, якщо? Порівняння сценаріїв</h2><button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button></div>
+        <div class="card-body">
+          <p class="muted-note">Беремо вашу мережу такою, як вона є, і дивимось, що буде, якщо щось зміниться. Це окремий розрахунок на копії: ваші основні цифри не чіпаються.</p>
+          <div id="scPresets" class="nv-chips"></div>
+          <div id="scControls"></div>
+          <div id="scLocs" style="margin-bottom:10px"></div>
+          <div class="nv-save"><input type="text" id="scName" maxlength="60" placeholder="Назва сценарію (необов’язково)"><button class="btn-secondary" onclick="scSave()">💾 Зберегти сценарій</button></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">Результат</h2></div><div class="card-body" id="scOut"></div></div>
+    </section>
+
+    <!-- ==================== TAB 9: NEW BRANCH ==================== -->
+    <section id="tab-newbranch" class="tab-panel">
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">🏪 Планування нового відділення</h2><button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button></div>
+        <div class="card-body">
+          <p class="muted-note">Введіть умови потенційної локації. Спершу підставлено значення вашої мережі, змінюйте лише те, що відрізняється.</p>
+          <div id="nbFields" class="grid-2"></div>
+          <div class="nv-save">
+            <button class="btn-secondary" onclick="nbSavePlan()">💾 Зберегти план</button>
+            <button class="btn-secondary" onclick="nbToNetwork()">➕ Додати в мережу як план</button>
+            <button class="btn-pill" onclick="nbReset()">↺ Значення мережі</button>
+          </div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">Результат</h2></div><div class="card-body" id="nbOut"></div></div>
+    </section>
+
+    <!-- ==================== TAB 10: BALANCE ==================== -->
+    <section id="tab-balance" class="tab-panel">
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">⚖️ Міні-баланс</h2><button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button></div>
+        <div class="card-body">
+          <p class="muted-note">Кошти беруться з журналу операцій (вкладка 7), решту введіть вручну й оновлюйте раз на місяць. Це керівний огляд, а не бухгалтерська звітність.</p>
+          <div id="balFields"></div>
+          <div class="nv-save"><button class="btn-secondary" onclick="balSnap()">📌 Зафіксувати на сьогодні</button></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><h2 class="card-title">Підсумок</h2></div><div class="card-body" id="balOut"></div></div>
+    </section>
+
   </main>
 
   <!-- FLOATING UP/DOWN NAVIGATION -->
@@ -1186,6 +1330,108 @@
   </div>
 
   <!-- TOAST NOTIFICATION -->
+    <div id="aboutOv" class="about-ov" onclick="if(event.target===this)closeAbout()" role="dialog" aria-modal="true" aria-label="Про програму та ліцензія">
+    <div class="about-box">
+      <div class="about-head"><b>NOVA PULSE · Про програму</b><button class="btn-pill" onclick="closeAbout()">✕ Закрити</button></div>
+      <div class="about-tabs"><button id="abTabInfo" class="btn-pill" onclick="aboutTab('info')">Про програму</button><button id="abTabLic" class="btn-pill" onclick="aboutTab('lic')">Ліцензія</button></div>
+      <div class="about-body">
+        <div id="abInfo"><p>Офлайн-застосунок (PWA) для планування й обліку мережі відділень: економіка точки, старт і розгін, фінанси, працівники, зарплатний радник, щоденні звіти відділень. Працює в браузері, без сервера; дані зберігаються лише на вашому пристрої.</p>
+<h3>Можливості</h3>
+<ul>
+<li>Економіка однієї точки та мережі, стрес-тест, ціни/CAPEX, графік росту</li>
+<li>«Головне зараз»: поради, розраховані за вашими цифрами (запас міцності, оренда, резерв, цілі)</li>
+<li><b>Що, якщо?</b>: порівняння сценаріїв (потік, тариф, оренда, зарплати, запуск або пауза відділень), чутливість, збереження сценаріїв</li>
+<li><b>Нове відділення</b>: помісячний розгін, беззбитковість, потрібний стартовий капітал, окупність</li>
+<li><b>Міні-баланс</b>: активи, зобов’язання, власний капітал, на скільки місяців вистачає каси, історія</li>
+<li>Цілі та розподіл прибутку, «ворота» рішень</li>
+<li>Журнал фінансів, експорт у CSV</li>
+<li>Працівники, ринкові орієнтири зарплат (довідково), кабінети відділень</li>
+<li>Щоденні звіти відділень з перевіркою керівником</li>
+<li>Тема: авто (за часом доби), світла, темна</li>
+<li>Резервні копії (JSON), скасування останніх змін, офлайн-режим</li>
+</ul>
+<h3>Запуск</h3>
+<ol>
+<li>Завантажте файли в корінь репозиторію: <code>index.html</code>, <code>manifest.webmanifest</code>,</li>
+</ol>
+<p><code>sw.js</code>, <code>icon-192.png</code>, <code>icon-512.png</code>.</p>
+<ol>
+<li>GitHub → <b>Settings → Pages</b> → Source: гілка <code>main</code>, папка <code>/ (root)</code>.</li>
+<li>Відкрийте <code>https://&lt;ваш-логін&gt;.github.io/&lt;назва-репозиторію&gt;/</code>.</li>
+</ol>
+<p>Можна й просто відкрити <code>index.html</code> у браузері, але без офлайн-режиму й установлення.</p>
+<h3>Установлення на телефон</h3>
+<p>Відкрийте сторінку в Chrome/Safari → «Додати на головний екран» / «Установити застосунок».</p>
+<h3>Перший вхід</h3>
+<p>При першому запуску створіть пароль керівника (логін <code>admin</code>, від 8 символів). Паролі працівників зберігаються лише як хеш. Забутий пароль керівника відновити не можна: скиньте дані браузера або імпортуйте резервну копію.</p>
+<h3>Дані та безпека</h3>
+<ul>
+<li>Усе зберігається в <code>localStorage</code> браузера. <b>Регулярно робіть резервну копію</b></li>
+</ul>
+<p>(застосунок нагадує раз на 7 днів).</p>
+<ul>
+<li>Вхід у систему — це розмежування ролей на одному пристрої, а не серверна</li>
+</ul>
+<p>авторизація. Не зберігайте тут дані, які потребують справжнього захисту.</p>
+<ul>
+<li>Початкові значення (локації, суми, цілі) — демонстраційні; змініть їх під себе.</li>
+<li>Податкові ставки та ринкові дані довідкові. Ставки задано в блоці <code>TAX_CONFIG</code></li>
+</ul>
+<p>на початку скрипта; перед використанням звіряйте їх з ДПС/бухгалтером.</p>
+<h3>Структура</h3>
+<div class="about-tw"><table class="benchmark-table"><thead><tr><th>Файл</th><th>Призначення</th></tr></thead><tbody><tr><td><code>index.html</code></td><td>Увесь застосунок (HTML + CSS + JS)</td></tr><tr><td><code>manifest.webmanifest</code></td><td>Налаштування PWA</td></tr><tr><td><code>sw.js</code></td><td>Офлайн-кеш</td></tr><tr><td><code>icon-192.png</code>, <code>icon-512.png</code></td><td>Іконки</td></tr></tbody></table></div>
+<h3>Ліцензія</h3>
+<p>© 2026 Наконечний Володимир Михайлович. Усі права захищені. Див. LICENSE.</p></div>
+        <div id="abLic" style="display:none"><pre class="about-pre">NOVA PULSE
+Copyright (c) 2026 Наконечний Володимир Михайлович
+(Nakonechnyi Volodymyr Mykhailovych). Усі права захищені. All rights reserved.
+
+──────────────────────────── УКРАЇНСЬКОЮ ────────────────────────────
+
+Автор і правовласник програми «NOVA PULSE» (далі — «Програма») —
+Наконечний Володимир Михайлович.
+
+Вихідний код опубліковано для ознайомлення. Без попередньої письмової
+згоди правовласника заборонено:
+  1. копіювати, змінювати, адаптувати або створювати похідні роботи;
+  2. поширювати, публікувати, розміщувати на інших ресурсах, продавати,
+     здавати в оренду чи передавати в субліцензію Програму або її частини;
+  3. використовувати Програму чи її частини в комерційних цілях;
+  4. видаляти або змінювати відомості про авторство та цей текст.
+
+Ця ліцензія не скасовує прав, які Умови використання GitHub надають
+користувачам платформи (перегляд і створення форків у межах GitHub).
+
+Програма надається «як є», без жодних гарантій. Результати розрахунків
+мають довідковий характер і не є податковою, юридичною чи фінансовою
+консультацією; автор не несе відповідальності за збитки від її
+використання.
+
+Назви й торгові марки третіх сторін належать їхнім власникам. Програма
+не є офіційним продуктом жодної компанії.
+
+За дозволом на використання звертайтеся до правовласника.
+
+──────────────────────────── ENGLISH ────────────────────────────────
+
+Copyright (c) 2026 Volodymyr Nakonechnyi (Наконечний Володимир
+Михайлович). All rights reserved.
+
+The source code is published for viewing purposes only. Without prior
+written permission from the copyright holder you may not copy, modify,
+distribute, sublicense, sell, host elsewhere, or use the software or any
+part of it commercially, and you may not remove this notice.
+
+This license does not limit the rights that the GitHub Terms of Service
+grant to GitHub users (viewing and forking within the GitHub platform).
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND. THE
+AUTHOR SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
+ARISING FROM THE USE OF THE SOFTWARE. Calculations are informational and
+are not tax, legal or financial advice.</pre></div>
+      </div>
+    </div>
+  </div>
   <div id="backupBanner" class="backup-banner" style="display:none"><span id="backupBannerText"></span><span class="bb-actions"><button class="btn-pill" onclick="exportBackup()">💾 Зберегти копію</button><button class="btn-pill" onclick="hideBackupBanner(true)">Пізніше</button></span></div>
   <div id="toastMsg" class="toast">Скопійовано!</div>
 
@@ -1196,10 +1442,10 @@
       <button class="btn-secondary" onclick="document.getElementById('backupImportInput').click()">Імпорт копії</button>
       <input id="backupImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importBackupFile(this)" />
     </div>
-    <div>NOVA PULSE v6.4 · Локальна версія без сервера</div>
+    <div>NOVA PULSE v6.5 · Локальна версія без сервера</div>
     <div>© 2026 Наконечний Володимир Михайлович. Усі права захищені.</div>
-    <div>© 2026 Всі права захищені</div>
     <div><strong>РОЗРОБИВ: НАКОНЕЧНИЙ ВОЛОДИМИР МИХАЙЛОВИЧ</strong></div>
+    <div><button class="about-link" onclick="openAbout('info')">📄 Про програму</button> · <button class="about-link" onclick="openAbout('lic')">⚖️ Ліцензія</button></div>
   </footer>
 
   <div id="smartAdvisor" class="smart-advisor" aria-live="polite" role="status" style="display:none;">
@@ -1214,7 +1460,7 @@
   </style>
   <script>
     const STORAGE_KEY = 'np_lviv_pro_v6';
-    const APP_VERSION = '6.4';
+    const APP_VERSION = '6.5';
     const SCHEMA_VERSION = 6;
 
     /* ---- Єдині константи розрахунків (змінюйте тут, а не по коду) ---- */
@@ -1227,6 +1473,39 @@
       fop3_3: { rate: 0.04 }                         // 3% ЄП + 1% ВЗ (ПДВ окремо)
     };
     const PW_ROUNDS = 20000;
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const NB_KEYS = ['name', 'parcels', 'fee', 'pack', 'rent', 'depositMonths', 'payroll', 'utilities', 'packCost', 'other', 'capex', 'buffer'];
+    const BAL_KEYS = ['deposits', 'equipment', 'inventory', 'receivables', 'otherAssets', 'loans', 'payables', 'taxDue', 'otherLiab'];
+    function cleanDraft(d) {
+      const o = {}; d = d && typeof d === 'object' ? d : {};
+      NB_KEYS.forEach(k => { if (k in d) o[k] = k === 'name' ? String(d[k] ?? '').slice(0, 80) : Math.max(0, Number(d[k]) || 0); });
+      return o;
+    }
+    function sanitizeV65(s) {
+      const arr = v => (Array.isArray(v) ? v : []), num = v => (Number.isFinite(Number(v)) ? Number(v) : 0);
+      const sc = s.scenarioCurrent && typeof s.scenarioCurrent === 'object' ? s.scenarioCurrent : {};
+      const cleanSc = x => ({
+        parcels: clamp(num(x.parcels), -90, 300), fee: clamp(num(x.fee), -90, 300), rent: clamp(num(x.rent), -90, 300),
+        payroll: clamp(num(x.payroll), -90, 300), extra: Math.max(0, num(x.extra)),
+        include: arr(x.include).map(cleanId).slice(0, 20), exclude: arr(x.exclude).map(cleanId).slice(0, 20)
+      });
+      s.scenarioCurrent = cleanSc(sc);
+      s.scenarios = arr(s.scenarios).slice(0, 12).filter(x => x && typeof x === 'object').map(x => ({
+        id: cleanId(x.id || ('sc_' + Date.now())), name: String(x.name ?? '').slice(0, 60),
+        params: cleanSc(x.params && typeof x.params === 'object' ? x.params : {}), net: num(x.net), gross: num(x.gross), delta: num(x.delta)
+      }));
+      s.branchDraft = cleanDraft(s.branchDraft);
+      s.branchPlans = arr(s.branchPlans).slice(0, 12).filter(x => x && typeof x === 'object').map(x => ({
+        id: cleanId(x.id || ('bp_' + Date.now())), name: String(x.name ?? '').slice(0, 80), draft: Object.assign({ name: 'Нове відділення' }, cleanDraft(x.draft)),
+        res: { net: num(x.res && x.res.net), be: num(x.res && x.res.be), need: num(x.res && x.res.need), payback: num(x.res && x.res.payback) }
+      }));
+      const b = s.balance && typeof s.balance === 'object' ? s.balance : {};
+      s.balance = {}; BAL_KEYS.forEach(k => { s.balance[k] = Math.max(0, num(b[k])); });
+      s.balanceSnaps = arr(s.balanceSnaps).slice(-36).filter(x => x && typeof x === 'object').map(x => ({
+        date: String(x.date ?? '').slice(0, 10), assets: num(x.assets), liab: num(x.liab), equity: num(x.equity), cash: num(x.cash)
+      }));
+      return s;
+    }
 
     /* ---- SHA-256 (синхронний, працює і на file://, і на http) ---- */
     const SHA_K = new Uint32Array([
@@ -1353,6 +1632,7 @@
       s.branchReports = arr(s.branchReports).map(sanitizeReport).filter(Boolean);
       if (s.adminAuth && !(typeof s.adminAuth.hash === 'string' && typeof s.adminAuth.salt === 'string')) delete s.adminAuth;
       s.openingCash = sNum(s.openingCash);
+      sanitizeV65(s);
       return s;
     }
     function esvMonthly() {
@@ -1425,7 +1705,13 @@
       taxCustomPct: 6,
       benchmarkArea: 'Сихівський',
       benchmarkAreaM2: 100,
-      scoring: { access: 22, floor: 18, area: 17, power: 18, rentRatio: 13 }
+      scoring: { access: 22, floor: 18, area: 17, power: 18, rentRatio: 13 },
+      scenarioCurrent: { parcels: 0, fee: 0, rent: 0, payroll: 0, extra: 0, include: [], exclude: [] },
+      scenarios: [],
+      branchDraft: {},
+      branchPlans: [],
+      balance: {},
+      balanceSnaps: []
     };
 
     let state = loadState();
@@ -1527,6 +1813,9 @@
       document.getElementById(btn.dataset.tab).classList.add('active');
       if (btn.dataset.tab === 'tab-chart') drawGrowthChart();
       if (btn.dataset.tab === 'tab-management') renderManagement();
+      if (btn.dataset.tab === 'tab-scenarios') scInit();
+      if (btn.dataset.tab === 'tab-newbranch') nbInit();
+      if (btn.dataset.tab === 'tab-balance') balInit();
     });
 
     function setIncomeMode(mode) {
@@ -1732,12 +2021,12 @@
       const workDays=Math.max(1,Number(state.workDays)||30);
       const rows=active.map(loc=>{
         const share=volume>0?Math.max(0,Number(loc.parcelsDay)||0)/volume:0;
-        const gross=state.incomeMode==='parcels' ? Math.max(0,Number(loc.parcelsDay)||0)*workDays*Math.max(0,Number(state.feePerParcel)||0)+Math.max(0,Number(state.packSales)||0)*share : Math.max(0,Number(state.directIncome)||0)*share;
+        const gross=state.incomeMode==='parcels' ? Math.max(0,Number(loc.parcelsDay)||0)*workDays*Math.max(0,Number(state.feePerParcel)||0)+Math.max(0,Number(state.packSales)||0) : Math.max(0,Number(state.directIncome)||0)*(Math.max(0,Number(loc.parcelsDay)||0)/Math.max(1,Number(state.parcelsDay)||1));
         const rent=Math.max(0,Number(loc.rent)||0);
         const payroll=employeePayrollForLocation(loc.id);
-        const packCost=Math.max(0,Number(state.packCost)||0)*share;
-        const utilities=Math.max(0,Number(state.utilities)||0)*share;
-        const amort=Math.max(0,Number(state.amort)||0)*share;
+        const packCost=Math.max(0,Number(state.packCost)||0);
+        const utilities=Math.max(0,Number(state.utilities)||0);
+        const amort=Math.max(0,Number(state.amort)||0);
         return {loc,share,gross,rent,payroll,packCost,utilities,amort};
       });
       const gross=rows.reduce((a,r)=>a+r.gross,0);
@@ -1950,9 +2239,9 @@
       const stressBox = document.getElementById('stressResultBox');
       stressBox.className = 'alert ' + (stressNet >= 0 ? 'good' : 'bad');
       stressBox.innerHTML = `
-        <strong>Стрес-сценарій (-25% посилок + 7 500 ₴ генератор/паливо):</strong><br/>
-        Дохід падає до <strong>${fmt(stressIncome)}</strong>, витрати — <strong>${fmt(stressOpex)}</strong>.<br/>
-        Результат місяця: <strong>${fmt(stressNet)}</strong> (${stressNet >= 0 ? 'точка витримує просадку без збитків ✅' : 'виникає мінус — потрібен резерв ⚠️'}).
+        <strong>Стрес-перевірка:</strong> посилок на 25% менше й додатково 7 500 ₴ на генератор і паливо.<br/>
+        Виручка тоді буде близько <strong>${fmt(stressIncome)}</strong>, витрати — <strong>${fmt(stressOpex)}</strong>.<br/>
+        Підсумок місяця: <strong>${fmt(stressNet)}</strong>. ${stressNet >= 0 ? 'Точка витримує таку просадку й лишається в плюсі.' : `Без резерву такий місяць закінчиться мінусом. Тримайте на рахунку хоча б ${fmt(Math.abs(stressNet) * 2)}: цього вистачить на два таких місяці.`}
       `;
 
       // Tab 2: CAPEX, Ramp-up & Cash Gap
@@ -2010,10 +2299,11 @@
       const allocPersonal = Math.max(0, 100 - state.allocScale - state.allocReserve);
       const baseProfitForAlloc = Math.max(0, netProfit);
       document.getElementById('allocSummary').innerHTML = `
-        <strong>З кожної точки (${fmt(baseProfitForAlloc)}/міс):</strong><br/>
-        • У фонд нових точок (${state.allocScale}%): <strong>${fmt(baseProfitForAlloc * state.allocScale / 100)}</strong><br/>
-        • У резерв безпеки (${state.allocReserve}%): <strong>${fmt(baseProfitForAlloc * state.allocReserve / 100)}</strong><br/>
-        • На особисті та сімейні цілі (${allocPersonal}%): <strong>${fmt(baseProfitForAlloc * allocPersonal / 100)}</strong>
+        <strong>З прибутку точки (${fmt(baseProfitForAlloc)}/міс) щомісяця:</strong><br/>
+        • на запуск нових точок (${state.allocScale}%): <strong>${fmt(baseProfitForAlloc * state.allocScale / 100)}</strong><br/>
+        • у резерв безпеки (${state.allocReserve}%): <strong>${fmt(baseProfitForAlloc * state.allocReserve / 100)}</strong><br/>
+        • вам на особисті та сімейні цілі (${allocPersonal}%): <strong>${fmt(baseProfitForAlloc * allocPersonal / 100)}</strong>
+        ${allocPersonal <= 10 ? '<br/><small>На себе лишається зовсім мало. Переконайтесь, що цього вистачає: схема, яка виснажує власника, довго не працює.</small>' : ''}
       `;
 
       state.partnerCapexPct = Number(document.getElementById('partnerCapexPct').value) || 0;
@@ -2022,8 +2312,9 @@
       const myMonthlyWithPartner = netProfit * (1 - state.partnerProfitPct / 100);
       const myPaybackPartner = myMonthlyWithPartner > 0 ? (myCapex / myMonthlyWithPartner).toFixed(1) : '∞';
       document.getElementById('partnerCompareBox').innerHTML = `
-        • <strong>100% свої кошти:</strong> вкладаєш ${fmt(totalStartBudget)} → отримуєш <strong>${fmt(netProfit)}/міс</strong> (окупність ${paybackMonths} міс).<br/>
-        • <strong>З партнером:</strong> твій вхід <strong>${fmt(myCapex)}</strong> → отримуєш <strong>${fmt(myMonthlyWithPartner)}/міс</strong> (твоя окупність ${myPaybackPartner} міс).
+        • <strong>Самостійно:</strong> ви вкладаєте ${fmt(totalStartBudget)}, отримуєте <strong>${fmt(netProfit)}/міс</strong>, окупність ≈ ${paybackMonths} міс.<br/>
+        • <strong>З партнером:</strong> ваш внесок ${fmt(myCapex)}, ваша частка <strong>${fmt(myMonthlyWithPartner)}/міс</strong>, окупність ≈ ${myPaybackPartner} міс.
+        ${Number.isFinite(Number(myPaybackPartner)) && Number.isFinite(Number(paybackMonths)) ? (Number(myPaybackPartner) < Number(paybackMonths) ? '<br/><small>З партнером ви окупаєтесь швидше, але віддаєте частину прибутку на весь час співпраці.</small>' : '<br/><small>Самостійно окупність не довша, тож партнер потрібен лише тоді, коли бракує грошей на старт.</small>') : ''}
       `;
 
       state.curReserveCash = Number(document.getElementById('curReserveCash').value) || 0;
@@ -2034,11 +2325,11 @@
       const allGates = gate1 && gate2 && gate3;
       document.getElementById('gatesResultBox').innerHTML = `
         <div class="alert ${allGates ? 'good' : 'warn'}">
-          <div>${gate1 ? '✅' : '❌'} <strong>Ворота 1 (Маржа ≥ 20%):</strong> зараз ${margin.toFixed(1)}%</div>
-          <div>${gate2 ? '✅' : '❌'} <strong>Ворота 2 (Резерв ≥ 2 міс OPEX = ${fmt(totalOpex * 2)}):</strong> зараз ${fmt(state.curReserveCash)}</div>
-          <div>${gate3 ? '✅' : '❌'} <strong>Ворота 3 (Капітал на старт = ${fmt(totalStartBudget)}):</strong> зараз ${fmt(state.curScaleCash)}</div>
+          <div>${gate1 ? '✅' : '❌'} <strong>Маржа від 20%:</strong> зараз ${margin.toFixed(1)}%${gate1 ? '.' : `, бракує приблизно ${fmt(Math.max(0, grossIncome * 0.2 - netProfit))} чистого прибутку на місяць.`}</div>
+          <div>${gate2 ? '✅' : '❌'} <strong>Резерв на два місяці витрат (${fmt(totalOpex * 2)}):</strong> зараз ${fmt(state.curReserveCash)}${gate2 ? '.' : `, бракує ${fmt(totalOpex * 2 - state.curReserveCash)}.`}</div>
+          <div>${gate3 ? '✅' : '❌'} <strong>Капітал на старт (${fmt(totalStartBudget)}):</strong> зараз ${fmt(state.curScaleCash)}${gate3 ? '.' : `, бракує ${fmt(totalStartBudget - state.curScaleCash)}.`}</div>
           <div style="margin-top:6px;font-weight:800;">
-            ${allGates ? '🟢 Усі три ворота відкриті — можна безпечно запускати наступну локацію!' : '🟡 Рано відкривати нову точку — спершу закрий червоні пункти вище.'}
+            ${allGates ? '🟢 Усі три умови виконано: можна готувати запуск наступної точки.' : `🟡 Рано відкривати нову точку. Спершу закрийте: ${[!gate1 && 'маржу', !gate2 && 'резерв', !gate3 && 'капітал на старт'].filter(Boolean).join(', ')}.`}
           </div>
         </div>
       `;
@@ -2052,18 +2343,19 @@
       };
       const score = state.scoring.access + state.scoring.floor + state.scoring.area + state.scoring.power + state.scoring.rentRatio;
       const flags = [];
-      if (state.scoring.access < 15) flags.push("слабкий під'їзд буса/парковка");
-      if (state.scoring.power < 12) flags.push("ризик по електропотужності/зв'язку");
-      if (state.scoring.rentRatio < 9) flags.push('завищена оренда відносно трафіку');
+      if (state.scoring.access < 15) flags.push('слабкий під’їзд для буса й парковка');
+      if (state.scoring.power < 12) flags.push('ризик по електропотужності та зв’язку');
+      if (state.scoring.rentRatio < 9) flags.push('оренда завелика для такого трафіку');
       const scEl = document.getElementById('scoringResultBox');
       scEl.className = 'alert ' + (score >= 80 && !flags.length ? 'good' : (score >= 65 ? 'warn' : 'bad'));
       scEl.innerHTML = `
-        <strong>Оцінка локації: ${score} / 100 балів</strong> — ${score >= 80 ? 'сильне приміщення, можна брати' : (score >= 65 ? 'середній варіант, торгуйся по оренді' : 'високий ризик провалу')}.
-        ${flags.length ? `<br/>🚩 Червоні прапорці: <strong>${flags.join(', ')}</strong>.` : ''}
+        <strong>Оцінка локації: ${score} з 100.</strong> ${score >= 80 ? 'Сильне приміщення, його варто брати.' : (score >= 65 ? 'Середній варіант: торгуйтесь по оренді й перевірте слабкі місця.' : 'Високий ризик: без суттєвих поступок орендодавця краще шукати інше.')}
+        ${flags.length ? `<br/>🚩 На що звернути увагу: <strong>${flags.join('; ')}</strong>.` : ''}
       `;
 
       // Tab 6: Growth Curve Simulation
       runSimulation(grossIncome, totalOpex, netProfit, totalStartBudget, margin);
+      try { refreshV65(); } catch (e) { console.error(e); }
       saveState();
       if(document.getElementById('tab-management')?.classList.contains('active')) renderManagement();
     }
@@ -2135,13 +2427,13 @@
       const getY = (v) => padT + plotH - ((v - minV) / range) * plotH;
 
       // Grid lines
-      ctx.strokeStyle = '#222d42';
+      ctx.strokeStyle = cssVar('--chart-grid');
       ctx.lineWidth = 1;
       for (let i = 0; i <= 4; i++) {
         const y = padT + (plotH / 4) * i;
         ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
         const labelVal = Math.round((maxV - (range / 4) * i) / 1000) + 'k';
-        ctx.fillStyle = '#8b99b5';
+        ctx.fillStyle = cssVar('--chart-text');
         ctx.font = '12px sans-serif';
         ctx.fillText(labelVal, 8, y + 4);
       }
@@ -2153,7 +2445,7 @@
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(padL, redY); ctx.lineTo(W - padR, redY); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = '#fca5a5';
+      ctx.fillStyle = cssVar('--chart-red');
       ctx.font = 'bold 11px sans-serif';
       ctx.fillText('Червона межа: ' + Math.round(redLine / 1000) + 'k ₴', padL + 8, redY - 6);
 
@@ -2175,7 +2467,7 @@
         ctx.arc(x, y, pt.opened ? 5.5 : 3.5, 0, Math.PI * 2);
         ctx.fill();
         if (idx % 3 === 0 || idx === lastSimSeries.length - 1) {
-          ctx.fillStyle = '#93a1bd';
+          ctx.fillStyle = cssVar('--chart-text');
           ctx.font = '11px sans-serif';
           ctx.fillText(pt.month + 'м', x - 8, H - 10);
         }
@@ -2333,13 +2625,14 @@
       if(!reference){box.className='alert warn';box.textContent='Для цієї посади немає надійного відповідника в статистиці вакансій.';advisorShow('Потрібно уточнити посаду',[{label:'Рекомендація',text:'Не встановлюю ринкову суму без відповідної професії. Оберіть найближчу посаду або додайте власні порівнювані вакансії.',kind:'recommend'},{label:'Ризик',text:'Неправильний аналог може суттєво спотворити бюджет найму.',kind:'risk'}],'Джерело базових зарплат: Work.ua, листопад 2026.');return;}
       const scaledLow=low*load/100,scaledHigh=high*load/100;
       const status=salary<scaledLow*.9?'bad':salary>scaledHigh*1.1?'warn':'good';
-      const recommendation=salary<scaledLow?`Підвищити орієнтир до ${fmt(scaledLow)}–${fmt(scaledHigh)} ₴ gross/міс.`:salary>scaledHigh?`Можна розглянути ${fmt(scaledLow)}–${fmt(scaledHigh)} ₴ gross/міс.; вища ставка виправдана за додаткові обов’язки або досвід.`:`Залишити в межах ${fmt(scaledLow)}–${fmt(scaledHigh)} ₴ gross/міс.`;
-      const why=override>0?('Використано ваш власний ринковий орієнтир: '+fmt(override)+' ₴/міс. (з ваших вакансій чи пропозицій).'):postalRole
-        ? (postalCity?`Для операторів поштових відділень у ${postalCity[0].toUpperCase()+postalCity.slice(1)} медіана Work.ua — ${fmt(reference)} ₴/міс. Це прямі дані за посадою й містом, а не перерахунок середньої зарплати всіх професій.`:`Для операторів поштових відділень загальноукраїнська медіана Work.ua — ${fmt(reference)} ₴/міс. Для цього міста окремої вибірки не знайдено, тому це лише загальноукраїнський орієнтир.`)
-        : `Для ролі «${role}» базовий показник вакансій — близько ${fmt(roleMedian)} ₴/міс.; регіональний коефіцієнт ${city.factor.toFixed(2)} (${city.city}). Це орієнтир вакансій, а не тариф конкретної компанії.`;
-      const risk=salary<scaledLow?`Ставка нижча за орієнтир: може бути менше відгуків, довший пошук і більша плинність.`:salary>scaledHigh?`Ставка помітно вища: витрати зростуть; варто закріпити додаткові задачі та показники результату.`:`Сума в ринковому коридорі. Якщо не врахувати графік, навантаження та бонуси, можна неправильно оцінити реальну конкурентність.`;
-      box.className='alert '+status;box.textContent='Коротка рекомендація відображається у напівпрозорому вікні.';
-      advisorShow('Зарплата: '+role,[{label:'Що краще запропонувати',text:recommendation,kind:'recommend'},{label:'Чому саме так',text:why+' '+city.note},{label:'Якщо не врахувати',text:risk,kind:'risk'},{label:'Вплив на відділення',text:`На руки орієнтовно ${fmt(net)} ₴; повна вартість роботодавця близько ${fmt(employer)} ₴/міс. Прогнозний результат після найму: ${fmt(projected)} ₴/міс.${projected<0?' Модель показує ризик збитку.':''}`}],`Місто/регіон: ${postalRole?(postalCity?postalCity[0].toUpperCase()+postalCity.slice(1):'Україна — без локальної вибірки'):city.city}. ${postalRole?postalOperatorSource:'Ринкові дані Work.ua: листопад 2026.'} Формат gross/net у вакансіях може відрізнятися — уточніть його до погодження оферу.`);
+      const range=`${fmt(scaledLow)}–${fmt(scaledHigh)} ₴ gross на місяць`;
+      const recommendation=salary<scaledLow?`Ставка нижча за ринок. Реалістичний коридор — ${range}. Щоб швидко закрити вакансію, цільтесь ближче до верхньої межі.`:salary>scaledHigh?`Ви пропонуєте вище за ринковий коридор (${range}). Це виправдано, якщо людина бере більше обов’язків: тоді запишіть їх в оферті. Якщо ні, є простір для торгу.`:`Ставка в ринковому коридорі (${range}). Щоб утримати сильніших, краще додати бонус за результат, ніж піднімати базу.`;
+      const why=override>0?`Орієнтиром взято ваше значення — ${fmt(override)} ₴/міс (з ваших вакансій чи пропозицій).`:postalRole
+        ? (postalCity?`Для операторів поштових відділень у ${postalCity[0].toUpperCase()+postalCity.slice(1)} медіана вакансій на Work.ua — ${fmt(reference)} ₴/міс. Це дані саме за цією посадою й містом.`:`Для операторів поштових відділень загальноукраїнська медіана вакансій на Work.ua — ${fmt(reference)} ₴/міс. Для цього міста окремої вибірки немає, тож це лише загальний орієнтир.`)
+        : `Для ролі «${role}» вакансії дають близько ${fmt(roleMedian)} ₴/міс з регіональним коефіцієнтом ${city.factor.toFixed(2)} (${city.city}). Це ринок вакансій, а не тариф конкретної компанії.`;
+      const risk=salary<scaledLow?`Низька ставка означає менше відгуків, довший пошук і вищу плинність, а заміна людини зазвичай коштує дорожче за кілька тисяч різниці.`:salary>scaledHigh?`Вища ставка збільшить витрати назавжди, тому прив’яжіть частину виплат до показників (черги, помилки, звіти).`:`Сума в ринковому коридорі. Якщо графік важчий за середній (позмінно, вихідні), реальна конкурентність нижча, ніж здається.`;
+      box.className='alert '+status;box.textContent='Коротка рекомендація — у вікні помічника.';
+      advisorShow('Зарплата: '+role,[{label:'Що пропонувати',text:recommendation,kind:'recommend'},{label:'Чому саме так',text:why+' '+city.note},{label:'Чим ризикуєте',text:risk,kind:'risk'},{label:'Що це означає для відділення',text:`Така людина обійдеться вам у ≈ ${fmt(employer)}/міс, а на руки отримає ≈ ${fmt(net)}. ${loc?`Якщо додати її поверх поточного складу, результат «${loc.name}» зміниться з ${fmt(currentNet)} до ${fmt(projected)} на місяць.`:''} ${projected<0?'Після цього відділення стане збитковим: спершу потрібен більший потік або менший фонд оплати праці.':''}`}],`Місто/регіон: ${postalRole?(postalCity?postalCity[0].toUpperCase()+postalCity.slice(1):'Україна — без локальної вибірки'):city.city}. ${postalRole?postalOperatorSource:'Ринкові дані Work.ua: листопад 2026.'} Формат gross/net у вакансіях може відрізнятися, тож уточніть його, перш ніж погоджувати оферту.`);
     }
     function renderRepairBenchmark(){
       const city=document.getElementById('marketCity')?.value||'Львів',service=document.getElementById('marketService')?.value||'apartment',price=Number(document.getElementById('marketUnitPrice')?.value)||0,qty=Math.max(0,Number(document.getElementById('marketQuantity')?.value)||0),pack=repairMarket[city],v=pack?.data?.[service];
@@ -2608,6 +2901,527 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       bindDirectInput(id, () => {});
     });
 
+    /* ===================== v6.5: тема, сценарії, нове відділення, баланс, поради ===================== */
+    function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#888'; }
+    const pctTxt = (x, d) => { const k = Math.pow(10, d === undefined ? 1 : d); return (Math.round(x * k) / k).toLocaleString('uk-UA') + '%'; };
+    const monthsTxt = n => { const v = Math.round(n * 10) / 10; return String(v).replace('.', ',') + ' міс'; };
+    const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+    const saveSoon = debounce(() => saveState(), 350);
+
+    /* ---------- Тема ---------- */
+    function cycleTheme() { if (window.NovaTheme) { NovaTheme.cycle(); updateThemeButton(); } }
+    function updateThemeButton() {
+      const b = document.getElementById('themeBtn'); if (!b || !window.NovaTheme) return;
+      const m = NovaTheme.mode(), day = NovaTheme.isDay();
+      b.textContent = m === 'auto' ? (day ? '☀️ Авто' : '🌙 Авто') : (m === 'light' ? '☀️ Світла' : '🌙 Темна');
+      b.title = 'Тема: Авто (за часом доби) → Світла → Темна';
+    }
+
+    /* ---------- Сценарний рушій ---------- */
+    const SC_ZERO = { parcels: 0, fee: 0, rent: 0, payroll: 0, extra: 0, include: [], exclude: [] };
+    function marginalTaxRate() {
+      const pr = state.taxProfile || 'fop3_5';
+      if (pr === 'fop2') return 0;
+      if (pr === 'fop3_5') return TAX_CONFIG.fop3_5.rate;
+      if (pr === 'fop3_3') return TAX_CONFIG.fop3_3.rate;
+      return Math.max(0, Number(state.taxCustomPct) || 0) / 100;
+    }
+    function runScenario(p) {
+      p = Object.assign({}, SC_ZERO, p || {});
+      const backup = state;
+      const tmp = Object.assign({}, state);                       // легка копія: журнал і звіти не клонуємо
+      tmp.locations = (state.locations || []).map(l => Object.assign({}, l));
+      tmp.employees = (state.employees || []).map(e => Object.assign({}, e));
+      const inc = new Set(p.include), exc = new Set(p.exclude);
+      tmp.locations.forEach(l => {
+        if (l.status !== 'active' && inc.has(l.id)) l.status = 'active';
+        if (l.status === 'active' && exc.has(l.id)) l.status = 'plan';
+        if (l.status === 'active') {
+          l.parcelsDay = Math.max(0, (Number(l.parcelsDay) || 0) * (1 + p.parcels / 100));
+          l.rent = Math.max(0, (Number(l.rent) || 0) * (1 + p.rent / 100));
+        }
+      });
+      tmp.feePerParcel = Math.max(0, (Number(state.feePerParcel) || 0) * (1 + p.fee / 100));
+      tmp.salary = Math.max(0, (Number(state.salary) || 0) * (1 + p.payroll / 100));
+      tmp.employees.forEach(e => { e.salary = Math.max(0, (Number(e.salary) || 0) * (1 + p.payroll / 100)); });
+      state = tmp;
+      try {
+        const m = networkModel(), extra = Math.max(0, Number(p.extra) || 0);
+        return {
+          gross: m.gross, opex: m.opex + extra, net: m.net - extra, tax: m.tax, extra,
+          volume: m.volume, count: m.activeCount,
+          rows: m.rows.map(r => ({ id: r.loc.id, name: r.loc.name, gross: r.gross, rent: r.rent, payroll: r.payroll, net: r.net }))
+        };
+      } finally { state = backup; }
+    }
+    function breakevenDropPct(p) {
+      const net = q => runScenario(Object.assign({}, p || {}, { parcels: q })).net;
+      const base = p ? (Number(p.parcels) || 0) : 0;
+      if (runScenario(p).net <= 0) return 0;
+      let lo = 0, hi = 100;                                       // падіння потоку відносно поточного стану сценарію
+      const f = d => runScenario(Object.assign({}, p || {}, { parcels: (1 + base / 100) * (1 - d / 100) * 100 - 100 })).net;
+      if (f(100) > 0) return 100;
+      for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (f(mid) > 0) lo = mid; else hi = mid; }
+      return Math.floor(lo * 10) / 10;
+    }
+
+    /* ---------- Вкладка «Що, якщо?» ---------- */
+    const SC_CONTROLS = [
+      { k: 'parcels', label: 'Потік посилок', unit: '%', min: -50, max: 50 },
+      { k: 'fee', label: 'Дохід з однієї посилки (тариф)', unit: '%', min: -30, max: 30 },
+      { k: 'rent', label: 'Оренда', unit: '%', min: -30, max: 50 },
+      { k: 'payroll', label: 'Зарплати працівників', unit: '%', min: -30, max: 50 }
+    ];
+    const SC_PRESETS = [
+      { id: 'base', label: 'Скинути', p: {} },
+      { id: 'drop', label: '📉 Просадка −25% + генератор', p: { parcels: -25, extra: 7500 } },
+      { id: 'growth', label: '📈 Потік +15%', p: { parcels: 15 } },
+      { id: 'rent', label: '🏠 Оренда +20%', p: { rent: 20 } },
+      { id: 'pay', label: '👥 Зарплати +15%', p: { payroll: 15 } },
+      { id: 'fee', label: '💸 Тариф −10%', p: { fee: -10 } },
+      { id: 'next', label: '🚀 Запустити наступне', p: 'next' },
+      { id: 'close', label: '🔒 Закрити найслабше', p: 'close' }
+    ];
+    function scInit() {
+      const box = document.getElementById('scControls');
+      if (box && !box.dataset.built) {
+        box.innerHTML = SC_CONTROLS.map(c =>
+          `<div class="control-row"><div class="control-top"><span class="control-label">${c.label}</span><span class="num-box"><b id="scVal_${c.k}">0</b>${c.unit}</span></div>` +
+          `<div class="slider-wrap"><input type="range" class="free-slider" id="scIn_${c.k}" min="${c.min}" max="${c.max}" step="1" value="0" oninput="scSet('${c.k}',this.value)"></div></div>`).join('') +
+          `<div class="control-row"><div class="control-top"><span class="control-label">Додаткові витрати на місяць (генератор, охорона, реклама)</span><div class="num-box"><input type="number" id="scIn_extra" min="0" step="500" value="0" oninput="scSet('extra',this.value)"><span class="num-unit">₴</span></div></div></div>`;
+        document.getElementById('scPresets').innerHTML = SC_PRESETS.map(x => `<button class="btn-pill" onclick="scPreset('${x.id}')">${x.label}</button>`).join('');
+        box.dataset.built = '1';
+      }
+      scSyncControls(); renderScenarios();
+    }
+    function scSyncControls() {
+      const p = state.scenarioCurrent;
+      SC_CONTROLS.forEach(c => {
+        const el = document.getElementById('scIn_' + c.k), v = document.getElementById('scVal_' + c.k);
+        if (el) el.value = p[c.k]; if (v) v.textContent = (p[c.k] > 0 ? '+' : '') + p[c.k];
+      });
+      const ex = document.getElementById('scIn_extra'); if (ex && document.activeElement !== ex) ex.value = p.extra || 0;
+      const box = document.getElementById('scLocs'); if (!box) return;
+      const locs = state.locations || [];
+      const plan = locs.filter(l => l.status !== 'active'), act = locs.filter(l => l.status === 'active');
+      let h = '';
+      if (plan.length) h += '<div class="muted-note" style="margin-bottom:4px">Додати до розрахунку (зараз у плані):</div>' + plan.map(l =>
+        `<label class="sc-check"><input type="checkbox" ${p.include.includes(l.id) ? 'checked' : ''} onchange="scToggle('include','${escapeHtml(l.id)}',this.checked)"> ${escapeHtml(l.name)} <small>· ${Math.round(l.parcelsDay)} посилок/день, оренда ${fmt(l.rent)}</small></label>`).join('');
+      if (act.length > 1) h += '<div class="muted-note" style="margin:8px 0 4px">Призупинити (виключити з розрахунку):</div>' + act.map(l =>
+        `<label class="sc-check"><input type="checkbox" ${p.exclude.includes(l.id) ? 'checked' : ''} onchange="scToggle('exclude','${escapeHtml(l.id)}',this.checked)"> ${escapeHtml(l.name)}</label>`).join('');
+      box.innerHTML = h || '<div class="muted-note">Відділень для додавання чи призупинення немає. Додайте їх на вкладці «Мережа».</div>';
+    }
+    function scSet(k, v) {
+      const c = SC_CONTROLS.find(x => x.k === k);
+      let n = Number(v); if (!Number.isFinite(n)) n = 0;
+      n = k === 'extra' ? Math.max(0, n) : clamp(n, c ? c.min : -90, c ? c.max : 300);
+      state.scenarioCurrent[k] = n;
+      const lab = document.getElementById('scVal_' + k); if (lab) lab.textContent = (n > 0 ? '+' : '') + n;
+      saveSoon(); renderScenarios();
+    }
+    function scToggle(kind, id, on) {
+      const arr = state.scenarioCurrent[kind], i = arr.indexOf(id);
+      if (on && i < 0) arr.push(id); if (!on && i >= 0) arr.splice(i, 1);
+      saveSoon(); renderScenarios();
+    }
+    function scPreset(id) {
+      const pr = SC_PRESETS.find(x => x.id === id); if (!pr) return;
+      let p = pr.p;
+      if (p === 'next') {
+        const nxt = (state.locations || []).find(l => l.status !== 'active');
+        if (!nxt) { showToast('У плані немає відділень для запуску'); return; }
+        p = { include: [nxt.id] };
+      } else if (p === 'close') {
+        const m = networkModel(); if (m.rows.length < 2) { showToast('Потрібно щонайменше два активні відділення'); return; }
+        const worst = m.rows.slice().sort((a, b) => a.net - b.net)[0]; p = { exclude: [worst.loc.id] };
+      }
+      state.scenarioCurrent = Object.assign({}, SC_ZERO, { include: [], exclude: [] }, p);
+      saveState(); scSyncControls(); renderScenarios();
+    }
+    function scLabel(p) {
+      const parts = [];
+      if (p.parcels) parts.push('посилки ' + (p.parcels > 0 ? '+' : '') + p.parcels + '%');
+      if (p.fee) parts.push('тариф ' + (p.fee > 0 ? '+' : '') + p.fee + '%');
+      if (p.rent) parts.push('оренда ' + (p.rent > 0 ? '+' : '') + p.rent + '%');
+      if (p.payroll) parts.push('зарплати ' + (p.payroll > 0 ? '+' : '') + p.payroll + '%');
+      if (p.extra) parts.push('+' + fmt(p.extra) + ' витрат');
+      if (p.include.length) parts.push('запуск: ' + p.include.map(id => ((state.locations || []).find(l => l.id === id) || {}).name || id).join(', '));
+      if (p.exclude.length) parts.push('пауза: ' + p.exclude.map(id => ((state.locations || []).find(l => l.id === id) || {}).name || id).join(', '));
+      return parts.join(' · ') || 'без змін';
+    }
+    function scSave() {
+      const nm = (document.getElementById('scName').value || '').trim() || ('Сценарій ' + ((state.scenarios || []).length + 1));
+      const p = state.scenarioCurrent, b = runScenario(SC_ZERO), s = runScenario(p);
+      state.scenarios = (state.scenarios || []).slice(0, 11);
+      state.scenarios.unshift({ id: 'sc_' + Date.now().toString(36), name: nm.slice(0, 60), params: JSON.parse(JSON.stringify(p)), net: Math.round(s.net), gross: Math.round(s.gross), delta: Math.round(s.net - b.net) });
+      document.getElementById('scName').value = '';
+      saveState(); renderScenarios(); showToast('Сценарій збережено');
+    }
+    function scApply(id) {
+      const s = (state.scenarios || []).find(x => x.id === id); if (!s) return;
+      state.scenarioCurrent = Object.assign({}, SC_ZERO, JSON.parse(JSON.stringify(s.params)));
+      saveState(); scSyncControls(); renderScenarios();
+    }
+    function scDelete(id) { state.scenarios = (state.scenarios || []).filter(x => x.id !== id); saveState(); renderScenarios(); }
+    function renderScenarios() {
+      const out = document.getElementById('scOut'); if (!out) return;
+      const p = state.scenarioCurrent, base = runScenario(SC_ZERO), sc = runScenario(p);
+      if (!base.count) { out.innerHTML = '<div class="alert warn">Немає активних відділень. Позначте хоча б одне як активне на вкладці «Мережа», і тоді буде що порівнювати.</div>'; return; }
+      const d = sc.net - base.net, same = Math.abs(d) < 1 && Math.abs(sc.gross - base.gross) < 1;
+      const mg = x => x.gross > 0 ? (x.net / x.gross) * 100 : 0;
+      const cls = (v, goodUp) => Math.abs(v) < 1 ? '' : ((v > 0) === goodUp ? 'text-green' : 'text-red');
+      const sign = v => (v > 0 ? '+' : '') + Math.round(v).toLocaleString('uk-UA') + ' ₴';
+      const row = (name, a, b, goodUp) => `<tr><td>${name}</td><td>${fmt(a)}</td><td><b>${fmt(b)}</b></td><td class="${cls(b - a, goodUp)}">${Math.abs(b - a) < 1 ? '—' : sign(b - a)}</td></tr>`;
+      let verdict;
+      if (same) verdict = 'Сценарій поки збігається з базою. Посуньте повзунок або оберіть готовий варіант вище.';
+      else if (d >= 0) verdict = `За цих умов мережа заробляє на <b>${fmt(d)}</b> більше щомісяця, це приблизно ${fmt(d * 12)} за рік.`;
+      else verdict = `Цей варіант обходиться вам у <b>${fmt(-d)}</b> щомісяця, приблизно ${fmt(-d * 12)} за рік.`;
+      if (sc.net < 0) {
+        const res = Number(state.curReserveCash) || 0, mo = res / (-sc.net);
+        verdict += ` Мережа йде в мінус: ${fmt(sc.net)}/міс. Резерву ${fmt(res)} вистачить приблизно на ${monthsTxt(mo)}.`;
+      }
+      let launchNote = '';
+      if (p.include.length) {
+        const without = runScenario(Object.assign({}, p, { include: [] }));
+        const gain = sc.net - without.net;
+        let need = 0;
+        p.include.forEach(id => {
+          const l = (state.locations || []).find(x => x.id === id); if (!l) return;
+          need += simulateBranch(Object.assign(nbDefaults(), { parcels: Number(l.parcelsDay) || 0, rent: Number(l.rent) || 0 })).needTotal;
+        });
+        launchNote = `<div class="alert ${gain > 0 ? 'good' : 'bad'}" style="margin-top:8px">Запуск ${p.include.length > 1 ? 'нових відділень' : 'нового відділення'} додає близько <b>${fmt(gain)}</b>/міс у стабільному режимі. На старт орієнтовно потрібно <b>${fmt(need)}</b> (вкладення, застава, збитки розгону й подушка), тобто окупність ≈ ${gain > 0 ? monthsTxt(need / gain) : 'не досягається'}. У фонді розвитку зараз ${fmt(state.curScaleCash)}${(Number(state.curScaleCash) || 0) >= need ? ': цього вистачає.' : `: бракує ${fmt(need - (Number(state.curScaleCash) || 0))}.`}</div>`;
+      }
+      const sens = [
+        { t: 'потоку посилок на 10%', p: { parcels: 10 } }, { t: 'тарифу за посилку на 10%', p: { fee: 10 } },
+        { t: 'оренди на 10%', p: { rent: -10 } }, { t: 'зарплат на 10%', p: { payroll: -10 } }
+      ].map(s => ({ t: s.t, up: s.p.parcels > 0 || s.p.fee > 0, v: runScenario(Object.assign({}, p, s.p)).net - sc.net })).sort((a, b) => b.v - a.v);
+      const sensHtml = sens.map(s => `<li>${s.up ? 'Зростання' : 'Зниження'} ${s.t}: <b class="${s.v >= 0 ? 'text-green' : 'text-red'}">${sign(s.v)}</b>/міс</li>`).join('');
+      const bed = breakevenDropPct(p);
+      const bedTxt = sc.net <= 0 ? 'У цьому варіанті мережа вже не в плюсі, тому запасу міцності немає.' :
+        `Потік посилок може впасти ще на <b>${pctTxt(bed)}</b>, і лише тоді мережа дійде до нуля. ${bed < 12 ? 'Це дуже тонкий запас.' : bed < 25 ? 'Просадка на чверть уже дасть збиток.' : 'Це комфортний запас.'}`;
+      const perBranch = sc.rows.map(r => `<tr><td>${escapeHtml(r.name)}</td><td>${fmt(r.gross)}</td><td class="${r.net >= 0 ? 'text-green' : 'text-red'}"><b>${fmt(r.net)}</b></td></tr>`).join('');
+      const saved = (state.scenarios || []).map(s => `<div class="ledger-row"><div><strong>${escapeHtml(s.name)}</strong><small style="display:block;color:var(--muted)">${escapeHtml(scLabel(s.params))}</small><small>Чистий прибуток: <b>${fmt(s.net)}</b> (${s.delta >= 0 ? '+' : ''}${fmt(s.delta)} до бази на момент збереження)</small></div><div style="display:flex;gap:5px;align-items:center"><button class="btn-pill" onclick="scApply('${escapeHtml(s.id)}')">Відкрити</button><button class="btn-danger" onclick="scDelete('${escapeHtml(s.id)}')">✕</button></div></div>`).join('');
+      out.innerHTML = `
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">База: чистий прибуток</div><div class="kpi-val ${base.net >= 0 ? 'text-green' : 'text-red'}">${fmt(base.net)}</div></div>
+          <div class="kpi"><div class="kpi-label">Сценарій</div><div class="kpi-val ${sc.net >= 0 ? 'text-green' : 'text-red'}">${fmt(sc.net)}</div></div>
+          <div class="kpi"><div class="kpi-label">Різниця / міс</div><div class="kpi-val ${cls(d, true)}">${Math.abs(d) < 1 ? '—' : sign(d)}</div></div>
+          <div class="kpi"><div class="kpi-label">Різниця / рік</div><div class="kpi-val ${cls(d, true)}">${Math.abs(d) < 1 ? '—' : sign(d * 12)}</div></div>
+        </div>
+        <div class="muted-note" style="margin-bottom:6px">Сценарій: ${escapeHtml(scLabel(p))}</div>
+        <div class="alert ${same ? '' : (d >= 0 ? 'good' : 'warn')}">${verdict}</div>${launchNote}
+        <div class="table-wrap" style="margin-top:10px"><table class="benchmark-table"><thead><tr><th></th><th>База</th><th>Сценарій</th><th>Різниця</th></tr></thead><tbody>
+          ${row('Виручка', base.gross, sc.gross, true)}${row('Витрати (з податками)', base.opex, sc.opex, false)}${row('Податки та ЄСВ', base.tax, sc.tax, false)}${row('Чистий прибуток', base.net, sc.net, true)}
+          <tr><td>Маржа</td><td>${pctTxt(mg(base))}</td><td><b>${pctTxt(mg(sc))}</b></td><td>${Math.abs(mg(sc) - mg(base)) < .05 ? '—' : (mg(sc) - mg(base) > 0 ? '+' : '') + pctTxt(mg(sc) - mg(base))}</td></tr>
+          <tr><td>Посилок на день (мережа)</td><td>${Math.round(base.volume)}</td><td><b>${Math.round(sc.volume)}</b></td><td>${Math.round(sc.volume - base.volume) === 0 ? '—' : (sc.volume > base.volume ? '+' : '') + Math.round(sc.volume - base.volume)}</td></tr>
+        </tbody></table></div>
+        <h3 class="sub-title">Запас міцності сценарію</h3><p class="sc-text">${bedTxt}</p>
+        <h3 class="sub-title">Що найсильніше впливає на результат</h3><ul class="sc-list">${sensHtml}</ul>
+        <p class="muted-note">Розрахунок від точки сценарію: показано, як змінився б чистий прибуток при додатковій зміні кожного чинника окремо.</p>
+        <h3 class="sub-title">По відділеннях (у сценарії)</h3>
+        <div class="table-wrap"><table class="benchmark-table"><thead><tr><th>Відділення</th><th>Виручка</th><th>Чистий прибуток</th></tr></thead><tbody>${perBranch}</tbody></table></div>
+        <h3 class="sub-title">Збережені сценарії</h3>
+        ${saved || '<div class="muted-note">Поки порожньо. Налаштуйте варіант, дайте йому назву й натисніть «Зберегти».</div>'}`;
+    }
+
+    /* ---------- Симуляція нового відділення ---------- */
+    const NB_FIELDS = [
+      { k: 'name', label: 'Назва', type: 'text' },
+      { k: 'parcels', label: 'Посилок на день у стабільному режимі', step: 5 },
+      { k: 'fee', label: 'Дохід з однієї посилки, ₴', step: 1 },
+      { k: 'pack', label: 'Продажі пакування, ₴/міс (стабільно)', step: 500 },
+      { k: 'rent', label: 'Оренда, ₴/міс', step: 500 },
+      { k: 'depositMonths', label: 'Застава за оренду, місяців', step: 1 },
+      { k: 'payroll', label: 'Фонд оплати праці з внесками, ₴/міс', step: 1000 },
+      { k: 'utilities', label: 'Комунальні та зв’язок, ₴/міс', step: 500 },
+      { k: 'packCost', label: 'Закупівля пакування, ₴/міс (стабільно)', step: 500 },
+      { k: 'other', label: 'Інші щомісячні витрати (охорона, реклама), ₴', step: 500 },
+      { k: 'capex', label: 'Стартові вкладення (ремонт, обладнання), ₴', step: 5000 },
+      { k: 'buffer', label: 'Подушка, місяців постійних витрат', step: 1 }
+    ];
+    function nbDefaults() {
+      const act = (state.locations || []).filter(l => l.status === 'active');
+      const avg = act.length ? act.reduce((a, l) => a + (Number(l.parcelsDay) || 0), 0) / act.length : 120;
+      const capex = (state.capex || []).reduce((s, x) => s + (x.enabled ? (Number(x.cost) || 0) : 0), 0);
+      return {
+        name: 'Нове відділення', parcels: Math.round(avg), fee: Number(state.feePerParcel) || 34,
+        pack: Math.round(Number(state.packSales) || 0), rent: 25000, depositMonths: 2,
+        payroll: Math.round(effectivePayroll()), utilities: Math.round(Number(state.utilities) || 0),
+        packCost: Math.round(Number(state.packCost) || 0), other: 0, capex: Math.round(capex), buffer: 2
+      };
+    }
+    function nbDraft() {
+      const d = Object.assign(nbDefaults(), state.branchDraft || {});
+      NB_FIELDS.forEach(f => { if (f.type !== 'text') d[f.k] = Math.max(0, Number(d[f.k]) || 0); });
+      d.name = String(d.name || 'Нове відділення'); return d;
+    }
+    function simulateBranch(p) {
+      const wd = Math.max(1, Number(state.workDays) || 30), tr = marginalTaxRate();
+      const ramp = (Array.isArray(state.ramp) && state.ramp.length ? state.ramp : [45, 70, 90, 100]).map(x => Math.max(0, Number(x) || 0) / 100);
+      const amort = Math.max(0, Number(state.amort) || 0), deposit = p.rent * p.depositMonths;
+      const rows = []; let cum = -(p.capex + deposit), minCum = cum, minMonth = 0, payback = null;
+      for (let m = 1; m <= 36; m++) {
+        const k = m <= ramp.length ? ramp[m - 1] : 1;
+        const parcels = p.parcels * k, income = parcels * wd * p.fee + p.pack * k, tax = income * tr;
+        const costs = p.rent + p.payroll + p.utilities + p.other + amort + p.packCost * k + tax;
+        const net = income - costs; cum += net;
+        if (cum < minCum) { minCum = cum; minMonth = m; }
+        if (payback === null && cum >= 0) payback = m;
+        rows.push({ m, k, parcels, income, costs, net, cum });
+      }
+      const steady = rows.find(r => r.k >= 1) || rows[rows.length - 1];
+      const fixed = p.rent + p.payroll + p.utilities + p.other + amort;
+      const contrib = p.fee * (1 - tr) * wd, packNet = p.pack * (1 - tr) - p.packCost;
+      const be = contrib > 0 ? Math.max(0, Math.ceil((fixed - packNet) / contrib)) : Infinity;
+      const need0 = Math.max(0, -minCum), bufferCash = p.buffer * (p.rent + p.payroll + p.utilities + p.other);
+      return {
+        rows, steady, be, buf: p.parcels > 0 && Number.isFinite(be) ? (p.parcels - be) / p.parcels : -1,
+        need0, bufferCash, needTotal: need0 + bufferCash, deposit, lossRamp: Math.max(0, need0 - p.capex - deposit),
+        minMonth, payback, rentShare: steady.income > 0 ? p.rent / steady.income : 0, rentCap: steady.income * 0.25, tr, amort
+      };
+    }
+    function nbInit() {
+      const box = document.getElementById('nbFields');
+      if (box && !box.dataset.built) {
+        box.innerHTML = NB_FIELDS.map(f => `<div class="field"><label>${f.label}</label><input id="nb_${f.k}" ${f.type === 'text' ? 'type="text" maxlength="80"' : `type="number" min="0" step="${f.step}"`} oninput="nbSet('${f.k}',this.value)"></div>`).join('');
+        box.dataset.built = '1';
+      }
+      nbSyncFields(); nbRender();
+    }
+    function nbSyncFields() {
+      const d = nbDraft();
+      NB_FIELDS.forEach(f => { const el = document.getElementById('nb_' + f.k); if (el && document.activeElement !== el) el.value = d[f.k]; });
+    }
+    function nbSet(k, v) {
+      state.branchDraft = Object.assign({}, state.branchDraft || {});
+      state.branchDraft[k] = k === 'name' ? String(v).slice(0, 80) : Math.max(0, Number(v) || 0);
+      saveSoon(); nbRender();
+    }
+    function nbReset() { state.branchDraft = {}; saveState(); nbSyncFields(); nbRender(); showToast('Поля повернуто до значень вашої мережі'); }
+    function nbAdvice(d, r) {
+      const out = [], act = (state.locations || []).filter(l => l.status === 'active');
+      if (!Number.isFinite(r.be)) { out.push({ t: 'bad', x: 'Дохід з посилки нульовий, тож вихід у плюс неможливий. Перевірте поле «Дохід з однієї посилки».' }); return out; }
+      const bufPct = r.buf * 100;
+      if (r.steady.net <= 0) out.push({ t: 'bad', x: `Навіть у стабільному режимі відділення збиткове: ${fmt(r.steady.net)}/міс. Щоб вийти в нуль, потрібно від ${r.be} посилок на день, а ви закладаєте ${Math.round(d.parcels)}. Або шукайте інше приміщення, або переглядайте оренду та склад.` });
+      else if (bufPct < 15) out.push({ t: 'bad', x: `Беззбитковість починається з ${r.be} посилок на день, ви очікуєте ${Math.round(d.parcels)}: запас лише ${pctTxt(bufPct, 0)}. Це дуже тонко, бо перші місяці потік зазвичай коливається. Хоча б 25–30% запасу було б спокійніше.` });
+      else if (bufPct < 30) out.push({ t: 'warn', x: `Беззбитковість з ${r.be} посилок на день при очікуваних ${Math.round(d.parcels)}. Запас ${pctTxt(bufPct, 0)}: працювати можна, але просадка потоку швидко з’їсть прибуток.` });
+      else out.push({ t: 'good', x: `Беззбитковість з ${r.be} посилок на день при очікуваних ${Math.round(d.parcels)}. Запас ${pctTxt(bufPct, 0)}, і це добра подушка проти коливань потоку.` });
+      if (r.rentShare > 0.3) out.push({ t: 'bad', x: `Оренда ${fmt(d.rent)} забирає ${pctTxt(r.rentShare * 100, 0)} виручки. Орієнтир, щоб виручка не «лягала» під оренду, ≈ до 25%, тобто приблизно ${fmt(r.rentCap)}. Є сенс торгуватися або шукати дешевше приміщення.` });
+      else if (r.rentShare > 0.22) out.push({ t: 'warn', x: `Оренда забирає ${pctTxt(r.rentShare * 100, 0)} виручки, це верхня межа комфортного (орієнтир до ≈25%).` });
+      if (r.payback === null) out.push({ t: 'bad', x: `Вкладення не окупаються за 36 місяців. Найглибша точка: місяць ${r.minMonth || 1}, накопичений мінус ${fmt(r.need0)}.` });
+      else if (r.payback > 24) out.push({ t: 'warn', x: `Окупність близько ${r.payback} міс, це довго: за цей час змінюються тарифи, оренда й умови.` });
+      else out.push({ t: 'good', x: `Окупність ≈ ${r.payback} міс. від старту (разом із розгоном за вкладкою 2: ${state.ramp.join('% → ')}%).` });
+      const fund = Number(state.curScaleCash) || 0;
+      out.push({ t: fund >= r.needTotal ? 'good' : 'warn', x: `На старт потрібно ≈ <b>${fmt(r.needTotal)}</b>: вкладення ${fmt(d.capex)} + застава ${fmt(r.deposit)}${r.lossRamp > 0 ? ` + збитки розгону ${fmt(r.lossRamp)}` : ''} + подушка ${fmt(r.bufferCash)}. У фонді розвитку зараз ${fmt(fund)}${fund >= r.needTotal ? ': вистачає, залишок ' + fmt(fund - r.needTotal) + '.' : `: бракує ${fmt(r.needTotal - fund)}.`}` });
+      if (act.length) {
+        const avg = act.reduce((a, l) => a + (Number(l.parcelsDay) || 0), 0) / act.length;
+        if (d.parcels > avg * 1.25) out.push({ t: 'warn', x: `Ви закладаєте ${Math.round(d.parcels)} посилок на день, це помітно більше за середнє по вашій мережі (${Math.round(avg)}). Якщо немає причини (трафік, вузол, ТРЦ поруч), перевірте прогноз на нижчому значенні.` });
+      }
+      if (r.deposit > 0) out.push({ t: 'good', x: `Застава ${fmt(r.deposit)} тут у складі стартових грошей, але вона повертається з виходом із оренди; у балансі її можна вказати як актив.` });
+      return out;
+    }
+    function nbRender() {
+      const out = document.getElementById('nbOut'); if (!out) return;
+      const d = nbDraft(), r = simulateBranch(d), s = r.steady;
+      const mg = s.income > 0 ? s.net / s.income * 100 : 0;
+      const adv = nbAdvice(d, r).map(a => `<div class="alert ${a.t}" style="margin-bottom:6px">${a.x}</div>`).join('');
+      const rows = r.rows.slice(0, 12).map(x => `<tr><td>${x.m}</td><td>${Math.round(x.k * 100)}%</td><td>${Math.round(x.parcels)}</td><td>${fmt(x.income)}</td><td>${fmt(x.costs)}</td><td class="${x.net >= 0 ? 'text-green' : 'text-red'}">${fmt(x.net)}</td><td class="${x.cum >= 0 ? 'text-green' : 'text-red'}">${fmt(x.cum)}</td></tr>`).join('');
+      const plans = (state.branchPlans || []).map(p => `<div class="ledger-row"><div><strong>${escapeHtml(p.name)}</strong><small style="display:block;color:var(--muted)">${Math.round(p.draft.parcels)} посилок/день · оренда ${fmt(p.draft.rent)} · беззбитковість ${Number.isFinite(p.res.be) ? p.res.be : '—'}/день · потрібно ${fmt(p.res.need)} · ${p.res.payback ? 'окупність ' + p.res.payback + ' міс' : 'не окупається за 36 міс'}</small></div><div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap"><button class="btn-pill" onclick="nbOpenPlan('${escapeHtml(p.id)}')">Відкрити</button><button class="btn-pill" onclick="nbToNetwork('${escapeHtml(p.id)}')">У мережу</button><button class="btn-danger" onclick="nbDeletePlan('${escapeHtml(p.id)}')">✕</button></div></div>`).join('');
+      out.innerHTML = `
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Прибуток у стабільному режимі</div><div class="kpi-val ${s.net >= 0 ? 'text-green' : 'text-red'}">${fmt(s.net)}</div><small class="muted-note">маржа ${pctTxt(mg)}</small></div>
+          <div class="kpi"><div class="kpi-label">Беззбитковість</div><div class="kpi-val">${Number.isFinite(r.be) ? r.be + ' шт/день' : '—'}</div><small class="muted-note">запас ${r.buf >= 0 ? pctTxt(r.buf * 100, 0) : '—'}</small></div>
+          <div class="kpi"><div class="kpi-label">Потрібно на старт</div><div class="kpi-val">${fmt(r.needTotal)}</div><small class="muted-note">разом з подушкою</small></div>
+          <div class="kpi"><div class="kpi-label">Окупність</div><div class="kpi-val">${r.payback ? r.payback + ' міс' : '> 36 міс'}</div><small class="muted-note">від дня відкриття</small></div>
+        </div>
+        ${adv}
+        <h3 class="sub-title">Перші 12 місяців</h3>
+        <div class="table-wrap"><table class="benchmark-table"><thead><tr><th>Міс</th><th>Розгін</th><th>Посилок/день</th><th>Виручка</th><th>Витрати</th><th>Результат</th><th>Накопичено</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <p class="muted-note">Накопичений результат стартує з мінуса вкладень і застави. Витрати враховують податок з виручки (ЄСВ уже сплачується за вас як ФОП, тому окремо для відділення не додається) і резерв на оновлення обладнання. Розгін береться з вкладки 2.</p>
+        <h3 class="sub-title">Збережені плани</h3>
+        ${plans || '<div class="muted-note">Поки порожньо. Збережіть варіант, щоб порівнювати кілька локацій між собою.</div>'}`;
+    }
+    function nbSavePlan() {
+      const d = nbDraft(), r = simulateBranch(d);
+      state.branchPlans = (state.branchPlans || []).slice(0, 11);
+      state.branchPlans.unshift({ id: 'bp_' + Date.now().toString(36), name: d.name.slice(0, 80), draft: JSON.parse(JSON.stringify(d)), res: { net: Math.round(r.steady.net), be: Number.isFinite(r.be) ? r.be : 0, need: Math.round(r.needTotal), payback: r.payback || 0 } });
+      saveState(); nbRender(); showToast('План збережено');
+    }
+    function nbOpenPlan(id) { const p = (state.branchPlans || []).find(x => x.id === id); if (!p) return; state.branchDraft = JSON.parse(JSON.stringify(p.draft)); saveState(); nbSyncFields(); nbRender(); }
+    function nbDeletePlan(id) { state.branchPlans = (state.branchPlans || []).filter(x => x.id !== id); saveState(); nbRender(); }
+    function nbAddLocation(d) {
+      pushHistory();
+      state.locations.push({ id: 'l_' + Date.now().toString(36), name: d.name.slice(0, 80), status: 'plan', parcelsDay: Math.round(d.parcels), rent: Math.round(d.rent) });
+      saveState(); recalcAll(); showToast('Додано у вкладку «Мережа» як план');
+    }
+    function nbToNetwork(id) { const p = id ? (state.branchPlans || []).find(x => x.id === id) : null; nbAddLocation(p ? p.draft : nbDraft()); }
+
+    /* ---------- Міні-баланс ---------- */
+    const BAL_FIELDS = [
+      { g: 'a', k: 'deposits', label: 'Застави та передоплати (оренда, постачальники)' },
+      { g: 'a', k: 'equipment', label: 'Обладнання та ремонти за залишковою вартістю' },
+      { g: 'a', k: 'inventory', label: 'Запас пакування та матеріалів' },
+      { g: 'a', k: 'receivables', label: 'Вам винні (очікувані виплати, дебіторка)' },
+      { g: 'a', k: 'otherAssets', label: 'Інші активи' },
+      { g: 'l', k: 'loans', label: 'Кредити та позики' },
+      { g: 'l', k: 'payables', label: 'Ви винні (оренда, постачальники, зарплата)' },
+      { g: 'l', k: 'taxDue', label: 'Податки та внески до сплати' },
+      { g: 'l', k: 'otherLiab', label: 'Інші зобов’язання' }
+    ];
+    function balCash() {
+      const txs = Array.isArray(state.transactions) ? state.transactions : [];
+      const inc = txs.filter(t => t.type === 'income').reduce((a, t) => a + (Number(t.amount) || 0), 0);
+      const exp = txs.filter(t => t.type === 'expense').reduce((a, t) => a + (Number(t.amount) || 0), 0);
+      return (Number(state.openingCash) || 0) + inc - exp;
+    }
+    function monthlyBurn() {
+      const txs = Array.isArray(state.transactions) ? state.transactions : [], by = {};
+      txs.filter(t => t.type === 'expense').forEach(t => { const m = String(t.date || '').slice(0, 7); if (m) by[m] = (by[m] || 0) + (Number(t.amount) || 0); });
+      const cur = localDateISO().slice(0, 7), months = Object.keys(by).filter(m => m < cur).sort().slice(-3);
+      if (months.length) return { v: months.reduce((a, m) => a + by[m], 0) / months.length, src: 'середні витрати за ' + months.length + ' ' + (months.length === 1 ? 'повний місяць' : 'повних місяці') + ' з журналу' };
+      return { v: networkModel().opex, src: 'розрахункові витрати мережі' };
+    }
+    function balInit() {
+      const box = document.getElementById('balFields');
+      if (box && !box.dataset.built) {
+        const mk = g => BAL_FIELDS.filter(f => f.g === g).map(f => `<div class="field"><label>${f.label}</label><input id="bal_${f.k}" type="number" min="0" step="500" oninput="balSet('${f.k}',this.value)"></div>`).join('');
+        box.innerHTML = `<div class="grid-2"><div><h3 class="sub-title">Що у вас є</h3><div class="field"><label>Кошти (рахується з журналу автоматично)</label><input id="bal_cash" type="text" disabled></div>${mk('a')}</div><div><h3 class="sub-title">Що ви винні</h3>${mk('l')}</div></div>`;
+        box.dataset.built = '1';
+      }
+      balSync(); renderBalance();
+    }
+    function balSync() {
+      const b = state.balance || {};
+      BAL_FIELDS.forEach(f => { const el = document.getElementById('bal_' + f.k); if (el && document.activeElement !== el) el.value = Number(b[f.k]) || 0; });
+      const c = document.getElementById('bal_cash'); if (c) c.value = fmt(balCash());
+      const eq = document.getElementById('bal_equipment'); if (eq) eq.placeholder = 'для довідки: вкладення за планом ≈ ' + Math.round((state.capex || []).reduce((s, x) => s + (x.enabled ? (Number(x.cost) || 0) : 0), 0));
+    }
+    function balSet(k, v) { state.balance = Object.assign({}, state.balance || {}); state.balance[k] = Math.max(0, Number(v) || 0); saveSoon(); renderBalance(); }
+    function balTotals() {
+      const b = state.balance || {}, n = k => Number(b[k]) || 0, cash = balCash();
+      const assets = cash + n('deposits') + n('equipment') + n('inventory') + n('receivables') + n('otherAssets');
+      const liab = n('loans') + n('payables') + n('taxDue') + n('otherLiab');
+      return { cash, assets, liab, equity: assets - liab, n };
+    }
+    function balSnap() {
+      const t = balTotals();
+      state.balanceSnaps = (state.balanceSnaps || []).filter(x => x.date !== localDateISO()).slice(-35);
+      state.balanceSnaps.push({ date: localDateISO(), assets: Math.round(t.assets), liab: Math.round(t.liab), equity: Math.round(t.equity), cash: Math.round(t.cash) });
+      saveState(); renderBalance(); showToast('Баланс зафіксовано на сьогодні');
+    }
+    function renderBalance() {
+      const out = document.getElementById('balOut'); if (!out) return;
+      const t = balTotals(), n = t.n, burn = monthlyBurn(), m = networkModel();
+      const cur = n('payables') + n('taxDue') + n('otherLiab'), liquid = t.cash + n('receivables');
+      const runway = burn.v > 0 ? t.cash / burn.v : 0;
+      const adv = [];
+      if (t.equity < 0) adv.push({ t: 'bad', x: `Зобов’язання (${fmt(t.liab)}) перевищують активи (${fmt(t.assets)}): власний капітал від’ємний, ${fmt(t.equity)}. Спершу варто закрити найближчі платежі та не брати нових зобов’язань.` });
+      else adv.push({ t: 'good', x: `Якби ви сьогодні розрахувались з усіма, на руках залишилось би <b>${fmt(t.equity)}</b>, і це ваш власний капітал.` });
+      if (burn.v > 0) {
+        const tone = runway < 1 ? 'bad' : runway < 2 ? 'warn' : 'good';
+        adv.push({ t: tone, x: `Каса ${fmt(t.cash)} покриває ${monthsTxt(runway)} витрат (беру ${burn.src}: ≈ ${fmt(burn.v)}/міс). ${runway < 2 ? 'Безпечним зазвичай вважають 2–3 місяці, тож бракує приблизно ' + fmt(Math.max(0, burn.v * 2 - t.cash)) + ' до двох.' : 'Це нормальна подушка.'}` });
+      }
+      if (cur > 0) {
+        adv.push({ t: liquid >= cur ? 'good' : 'warn', x: `Найближчі платежі (борги постачальникам, податки тощо): ${fmt(cur)}. Готівки з очікуваними виплатами є ${fmt(liquid)}${liquid >= cur ? ': покриває з запасом ' + fmt(liquid - cur) + '.' : ', тож бракує ' + fmt(cur - liquid) + '.'}` });
+      }
+      if (n('taxDue') === 0 && m.tax > 0) adv.push({ t: 'warn', x: `Податки не відкладені: за моделлю на місяць виходить ≈ ${fmt(m.tax)} (податок на дохід + ЄСВ). Якщо відкладати їх щотижня окремо, ця сума не стане несподіванкою в день сплати.` });
+      if (n('loans') > 0 && m.net > 0) adv.push({ t: 'warn', x: `Кредити ${fmt(n('loans'))}: при чистому прибутку мережі ${fmt(m.net)}/міс це приблизно ${monthsTxt(n('loans') / m.net)}, якби весь прибуток іти на погашення.` });
+      const snaps = state.balanceSnaps || [];
+      const prev = snaps.length ? snaps[snaps.length - 1] : null;
+      if (prev && prev.date !== localDateISO()) {
+        const dv = t.equity - prev.equity;
+        adv.push({ t: dv >= 0 ? 'good' : 'warn', x: `З ${prev.date} власний капітал ${dv >= 0 ? 'зріс' : 'зменшився'} на ${fmt(Math.abs(dv))}.` });
+      }
+      const hist = snaps.slice().reverse().slice(0, 12).map((s, i, a) => { const p = a[i + 1], dv = p ? s.equity - p.equity : null; return `<tr><td>${escapeHtml(s.date)}</td><td>${fmt(s.assets)}</td><td>${fmt(s.liab)}</td><td><b>${fmt(s.equity)}</b></td><td class="${dv === null ? '' : dv >= 0 ? 'text-green' : 'text-red'}">${dv === null ? '—' : (dv >= 0 ? '+' : '') + Math.round(dv).toLocaleString('uk-UA') + ' ₴'}</td></tr>`; }).join('');
+      out.innerHTML = `
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Активи</div><div class="kpi-val">${fmt(t.assets)}</div></div>
+          <div class="kpi"><div class="kpi-label">Зобов’язання</div><div class="kpi-val">${fmt(t.liab)}</div></div>
+          <div class="kpi"><div class="kpi-label">Власний капітал</div><div class="kpi-val ${t.equity >= 0 ? 'text-green' : 'text-red'}">${fmt(t.equity)}</div></div>
+          <div class="kpi"><div class="kpi-label">Каса покриває</div><div class="kpi-val ${runway < 1 ? 'text-red' : runway < 2 ? 'text-amber' : 'text-green'}">${burn.v > 0 ? monthsTxt(runway) : '—'}</div></div>
+        </div>
+        ${adv.map(a => `<div class="alert ${a.t}" style="margin-bottom:6px">${a.x}</div>`).join('')}
+        <h3 class="sub-title">Історія балансу</h3>
+        ${hist ? `<div class="table-wrap"><table class="benchmark-table"><thead><tr><th>Дата</th><th>Активи</th><th>Зобов’язання</th><th>Капітал</th><th>Зміна</th></tr></thead><tbody>${hist}</tbody></table></div>` : '<div class="muted-note">Натисніть «Зафіксувати на сьогодні», і тут з’явиться перший запис. Раз на місяць цього достатньо, щоб бачити, чи справді капітал росте.</div>'}`;
+    }
+
+    /* ---------- «Головне зараз»: поради за вашими цифрами ---------- */
+    function buildInsights() {
+      const out = [], m = networkModel();
+      if (!m.activeCount) return [{ t: 'warn', x: 'У мережі немає активних відділень, тому розрахунок по мережі порожній. Позначте хоча б одне відділення активним на вкладці «Мережа».' }];
+      const base = runScenario(SC_ZERO);
+      // 1. запас міцності
+      if (base.net <= 0) out.push({ t: 'bad', x: `Мережа зараз у мінусі: ${fmt(base.net)}/міс. Дивіться вкладку «Що, якщо?»: там видно, що дає найбільший ефект (оренда, потік чи зарплати).` });
+      else {
+        const bed = breakevenDropPct(SC_ZERO);
+        if (bed < 12) out.push({ t: 'bad', x: `Запас міцності малий: якщо потік посилок впаде лише на ${pctTxt(bed)}, мережа вийде в нуль. Перш ніж брати нові витрати, варто підняти потік або зменшити постійні платежі.` });
+        else if (bed < 25) out.push({ t: 'warn', x: `До нуля мережі лишається ${pctTxt(bed)} просідання потоку. Стрес-сценарій «−25%» уже дав би збиток, тож тримайте резерв.` });
+        else out.push({ t: 'good', x: `Запас міцності добрий: потік може просісти на ${pctTxt(bed)}, і тільки після цього мережа піде в мінус.` });
+      }
+      // 2. оренда
+      const worst = m.rows.filter(r => r.gross > 0).map(r => ({ r, sh: r.rent / r.gross })).sort((a, b) => b.sh - a.sh)[0];
+      if (worst && worst.sh > 0.25) {
+        const save = worst.r.rent * 0.1;
+        out.push({ t: worst.sh > 0.35 ? 'bad' : 'warn', x: `Оренда у «${escapeHtml(worst.r.loc.name)}» забирає ${pctTxt(worst.sh * 100, 0)} виручки (орієнтир ≈ до 25%). Кожні 10% знижки там дають близько ${fmt(save)} на місяць.` });
+      }
+      // 3. залежність від одного відділення
+      if (m.rows.length > 1 && m.gross > 0) {
+        const top = m.rows.slice().sort((a, b) => b.gross - a.gross)[0], sh = top.gross / m.gross;
+        if (sh > 0.6) out.push({ t: 'warn', x: `${pctTxt(sh * 100, 0)} виручки дає лише «${escapeHtml(top.loc.name)}». Якщо з ним щось станеться (оренда, відключення, конкурент), мережа відчує це одразу.` });
+      }
+      // 4. резерв
+      if (m.opex > 0) {
+        const res = Number(state.curReserveCash) || 0, mo = res / m.opex;
+        if (mo < 2) out.push({ t: mo < 1 ? 'bad' : 'warn', x: `У резерві ${fmt(res)}: це ${monthsTxt(mo)} витрат мережі. До безпечних 2 місяців бракує ${fmt(Math.max(0, m.opex * 2 - res))}.` });
+        else out.push({ t: 'good', x: `Резерв ${fmt(res)} покриває ${monthsTxt(mo)} витрат мережі, це нормально.` });
+      }
+      // 5. найсильніший важіль
+      if (base.net > 0) {
+        const lev = [
+          { t: '+5% посилок', v: runScenario({ parcels: 5 }).net - base.net }, { t: '−10% оренди', v: runScenario({ rent: -10 }).net - base.net },
+          { t: '−10% зарплат', v: runScenario({ payroll: -10 }).net - base.net }, { t: '+5% тарифу', v: runScenario({ fee: 5 }).net - base.net }
+        ].sort((a, b) => b.v - a.v)[0];
+        if (lev && lev.v > 0) out.push({ t: 'good', x: `Найсильніший важіль зараз: ${lev.t} → приблизно ${fmt(lev.v)} на місяць.` });
+      }
+      // 6. ціль
+      const g = (state.goals || []).find(x => x.id === state.activeGoalId);
+      if (g && m.net > 0) {
+        const left = Math.max(0, (Number(g.amount) || 0) - (Number(g.saved) || 0)), mon = m.net * (Number(g.allocPct) || 0) / 100;
+        if (left > 0 && mon > 0) {
+          const need = Math.ceil(left / mon), now = new Date(), mm = /^\d{4}-\d{2}$/.test(g.date || '') ? (Number(g.date.slice(0, 4)) - now.getFullYear()) * 12 + Number(g.date.slice(5, 7)) - (now.getMonth() + 1) : null;
+          if (mm !== null && mm > 0 && need > mm) out.push({ t: 'warn', x: `До цілі «${escapeHtml(g.title)}» бракує ${fmt(left)}. При ${g.allocPct}% прибутку (${fmt(mon)}/міс) це ≈ ${need} міс, а до обраної дати (${g.date.slice(5)}.${g.date.slice(0, 4)}) лишилось ${mm} міс. Щоб встигнути, треба відкладати близько ${fmt(left / mm)} на місяць.` });
+          else if (mm !== null && mm <= 0 && left > 0) out.push({ t: 'warn', x: `Цільова дата для «${escapeHtml(g.title)}» вже минула, а бракує ${fmt(left)}. Перенесіть дату або збільште відсоток відрахувань.` });
+          else out.push({ t: 'good', x: `До цілі «${escapeHtml(g.title)}» лишилось ${fmt(left)}: за поточного темпу це ≈ ${need} міс.` });
+        }
+      }
+      const rank = { bad: 0, warn: 1, good: 2 };
+      return out.sort((a, b) => rank[a.t] - rank[b.t]).slice(0, 5);
+    }
+    function renderInsights() {
+      const el = document.getElementById('insightsBody'); if (!el) return;
+      el.innerHTML = buildInsights().map(a => `<div class="alert ${a.t}" style="margin-bottom:6px">${a.x}</div>`).join('');
+    }
+    function refreshV65() {
+      renderInsights();
+      const act = document.querySelector('.tab-panel.active'); if (!act) return;
+      if (act.id === 'tab-scenarios') { scSyncControls(); renderScenarios(); }
+      if (act.id === 'tab-newbranch') nbRender();
+      if (act.id === 'tab-balance') { balSync(); renderBalance(); }
+    }
+
+    /* ---------- Вікно «Про програму та ліцензія» ---------- */
+    function aboutTab(w) {
+      const info = w !== 'lic';
+      document.getElementById('abInfo').style.display = info ? 'block' : 'none';
+      document.getElementById('abLic').style.display = info ? 'none' : 'block';
+      document.getElementById('abTabInfo').classList.toggle('locked', info);
+      document.getElementById('abTabLic').classList.toggle('locked', !info);
+      const body = document.querySelector('#aboutOv .about-body'); if (body) body.scrollTop = 0;
+    }
+    function openAbout(w) { aboutTab(w); document.getElementById('aboutOv').classList.add('open'); }
+    function closeAbout() { document.getElementById('aboutOv').classList.remove('open'); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAbout(); });
+
     // Init
     document.getElementById('txDate').value = localDateISO();
     syncInputsFromState();
@@ -2616,6 +3430,11 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
     renderManagement();
     ensureBranchData();
     renderBranchAdmin();
+
+    // v6.5: тема, поради
+    updateThemeButton();
+    if (window.NovaTheme) NovaTheme.onChange = () => { updateThemeButton(); try { drawGrowthChart(); } catch (e) {} };
+    try { renderInsights(); } catch (e) { console.error(e); }
 
     // v6.4: режим входу, Enter, постійне сховище, PWA
     refreshAuthMode();

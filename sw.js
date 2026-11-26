@@ -1,5 +1,5 @@
 // NOVA PULSE — офлайн-кеш. Дані користувача лежать у localStorage і цим файлом не чіпаються.
-const CACHE = 'nova-pulse-v6-4';
+const CACHE = 'nova-pulse-v6-5';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

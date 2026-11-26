@@ -1,21 +1,47 @@
-MIT License
+NOVA PULSE
+Copyright (c) 2026 Наконечний Володимир Михайлович
+(Nakonechnyi Volodymyr Mykhailovych). Усі права захищені. All rights reserved.
 
-Copyright (c) 2026 barn26
+──────────────────────────── УКРАЇНСЬКОЮ ────────────────────────────
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Автор і правовласник програми «NOVA PULSE» (далі — «Програма») —
+Наконечний Володимир Михайлович.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Вихідний код опубліковано для ознайомлення. Без попередньої письмової
+згоди правовласника заборонено:
+  1. копіювати, змінювати, адаптувати або створювати похідні роботи;
+  2. поширювати, публікувати, розміщувати на інших ресурсах, продавати,
+     здавати в оренду чи передавати в субліцензію Програму або її частини;
+  3. використовувати Програму чи її частини в комерційних цілях;
+  4. видаляти або змінювати відомості про авторство та цей текст.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Ця ліцензія не скасовує прав, які Умови використання GitHub надають
+користувачам платформи (перегляд і створення форків у межах GitHub).
+
+Програма надається «як є», без жодних гарантій. Результати розрахунків
+мають довідковий характер і не є податковою, юридичною чи фінансовою
+консультацією; автор не несе відповідальності за збитки від її
+використання.
+
+Назви й торгові марки третіх сторін належать їхнім власникам. Програма
+не є офіційним продуктом жодної компанії.
+
+За дозволом на використання звертайтеся до правовласника.
+
+──────────────────────────── ENGLISH ────────────────────────────────
+
+Copyright (c) 2026 Volodymyr Nakonechnyi (Наконечний Володимир
+Михайлович). All rights reserved.
+
+The source code is published for viewing purposes only. Without prior
+written permission from the copyright holder you may not copy, modify,
+distribute, sublicense, sell, host elsewhere, or use the software or any
+part of it commercially, and you may not remove this notice.
+
+This license does not limit the rights that the GitHub Terms of Service
+grant to GitHub users (viewing and forking within the GitHub platform).
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE
+AUTHOR SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
+ARISING FROM THE USE OF THE SOFTWARE. Calculations are informational and
+are not tax, legal or financial advice.
