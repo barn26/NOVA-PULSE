@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- NOVA PULSE v6.6 · © 2026 Наконечний Володимир Михайлович. Усі права захищені. Див. файл LICENSE. -->
+<!-- NOVA PULSE v6.8 · © 2026 Наконечний Володимир Михайлович. Усі права захищені. Див. файл LICENSE. -->
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
@@ -44,7 +44,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <title>NOVA PULSE v6.6 — Регіональний SMART ADVISOR</title>
+  <title>NOVA PULSE v6.8 — Регіональний SMART ADVISOR</title>
   <style>
     :root {
       --bg: #0b0f17;
@@ -648,6 +648,38 @@
     .about-pre { white-space: pre-wrap; word-wrap: break-word; font-family: inherit; font-size: 13px; margin: 8px 0 0; }
     .about-tw { overflow-x: auto; }
     .about-link { background: none; border: none; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 12px; padding: 4px; }
+    /* v6.7: проста навігація */
+    .topbar .brand-badge { white-space: nowrap; flex: 0 0 auto; }
+    .nav-title { font-size: 14px; font-weight: 800; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .topbar-row { flex-wrap: nowrap; }
+    .brand { min-width: 0; flex: 1 1 auto; }
+    .top-actions { flex: 0 0 auto; flex-wrap: nowrap; }
+    .subnav { max-width: 980px; margin: 8px auto 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .subnav::-webkit-scrollbar { display: none; }
+    .subnav button { flex: 0 0 auto; background: var(--bg-card); border: 1px solid var(--border); color: var(--muted); padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .subnav button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .bnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 120; display: flex; gap: 2px; background: var(--bg-card); border-top: 1px solid var(--border); padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px)); }
+    .bnav button { flex: 1 1 0; min-width: 0; min-height: 54px; background: none; border: none; color: var(--muted); font-size: 11px; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 2px; border-radius: 12px; cursor: pointer; }
+    .bnav button .ic { font-size: 20px; line-height: 1; }
+    .bnav button.active { color: var(--accent); background: var(--accent-soft); }
+    body.logged-out .bnav, body.branch-mode .bnav, body.logged-out .more-ov, body.branch-mode .more-ov { display: none !important; }
+    body { padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
+    .float-nav { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+    .toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 10001; }
+    .smart-advisor { bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important; }
+    .more-ov { position: fixed; inset: 0; z-index: 130; background: rgba(0, 0, 0, 0.5); display: none; align-items: flex-end; justify-content: center; }
+    .more-ov.open { display: flex; }
+    .more-sheet { width: min(100%, 560px); max-height: 82vh; overflow: auto; background: var(--bg-card); color: var(--text); border: 1px solid var(--border); border-radius: 20px 20px 0 0; padding: 8px 14px calc(16px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35); }
+    .more-grab { width: 42px; height: 4px; border-radius: 4px; background: var(--border); margin: 4px auto 8px; }
+    .more-title { font-size: 12px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; color: var(--muted); margin: 12px 2px 6px; }
+    .more-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .more-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px; background: var(--bg-card-2); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; }
+    .more-item span { font-size: 22px; }
+    .more-tools { display: flex; flex-direction: column; gap: 6px; }
+    .more-tools .btn-pill { width: 100%; text-align: left; padding: 11px 14px; font-size: 14px; }
+    .home-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .home-act { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px; background: var(--bg-card-2); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; }
+    .home-act span { font-size: 24px; }
   </style>
   <div id="authScreen" class="auth-screen">
     <div class="auth-card">
@@ -657,6 +689,7 @@
       <label for="authPassword">Пароль</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Пароль">
       <div id="authConfirmWrap" class="auth-confirm"><label for="authPassword2">Повторіть пароль</label><input id="authPassword2" type="password" autocomplete="new-password" placeholder="Повторіть пароль"></div>
       <button id="authSubmitBtn" class="btn-primary" style="margin-top:14px" onclick="loginSystem()">Увійти</button>
+      <button id="bioLoginBtn" class="btn-secondary" style="display:none;width:100%;margin:10px 0 12px" onclick="bioLogin()">👆 Увійти відбитком пальця</button>
       <div id="authError" class="alert bad" style="display:none"></div>
       <div class="auth-note">Демо-режим без сервера: облікові записи та дані зберігаються лише в цьому браузері. Це не захищена серверна авторизація.</div>
       <div style="margin-top:12px"><button class="btn-secondary" onclick="document.getElementById('accessImportInput').click()">Імпортувати пакет доступу від керівника</button><input id="accessImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importAccessPackage(this)"></div>
@@ -665,7 +698,7 @@
     </div>
   </div>
   <section id="branchWorkspace" class="branch-workspace">
-    <div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><div><div class="brand-badge">КАБІНЕТ ВІДДІЛЕННЯ</div><h2 id="branchWelcome">Щоденний звіт</h2><span class="role-chip" id="branchUserLabel"></span></div><button class="btn-secondary" onclick="logoutSystem()">Вийти</button></div><p class="muted-note">Заповніть короткий звіт за зміну. Усі поля, крім дати та відділення, можна залишити порожніми.</p></div>
+    <div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><div><div class="brand-badge">КАБІНЕТ ВІДДІЛЕННЯ</div><h2 id="branchWelcome">Щоденний звіт</h2><span class="role-chip" id="branchUserLabel"></span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button id="bioToggleBtn2" class="btn-secondary" onclick="bioToggle()">👆 Увімкнути вхід відбитком</button><button class="btn-secondary" onclick="logoutSystem()">Вийти</button></div></div><p class="muted-note">Заповніть короткий звіт за зміну. Усі поля, крім дати та відділення, можна залишити порожніми.</p></div>
     <div class="card"><h3>📦 Операційні показники</h3><div class="branch-grid"><div><label>Дата звіту</label><input type="date" id="brDate"></div><div><label>Працівників на зміні</label><input type="number" id="brStaff" min="0" step="1" placeholder="0"></div><div><label>Прийнято посилок</label><input type="number" id="brReceived" min="0" step="1" placeholder="0"></div><div><label>Видано посилок</label><input type="number" id="brIssued" min="0" step="1" placeholder="0"></div></div></div>
     <div class="card"><h3>💰 Фінансовий звіт</h3><div class="branch-grid"><div><label>Дохід, категорія</label><select id="brIncomeCat"><option>Комісія за посилки</option><option>Пакування</option><option>Інший дохід</option></select></div><div><label>Сума доходу, ₴</label><input type="number" id="brIncome" min="0" step="0.01" placeholder="0"></div><div><label>Витрата, категорія</label><select id="brExpenseCat"><option>Оренда</option><option>Зарплата</option><option>Закупівля пакування</option><option>Комунальні та зв'язок</option><option>Податки та внески</option><option>Ремонт та обслуговування</option><option>Маркетинг</option><option>Інше</option></select></div><div><label>Сума витрати, ₴</label><input type="number" id="brExpense" min="0" step="0.01" placeholder="0"></div></div><label>Коментар керівнику</label><textarea id="brNote" maxlength="500" placeholder="Проблеми, потреби, нестандартні ситуації..."></textarea><button class="btn-primary" style="margin-top:12px" onclick="submitBranchReport()">Надіслати звіт</button><div id="branchSubmitMsg" class="alert" style="display:none"></div></div>
     <div class="card"><h3>📚 Мої попередні звіти</h3><div id="branchMyReports" class="ledger-list"></div><button class="btn-secondary" style="margin-top:10px" onclick="exportMyReports()">Експортувати звіти для керівника (JSON)</button></div>
@@ -676,17 +709,17 @@
     <div class="topbar-row">
       <div class="brand">
         <span class="brand-badge">NOVA PULSE</span>
-        <span>Система управління мережею</span>
+        <span id="navTitle" class="nav-title">Сьогодні</span>
       </div>
       <div class="top-actions">
-        <button id="lockToggleBtn" class="btn-pill locked" onclick="toggleSliderLock()">🔒 Повзунки заблоковані</button>
         <button id="undoBtn" class="btn-pill" onclick="undoChange()" title="Скасувати останню зміну">↩ Назад</button>
         <button id="themeBtn" class="btn-pill" onclick="cycleTheme()" title="Тема: Авто, Світла, Темна">🌓 Тема</button>
-        <button class="btn-pill" onclick="copyReport()">📋 Звіт</button>
       </div>
     </div>
-    <nav class="tabs-wrap" id="tabsNav">
-      <button class="tab-btn active" data-tab="tab-unit">1. Точка + Стрес</button>
+    <div id="subNav" class="subnav" style="display:none"></div>
+    <nav class="tabs-wrap" id="tabsNav" style="display:none" aria-hidden="true">
+      <button class="tab-btn active" data-tab="tab-home">0. Сьогодні</button>
+      <button class="tab-btn" data-tab="tab-unit">1. Точка + Стрес</button>
       <button class="tab-btn" data-tab="tab-capex">2. Старт (CAPEX) і розгін</button>
       <button class="tab-btn" data-tab="tab-network">3. Мережа Львівщини</button>
       <button class="tab-btn" data-tab="tab-goals">4. Мої цілі</button>
@@ -703,8 +736,20 @@
   <main class="container">
 
     <!-- ==================== TAB 1: UNIT ECONOMICS & STRESS ==================== -->
-    <section id="tab-unit" class="tab-panel active">
+    <section id="tab-home" class="tab-panel active">
+      <div class="kpi-grid" id="homeKpis"></div>
       <div class="card"><div class="card-header"><h2 class="card-title">🧭 Головне зараз</h2><button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button></div><div class="card-body" id="insightsBody"></div></div>
+      <div class="card"><div class="card-header"><h2 class="card-title">Швидкі дії</h2></div><div class="card-body">
+        <div class="home-actions">
+          <button class="home-act" onclick="quickTx()"><span>➕</span>Додати операцію</button>
+          <button class="home-act" onclick="navTo('tab-planfact')"><span>📊</span>План і факт</button>
+          <button class="home-act" onclick="navTo('tab-scenarios')"><span>🔀</span>Що, якщо?</button>
+          <button class="home-act" onclick="shareBackup()"><span>📤</span>Надіслати копію</button>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="tab-unit" class="tab-panel">
       <div class="kpi-grid">
         <div class="kpi">
           <div class="kpi-label">Чистий прибуток / міс</div>
@@ -871,7 +916,7 @@
             <div class="field">
               <label style="display:flex;align-items:center;gap:6px;">
                 <input type="checkbox" id="chkAutoAmort" checked style="width:auto;" />
-                Авторезерв амортизації АКБ / інженерії (з вкладки 2)
+                Авторезерв амортизації АКБ / інженерії (з розділу «Ще → Старт і розгін»)
               </label>
               <input type="number" id="inAmort" value="6500" step="500" />
             </div>
@@ -1331,7 +1376,7 @@
       <div class="card">
         <div class="card-header"><h2 class="card-title">⚖️ Міні-баланс</h2><button class="collapse-btn" onclick="toggleCard(this)">Згорнути ▲</button></div>
         <div class="card-body">
-          <p class="muted-note">Кошти беруться з журналу операцій (вкладка 7), решту введіть вручну й оновлюйте раз на місяць. Це керівний огляд, а не бухгалтерська звітність.</p>
+          <p class="muted-note">Кошти беруться з журналу операцій (розділ «Гроші → Журнал і керівник»), решту введіть вручну й оновлюйте раз на місяць. Це керівний огляд, а не бухгалтерська звітність.</p>
           <div id="balFields"></div>
           <div id="balTaxBox"></div>
           <div class="nv-save"><button class="btn-secondary" onclick="balSnap()">📌 Зафіксувати на сьогодні</button></div>
@@ -1349,7 +1394,37 @@
   </div>
 
   <!-- TOAST NOTIFICATION -->
-    <div id="aboutOv" class="about-ov" onclick="if(event.target===this)closeAbout()" role="dialog" aria-modal="true" aria-label="Про програму та ліцензія">
+  <nav id="bnav" class="bnav" aria-label="Головна навігація">
+    <button data-go="home" class="active" onclick="navGroup('home')"><span class="ic">🏠</span>Сьогодні</button>
+    <button data-go="planfact" onclick="navGroup('planfact')"><span class="ic">📊</span>План/факт</button>
+    <button data-go="money" onclick="navGroup('money')"><span class="ic">💰</span>Гроші</button>
+    <button data-go="plan" onclick="navGroup('plan')"><span class="ic">🧭</span>Планування</button>
+    <button data-go="more" onclick="openMore()"><span class="ic">☰</span>Ще</button>
+  </nav>
+  <div id="moreOv" class="more-ov" onclick="if(event.target===this)closeMore()">
+    <div class="more-sheet" role="dialog" aria-label="Ще">
+      <div class="more-grab"></div>
+      <div class="more-title">Модель точки</div>
+      <div class="more-grid">
+        <button class="more-item" onclick="navTo('tab-unit')"><span>📐</span>Точка і стрес</button>
+        <button class="more-item" onclick="navTo('tab-capex')"><span>🛠️</span>Старт і розгін</button>
+        <button class="more-item" onclick="navTo('tab-chart')"><span>📈</span>Графік росту</button>
+      </div>
+      <div class="more-title">Інструменти</div>
+      <div class="more-tools">
+        <button id="lockToggleBtn" class="btn-pill locked" onclick="toggleSliderLock()">🔒 Повзунки заблоковані</button>
+        <button class="btn-pill" onclick="copyReport();closeMore()">📋 Скопіювати звіт</button>
+        <button class="btn-pill" onclick="closeMore();shareBackup()">📤 Надіслати копію</button>
+        <button class="btn-pill" onclick="closeMore();exportBackup()">💾 Зберегти файл копії</button>
+        <button class="btn-pill" onclick="closeMore();document.getElementById('backupImportInput').click()">📥 Імпорт копії</button>
+        <button class="btn-pill" onclick="closeMore();openAbout('info')">📄 Про програму</button>
+        <button class="btn-pill" onclick="closeMore();openAbout('lic')">⚖️ Ліцензія</button>
+        <button id="bioToggleBtn" class="btn-pill" onclick="closeMore();bioToggle()">👆 Увімкнути вхід відбитком</button>
+        <button class="btn-pill" onclick="closeMore();logoutSystem()">🚪 Вийти</button>
+      </div>
+    </div>
+  </div>
+  <div id="aboutOv" class="about-ov" onclick="if(event.target===this)closeAbout()" role="dialog" aria-modal="true" aria-label="Про програму та ліцензія">
     <div class="about-box">
       <div class="about-head"><b>NOVA PULSE · Про програму</b><button class="btn-pill" onclick="closeAbout()">✕ Закрити</button></div>
       <div class="about-tabs"><button id="abTabInfo" class="btn-pill" onclick="aboutTab('info')">Про програму</button><button id="abTabLic" class="btn-pill" onclick="aboutTab('lic')">Ліцензія</button></div>
@@ -1357,6 +1432,7 @@
         <div id="abInfo"><p>Офлайн-застосунок (PWA) для планування й обліку мережі відділень: економіка точки, старт і розгін, фінанси, працівники, зарплатний радник, щоденні звіти відділень. Працює в браузері, без сервера; дані зберігаються лише на вашому пристрої.</p>
 <h3>Можливості</h3>
 <ul>
+<li><b>Проста навігація</b>: нижня панель із п&#x27;яти розділів (Сьогодні, План/факт, Гроші, Планування, Ще); екран «Сьогодні» з головними цифрами, порадами та швидкими діями</li>
 <li>Економіка однієї точки та мережі, стрес-тест, ціни/CAPEX, графік росту</li>
 <li>«Головне зараз»: поради, розраховані за вашими цифрами (запас міцності, оренда, резерв, цілі)</li>
 <li><b>Що, якщо?</b>: порівняння сценаріїв (потік, тариф, оренда, зарплати, запуск або пауза відділень), чутливість, збереження сценаріїв</li>
@@ -1386,6 +1462,7 @@
 <p>Відкрийте сторінку в Chrome/Safari → «Додати на головний екран» / «Установити застосунок».</p>
 <h3>Перший вхід</h3>
 <p>При першому запуску створіть пароль керівника (логін <code>admin</code>, від 8 символів). Паролі працівників зберігаються лише як хеш. Забутий пароль керівника відновити не можна: скиньте дані браузера або імпортуйте резервну копію.</p>
+<p><b>Вхід відбитком пальця.</b> Після входу паролем відкрийте «Ще → Увімкнути вхід відбитком» (для працівника: кнопка у кабінеті відділення). Далі застосунок сам пропонує відбиток при відкритті, а пароль лишається запасним варіантом. Це працює через захист Android (відбиток або блокування екрана) у Chrome і лише на захищеному з’єднанні (https, наприклад github.io), а не з локального файла. Ключ зберігається тільки на цьому телефоні й не потрапляє в резервні копії, тому на іншому пристрої його треба ввімкнути окремо.</p>
 <h3>Дані та безпека</h3>
 <ul>
 <li>Усе зберігається в <code>localStorage</code> браузера. <b>Регулярно робіть резервну копію</b></li>
@@ -1465,7 +1542,7 @@ are not tax, legal or financial advice.</pre></div>
       <button class="btn-secondary" onclick="document.getElementById('backupImportInput').click()">Імпорт копії</button>
       <input id="backupImportInput" type="file" accept="application/json,.json" style="display:none" onchange="importBackupFile(this)" />
     </div>
-    <div>NOVA PULSE v6.6 · Локальна версія без сервера</div>
+    <div>NOVA PULSE v6.8 · Локальна версія без сервера</div>
     <div>© 2026 Наконечний Володимир Михайлович. Усі права захищені.</div>
     <div><strong>РОЗРОБИВ: НАКОНЕЧНИЙ ВОЛОДИМИР МИХАЙЛОВИЧ</strong></div>
     <div><button class="about-link" onclick="openAbout('info')">📄 Про програму</button> · <button class="about-link" onclick="openAbout('lic')">⚖️ Ліцензія</button></div>
@@ -1483,7 +1560,7 @@ are not tax, legal or financial advice.</pre></div>
   </style>
   <script>
     const STORAGE_KEY = 'np_lviv_pro_v6';
-    const APP_VERSION = '6.6';
+    const APP_VERSION = '6.8';
     const SCHEMA_VERSION = 6;
 
     /* ---- Єдині константи розрахунків (змінюйте тут, а не по коду) ---- */
@@ -1851,6 +1928,8 @@ are not tax, legal or financial advice.</pre></div>
       if (btn.dataset.tab === 'tab-newbranch') nbInit();
       if (btn.dataset.tab === 'tab-balance') balInit();
       if (btn.dataset.tab === 'tab-planfact') pfInit();
+      if (btn.dataset.tab === 'tab-home') renderHome();
+      navSync(btn.dataset.tab);
     });
 
     function setIncomeMode(mode) {
@@ -2163,7 +2242,7 @@ are not tax, legal or financial advice.</pre></div>
             • Залишилось зібрати: <strong>${fmt(remaining)}</strong> (до обраної дати: <strong>${monthsLeft} міс.</strong>)<br/>
             • Щоб встигнути в строк, потрібно відкладати по <strong>${fmt(neededPerMonth)}/міс</strong>.<br/>
             • При виділенні <strong>${g.allocPct}%</strong> чистого прибутку потрібно: <strong>${pointsNeeded} точок НП</strong>.<br/>
-            • З 1 поточною точкою ціль закриється за <strong>${monthsWith1Point} міс.</strong>, з усією мережею зі вкладки 3 — за <strong>${monthsWithNet} міс.</strong>
+            • З 1 поточною точкою ціль закриється за <strong>${monthsWith1Point} міс.</strong>, з усією мережею (розділ «Планування → Мережа») — за <strong>${monthsWithNet} міс.</strong>
           </div>
         </div>
       `;
@@ -2759,6 +2838,7 @@ are not tax, legal or financial advice.</pre></div>
       set('authSubmitBtn',e=>e.textContent=setup?'Створити пароль і увійти':'Увійти');
       set('authHint',e=>e.textContent=setup?'Пароль керівника — від 8 символів. Його не можна відновити: якщо забудете, доведеться скинути дані браузера або імпортувати резервну копію.':'');
       set('authPassword',e=>e.autocomplete=setup?'new-password':'current-password');
+      bioRefreshUi();
     }
     function loginSystem(){
       ensureBranchData();
@@ -2789,7 +2869,12 @@ are not tax, legal or financial advice.</pre></div>
         return;
       }
       authFails=0;
+      completeLogin(user,login);
+    }
+    function completeLogin(user,login){
+      const err=document.getElementById('authError');
       activeSession={role:user.role||'branch',name:user.name||user.displayName||login,login:user.login||login,locationId:user.locationId||''};
+      bioRefreshUi();
       err.style.display='none';document.getElementById('authScreen').style.display='none';
       document.getElementById('authPassword').value='';const p2el=document.getElementById('authPassword2');if(p2el)p2el.value='';
       document.body.classList.remove('logged-out','branch-mode');
@@ -3246,7 +3331,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       else if (r.rentShare > 0.22) out.push({ t: 'warn', x: `Оренда забирає ${pctTxt(r.rentShare * 100, 0)} виручки, це верхня межа комфортного (орієнтир до ≈25%).` });
       if (r.payback === null) out.push({ t: 'bad', x: `Вкладення не окупаються за 36 місяців. Найглибша точка: місяць ${r.minMonth || 1}, накопичений мінус ${fmt(r.need0)}.` });
       else if (r.payback > 24) out.push({ t: 'warn', x: `Окупність близько ${r.payback} міс, це довго: за цей час змінюються тарифи, оренда й умови.` });
-      else out.push({ t: 'good', x: `Окупність ≈ ${r.payback} міс. від старту (разом із розгоном за вкладкою 2: ${state.ramp.join('% → ')}%).` });
+      else out.push({ t: 'good', x: `Окупність ≈ ${r.payback} міс. від старту (разом із розгоном із розділу «Ще → Старт і розгін»: ${state.ramp.join('% → ')}%).` });
       const fund = Number(state.curScaleCash) || 0;
       out.push({ t: fund >= r.needTotal ? 'good' : 'warn', x: `На старт потрібно ≈ <b>${fmt(r.needTotal)}</b>: вкладення ${fmt(d.capex)} + застава ${fmt(r.deposit)}${r.lossRamp > 0 ? ` + збитки розгону ${fmt(r.lossRamp)}` : ''} + подушка ${fmt(r.bufferCash)}. У фонді розвитку зараз ${fmt(fund)}${fund >= r.needTotal ? ': вистачає, залишок ' + fmt(fund - r.needTotal) + '.' : `: бракує ${fmt(r.needTotal - fund)}.`}` });
       if (act.length) {
@@ -3273,7 +3358,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
         ${adv}
         <h3 class="sub-title">Перші 12 місяців</h3>
         <div class="table-wrap"><table class="benchmark-table"><thead><tr><th>Міс</th><th>Розгін</th><th>Посилок/день</th><th>Виручка</th><th>Витрати</th><th>Результат</th><th>Накопичено</th></tr></thead><tbody>${rows}</tbody></table></div>
-        <p class="muted-note">Накопичений результат стартує з мінуса вкладень і застави. Витрати враховують податок з виручки (ЄСВ уже сплачується за вас як ФОП, тому окремо для відділення не додається) і резерв на оновлення обладнання. Розгін береться з вкладки 2.</p>
+        <p class="muted-note">Накопичений результат стартує з мінуса вкладень і застави. Витрати враховують податок з виручки (ЄСВ уже сплачується за вас як ФОП, тому окремо для відділення не додається) і резерв на оновлення обладнання. Розгін береться з розділу «Ще → Старт і розгін».</p>
         <h3 class="sub-title">Збережені плани</h3>
         ${plans || '<div class="muted-note">Поки порожньо. Збережіть варіант, щоб порівнювати кілька локацій між собою.</div>'}`;
     }
@@ -3446,6 +3531,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       if (act.id === 'tab-newbranch') nbRender();
       if (act.id === 'tab-balance') { balSync(); renderBalance(); }
       if (act.id === 'tab-planfact') pfRender();
+      if (act.id === 'tab-home') renderHome();
     }
 
     /* ---------- Вікно «Про програму та ліцензія» ---------- */
@@ -3539,7 +3625,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       s.forEach(d => groups[isoWeekday(d.date)].push(d.flow));
       const cl = s.map(d => {
         const g = groups[isoWeekday(d.date)]; if (g.length < 3) return d.flow;
-        const md = fMedian(g), mad = fMedian(g.map(x => Math.abs(x - md))) * 1.4826, b = 3 * Math.max(mad, 0.08 * md);
+        const md = fMedian(g), mad = fMedian(g.map(x => Math.abs(x - md))) * 1.4826, b = 2.5 * Math.max(mad, 0.05 * md);
         return Math.min(md + b, Math.max(md - b, d.flow));
       });
       const m = fMean(cl); if (m <= 0) return null;
@@ -3550,7 +3636,7 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       const nf = fMean(fac); fac = fac.map(x => x / nf);
       const useW = s.length >= 14, f = w => (useW ? fac[w] : 1);
       const ds0 = s.map((d, i) => cl[i] / Math.max(0.3, f(isoWeekday(d.date))));
-      const med = fMedian(ds0), mad0 = fMedian(ds0.map(x => Math.abs(x - med))) * 1.4826, band = 3 * Math.max(mad0, 0.05 * med);
+      const med = fMedian(ds0), mad0 = fMedian(ds0.map(x => Math.abs(x - med))) * 1.4826, band = 2.5 * Math.max(mad0, 0.03 * med);
       const ds = ds0.map(x => Math.min(med + band, Math.max(med - band, x)));
       let level = ds[0]; for (let i = 1; i < ds.length; i++) level = 0.2 * ds[i] + 0.8 * level;
       let trend = 0;
@@ -3829,6 +3915,186 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
       }
     }
 
+    /* ===================== v6.7: проста навігація ===================== */
+    const NAV = {
+      home: { label: 'Сьогодні', tabs: [['tab-home', 'Сьогодні']] },
+      planfact: { label: 'План/факт', tabs: [['tab-planfact', 'План і факт']] },
+      money: { label: 'Гроші', tabs: [['tab-management', 'Журнал і керівник'], ['tab-balance', 'Баланс']] },
+      plan: { label: 'Планування', tabs: [['tab-scenarios', 'Що, якщо?'], ['tab-newbranch', 'Нове відділення'], ['tab-network', 'Мережа'], ['tab-goals', 'Цілі'], ['tab-decisions', 'Рішення і ворота']] },
+      more: { label: 'Модель точки', tabs: [['tab-unit', 'Точка і стрес'], ['tab-capex', 'Старт і розгін'], ['tab-chart', 'Графік росту']] }
+    };
+    const navLast = {};
+    function navGroupOf(tab) { return Object.keys(NAV).find(g => NAV[g].tabs.some(x => x[0] === tab)) || 'home'; }
+    function navTo(tab) {
+      const b = document.querySelector('#tabsNav .tab-btn[data-tab="' + tab + '"]');
+      if (!b) return;
+      closeMore(); b.click();
+      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); }
+    }
+    function navGroup(g) {
+      if (!NAV[g]) return;
+      const cur = document.querySelector('.tab-panel.active'), already = cur && NAV[g].tabs.some(x => x[0] === cur.id);
+      navTo(already ? cur.id : (navLast[g] || NAV[g].tabs[0][0]));
+    }
+    function navSync(tab) {
+      const g = navGroupOf(tab), def = NAV[g], sub = def.tabs.find(x => x[0] === tab);
+      navLast[g] = tab;
+      document.querySelectorAll('#bnav button[data-go]').forEach(b => b.classList.toggle('active', b.dataset.go === g));
+      const strip = document.getElementById('subNav');
+      if (strip) {
+        if (def.tabs.length > 1) {
+          strip.innerHTML = def.tabs.map(x => `<button class="${x[0] === tab ? 'active' : ''}" onclick="navTo('${x[0]}')">${x[1]}</button>`).join('');
+          strip.style.display = 'flex';
+          const a = strip.querySelector('.active'); if (a && a.scrollIntoView) { try { a.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
+        } else { strip.style.display = 'none'; strip.innerHTML = ''; }
+      }
+      const t = document.getElementById('navTitle'); if (t) t.textContent = def.tabs.length > 1 ? sub[1] : def.label;
+    }
+    function openMore() { const o = document.getElementById('moreOv'); if (o) o.classList.add('open'); }
+    function closeMore() { const o = document.getElementById('moreOv'); if (o) o.classList.remove('open'); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMore(); });
+    function quickTx() {
+      navTo('tab-management');
+      setTimeout(() => {
+        const el = document.getElementById('txAmount'); if (!el) return;
+        const card = el.closest('.card'); if (card && card.classList.contains('collapsed')) card.classList.remove('collapsed');
+        try { el.scrollIntoView({ block: 'center' }); } catch (e) {}
+        el.focus();
+      }, 80);
+    }
+    function renderHome() {
+      const el = document.getElementById('homeKpis'); if (!el) return;
+      const m = networkModel(), cash = balCash(), tx = taxAccrual(), burn = monthlyBurn();
+      const runway = burn.v > 0 ? cash / burn.v : null;
+      const bed = m.activeCount && m.net > 0 ? breakevenDropPct(SC_ZERO) : 0;
+      el.innerHTML =
+        `<div class="kpi" onclick="navTo('tab-scenarios')" style="cursor:pointer"><div class="kpi-label">Прибуток / міс</div><div class="kpi-val ${m.net >= 0 ? 'text-green' : 'text-red'}">${fmt(m.net)}</div><small class="muted-note">мережа, за моделлю</small></div>` +
+        `<div class="kpi" onclick="navTo('tab-balance')" style="cursor:pointer"><div class="kpi-label">Каса</div><div class="kpi-val">${fmt(cash)}</div><small class="muted-note">${!(state.transactions || []).length ? 'журнал ще порожній' : runway === null ? 'за журналом операцій' : cash <= 0 ? 'коштів у журналі немає' : 'покриває ' + monthsTxt(runway) + ' витрат'}</small></div>` +
+        `<div class="kpi" onclick="navTo('tab-balance')" style="cursor:pointer"><div class="kpi-label">Податки до сплати</div><div class="kpi-val ${tx.total > cash && cash > 0 ? 'text-red' : ''}">${fmt(tx.total)}</div><small class="muted-note">вже нараховано</small></div>` +
+        `<div class="kpi" onclick="navTo('tab-scenarios')" style="cursor:pointer"><div class="kpi-label">Запас міцності</div><div class="kpi-val ${m.net <= 0 ? 'text-red' : bed < 12 ? 'text-red' : bed < 25 ? 'text-amber' : 'text-green'}">${m.net > 0 ? pctTxt(bed, 0) : '—'}</div><small class="muted-note">${m.net > 0 ? 'просідання потоку до нуля' : 'мережа не в плюсі'}</small></div>`;
+    }
+
+    /* ===================== v6.8: вхід відбитком пальця (WebAuthn, платформний автентифікатор) ===================== */
+    const BIO_KEY = 'nova_pulse_bio';
+    const b64u = {
+      enc: buf => { const b = new Uint8Array(buf); let s = ''; b.forEach(x => { s += String.fromCharCode(x); }); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); },
+      dec: str => { str = String(str).replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; const s = atob(str), a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; }
+    };
+    // Ключі зберігаються окремо від резервних копій: вони прив’язані до цього пристрою
+    function bioLoad() {
+      try {
+        const a = JSON.parse(localStorage.getItem(BIO_KEY) || '[]');
+        return Array.isArray(a) ? a.filter(x => x && typeof x.id === 'string' && typeof x.pub === 'string' && typeof x.login === 'string' && (x.role === 'manager' || x.role === 'branch') && (x.alg === -7 || x.alg === -257)) : [];
+      } catch (e) { return []; }
+    }
+    function bioSave(a) { try { localStorage.setItem(BIO_KEY, JSON.stringify(a)); return true; } catch (e) { return false; } }
+    function bioSupported() { return !!(window.isSecureContext && location.protocol !== 'file:' && location.hostname && window.PublicKeyCredential && navigator.credentials && window.crypto && crypto.subtle); }
+    function bioAccount() {
+      if (!activeSession) return null;
+      return activeSession.role === 'manager' ? { login: 'admin', role: 'manager', name: 'Керівник мережі' } : { login: activeSession.login, role: 'branch', name: activeSession.name };
+    }
+    function bioHas(acc) { return bioLoad().some(x => x.login === acc.login && x.role === acc.role); }
+    function bioRefreshUi() {
+      const show = bioLoad().length > 0 && bioSupported();
+      const b = document.getElementById('bioLoginBtn'); if (b) b.style.display = show ? 'block' : 'none';
+      const acc = bioAccount();
+      ['bioToggleBtn', 'bioToggleBtn2'].forEach(id => {
+        const e = document.getElementById(id);
+        if (e) e.textContent = acc && bioHas(acc) ? '👆 Вхід відбитком: увімкнено' : '👆 Увімкнути вхід відбитком';
+      });
+    }
+    async function bioToggle() {
+      const acc = bioAccount(); if (!acc) { showToast('Спершу увійдіть у систему'); return; }
+      if (bioHas(acc)) {
+        if (!confirm('Вимкнути вхід відбитком для цього облікового запису на цьому пристрої?')) return;
+        bioSave(bioLoad().filter(x => !(x.login === acc.login && x.role === acc.role)));
+        bioRefreshUi(); showToast('Вхід відбитком вимкнено'); return;
+      }
+      if (!bioSupported()) { alert('Вхід відбитком працює лише на захищеному з’єднанні (https) у Chrome на Android. Відкрийте застосунок за адресою на github.io, а не як локальний файл.'); return; }
+      try {
+        if (PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable && !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())) {
+          alert('На цьому телефоні не налаштовано відбиток пальця або блокування екрана. Налаштуйте їх у налаштуваннях Android і повторіть.'); return;
+        }
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const cred = await navigator.credentials.create({ publicKey: {
+          challenge, rp: { name: 'NOVA PULSE', id: location.hostname },
+          user: { id: new TextEncoder().encode(('np:' + acc.role + ':' + acc.login).slice(0, 60)), name: acc.login, displayName: acc.name || acc.login },
+          pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+          authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+          timeout: 60000, attestation: 'none'
+        } });
+        const r = cred.response, cd = JSON.parse(new TextDecoder().decode(r.clientDataJSON));
+        if (cd.type !== 'webauthn.create' || cd.challenge !== b64u.enc(challenge) || cd.origin !== location.origin) throw new Error('Невірна відповідь пристрою');
+        const pk = r.getPublicKey && r.getPublicKey(), alg = r.getPublicKeyAlgorithm && r.getPublicKeyAlgorithm();
+        if (!pk || (alg !== -7 && alg !== -257)) throw new Error('Браузер не передав ключ. Оновіть Chrome.');
+        const list = bioLoad().filter(x => !(x.login === acc.login && x.role === acc.role));
+        list.push({ id: b64u.enc(cred.rawId), pub: b64u.enc(pk), alg, login: acc.login, role: acc.role, created: new Date().toISOString() });
+        if (!bioSave(list)) throw new Error('Не вдалося зберегти ключ у браузері');
+        bioRefreshUi(); showToast('Вхід відбитком увімкнено ✅', 3500);
+      } catch (e) {
+        if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) showToast('Скасовано');
+        else if (e && e.name === 'SecurityError') alert('Браузер не дозволив відбиток для цієї адреси. Відкрийте застосунок за https-адресою (наприклад, на github.io).');
+        else { console.error(e); alert('Не вдалося увімкнути відбиток: ' + (e && e.message ? e.message : 'невідома помилка')); }
+      }
+    }
+    function bioDerToRaw(der, len) {                                   // ECDSA: DER → r||s
+      let o = 2; if (der[1] & 0x80) o = 2 + (der[1] & 0x7f);
+      if (der[o] !== 0x02) throw new Error('der');
+      const rl = der[o + 1], r = der.slice(o + 2, o + 2 + rl); o = o + 2 + rl;
+      if (der[o] !== 0x02) throw new Error('der');
+      const sl = der[o + 1], s = der.slice(o + 2, o + 2 + sl);
+      const fix = x => { while (x.length > len && x[0] === 0) x = x.slice(1); const out = new Uint8Array(len); out.set(x, len - x.length); return out; };
+      const out = new Uint8Array(len * 2); out.set(fix(r), 0); out.set(fix(s), len); return out;
+    }
+    async function bioVerify(a, challenge, rec) {
+      const cd = JSON.parse(new TextDecoder().decode(a.response.clientDataJSON));
+      if (cd.type !== 'webauthn.get' || cd.challenge !== b64u.enc(challenge) || cd.origin !== location.origin) return false;
+      const ad = new Uint8Array(a.response.authenticatorData), rp = sha256(new TextEncoder().encode(location.hostname));
+      for (let i = 0; i < 32; i++) if (ad[i] !== rp[i]) return false;
+      if (!(ad[32] & 0x01) || !(ad[32] & 0x04)) return false;          // користувач присутній і підтверджений (відбиток)
+      const cdHash = new Uint8Array(await crypto.subtle.digest('SHA-256', a.response.clientDataJSON));
+      const signed = new Uint8Array(ad.length + 32); signed.set(ad); signed.set(cdHash, ad.length);
+      const spki = b64u.dec(rec.pub); let sig = new Uint8Array(a.response.signature), key, algo;
+      if (rec.alg === -7) {
+        key = await crypto.subtle.importKey('spki', spki, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+        sig = bioDerToRaw(sig, 32); algo = { name: 'ECDSA', hash: 'SHA-256' };
+      } else {
+        key = await crypto.subtle.importKey('spki', spki, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+        algo = { name: 'RSASSA-PKCS1-v1_5' };
+      }
+      return await crypto.subtle.verify(algo, key, sig, signed);
+    }
+    let bioBusy = false;
+    async function bioLogin(silent) {
+      if (bioBusy) return;
+      const err = document.getElementById('authError');
+      const fail = m => { if (silent) return; err.style.display = 'block'; err.textContent = m; };
+      if (!bioSupported()) { fail('Вхід відбитком недоступний: потрібне захищене з’єднання (https) і Chrome на Android.'); return; }
+      let creds = bioLoad();
+      if (!creds.length) { fail('Відбиток ще не налаштовано: увійдіть паролем і ввімкніть його в меню «Ще».'); return; }
+      const typed = (document.getElementById('authLogin').value || '').trim();
+      if (typed) { const f = creds.filter(x => x.login === typed); if (f.length) creds = f; }
+      bioBusy = true;
+      try {
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const a = await navigator.credentials.get({ publicKey: {
+          challenge, rpId: location.hostname, userVerification: 'required', timeout: 60000,
+          allowCredentials: creds.map(c => ({ type: 'public-key', id: b64u.dec(c.id), transports: ['internal'] }))
+        } });
+        const rec = creds.find(c => c.id === b64u.enc(a.rawId));
+        if (!rec || !(await bioVerify(a, challenge, rec))) { fail('Не вдалося підтвердити відбиток.'); return; }
+        ensureBranchData();
+        let user = null;
+        if (rec.role === 'manager') { if (state.adminAuth && state.adminAuth.hash) user = { role: 'manager', name: 'Керівник мережі' }; }
+        else user = (state.branchUsers || []).find(x => x.login === rec.login && x.active !== false) || null;
+        if (!user) { bioSave(bioLoad().filter(x => x.id !== rec.id)); bioRefreshUi(); fail('Обліковий запис недоступний. Увійдіть паролем.'); return; }
+        completeLogin(user, rec.login);
+      } catch (e) {
+        if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) fail('Скасовано. Спробуйте ще раз або увійдіть паролем.');
+        else fail('Помилка біометрії: ' + (e && e.message ? e.message : ''));
+      } finally { bioBusy = false; }
+    }
+
     // Init
     document.getElementById('txDate').value = localDateISO();
     syncInputsFromState();
@@ -3842,9 +4108,11 @@ function markReportReviewed(id){const r=(state.branchReports||[]).find(x=>x.id==
     updateThemeButton();
     if (window.NovaTheme) NovaTheme.onChange = () => { updateThemeButton(); try { drawGrowthChart(); } catch (e) {} };
     try { renderInsights(); } catch (e) { console.error(e); }
+    try { navSync('tab-home'); renderHome(); } catch (e) { console.error(e); }
 
     // v6.4: режим входу, Enter, постійне сховище, PWA
     refreshAuthMode();
+    if (bioLoad().length && bioSupported()) setTimeout(() => { bioLogin(true); }, 700);   // одразу пропонуємо відбиток, без помилок, якщо скасовано
     ['authLogin','authPassword','authPassword2'].forEach(id=>{
       const el=document.getElementById(id);
       if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loginSystem();}});
